@@ -11,13 +11,13 @@ export const Button = ({
   ...props
 }: ButtonProps) => {
   const baseStyles =
-    "inline-flex items-center justify-center rounded font-medium transition-colors gap-2";
+    "inline-flex items-center justify-center rounded font-medium transition-colors gap-1.5 cursor-pointer";
 
   const variants = {
     primary: "bg-black text-white hover:bg-gray-800",
-    secondary: "bg-white border border-gray-ddd text-gray-700 hover:bg-gray-50",
-    danger: "bg-[#F6B9BA] border border-[#FC8181] hover:bg-[#FFE3E3]",
-    ghost: "text-gray-400 hover:text-gray-600 px-0",
+    secondary: "bg-white border border-gray-ddd text-gray-700",
+    danger: "bg-[#F6B9BA] border border-[#FC8181]",
+    ghost: "px-0 bg-bg-light border border-gray-ddd",
   };
 
   const sizes = {
@@ -32,7 +32,7 @@ export const Button = ({
     <button
       className={twMerge(
         `${baseStyles} ${variants[variant]} ${sizes[size]}`,
-        className
+        className,
       )}
       {...props}
     >
