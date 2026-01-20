@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { SummaryCard } from "@/components/admin/SummaryCard";
 import { Button } from "@/components/common/Button";
 import {
@@ -14,21 +15,11 @@ import { Icon } from "@/components/common/Icon";
 import { MOCK_BACKLOG } from "@/mock/backlog";
 import { Badge } from "@/components/common/Badge";
 import { CommonPagination } from "@/components/common/Pagination";
-import { useState } from "react";
 
 export default function BacklogPage() {
-  // ------------------ 테이블 영역
+  // ------------------ 테이블 헤더 영역
   const COLUMNS = [
-    {
-      label: (
-        <button className="flex justify-center">
-          <Icon type="filterAlt" size="20" />
-          <Icon type="chevronDown" size="20" />
-        </button>
-      ),
-      width: "w-15",
-      center: true,
-    },
+    { label: "checkbox", width: "w-15", center: true },
     { label: "NO", width: "w-15", center: true },
     { label: "화면" },
     { label: "세부 페이지" },
@@ -41,24 +32,47 @@ export default function BacklogPage() {
 
   // ------------------ 페이지네이션 영역
   const [page, setPage] = useState(1);
-  const totalPages = 5; // 실제로는 API 결과값에서 받아옴
+  const totalPages = 5;
 
-  // ------------------ 총 백로그 개수, 구현 완료 계산 (mock 데이터 기반)
+  // ------------------ 데이터 및 선택 상태 관리 영역
   const [backlogData, setBacklogData] = useState(MOCK_BACKLOG);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
-  // 상태값 기반으로 요약 데이터 계산
-  const totalCount = backlogData.length;
-  const completedCount = backlogData.filter((item) => item.isDone).length;
-  const completionRate =
-    totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  // ------------------ 요약 데이터 계산 영역
+  const { totalCount, completionRate } = useMemo(() => {
+    const total = backlogData.length;
+    const completed = backlogData.filter((item) => item.isDone).length;
+    return {
+      totalCount: total,
+      completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
+    };
+  }, [backlogData]);
 
-  // 상태 토글 핸들러
+  // ------------------ 핸들러 영역 (상태/선택 토글)
+
+  // 구현/디자인 여부 상태 토글
   const toggleStatus = (id: number, field: "isDone" | "isDesigned") => {
     setBacklogData((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, [field]: !item[field] } : item
-      )
+        item.id === id ? { ...item, [field]: !item[field] } : item,
+      ),
     );
+  };
+
+  // 개별 행 선택 토글
+  const toggleSelect = (id: number) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((sid) => sid !== id) : [...prev, id],
+    );
+  };
+
+  // 전체 행 선택/해제 토글
+  const toggleSelectAll = () => {
+    if (selectedIds.length === backlogData.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(backlogData.map((item) => item.id));
+    }
   };
 
   return (
@@ -83,16 +97,21 @@ export default function BacklogPage() {
         />
       </div>
 
-      <div className="mb-4 flex justify-end gap-2 border-b border-gray-50">
-        <Button variant="secondary" icon="trash">
-          선택 항목 삭제
+      {/* 컨트롤 버튼 영역 */}
+      <div className="mb-4 flex justify-end gap-2">
+        <Button
+          variant="secondary"
+          icon="trash"
+          disabled={selectedIds.length === 0}
+        >
+          선택 항목 삭제 {selectedIds.length > 0 && `(${selectedIds.length})`}
         </Button>
         <Button variant="secondary" icon="chevronDown">
           필터
         </Button>
       </div>
 
-      {/* 테이블 컨트롤 영역 */}
+      {/* 테이블 영역 */}
       <div className="bg-white rounded-lg border border-gray-ddd overflow-hidden">
         <Table>
           <TableHeader className="bg-bg-light">
@@ -108,7 +127,20 @@ export default function BacklogPage() {
                   style={{ width: col.width }}
                 >
                   {col.label === "checkbox" ? (
-                    <input type="checkbox" className="rounded" />
+                    <div
+                      className="flex justify-center cursor-pointer"
+                      onClick={toggleSelectAll}
+                    >
+                      <Icon
+                        type={
+                          selectedIds.length === backlogData.length &&
+                          backlogData.length > 0
+                            ? "checkboxChecked"
+                            : "checkbox"
+                        }
+                        size={24}
+                      />
+                    </div>
                   ) : (
                     col.label
                   )}
@@ -121,27 +153,42 @@ export default function BacklogPage() {
             {backlogData.map((item, index) => (
               <TableRow
                 key={item.id}
-                className="text-base hover:bg-gray-50 transition-colors"
+                className={`text-base hover:bg-gray-50 transition-colors ${selectedIds.includes(item.id) ? "bg-gray-50" : ""}`}
               >
-                {/* 필터, 번호 */}
+                {/* 선택 체크박스 아이콘 */}
                 <TableCell className="w-[60px] py-3.5 text-center border-r border-gray-ddd">
-                  <input type="checkbox" />
+                  <div
+                    className="flex justify-center cursor-pointer"
+                    onClick={() => toggleSelect(item.id)}
+                  >
+                    <Icon
+                      type={
+                        selectedIds.includes(item.id)
+                          ? "checkboxChecked"
+                          : "checkbox"
+                      }
+                      size={24}
+                    />
+                  </div>
                 </TableCell>
+
+                {/* NO */}
                 <TableCell className="w-[60px] text-center border-r border-gray-ddd">
                   {index + 1}
                 </TableCell>
 
+                {/* 데이터 셀 영역 */}
                 {[
-                  { val: item.screen, width: "w-[150px]" }, // 화면
-                  { val: item.subPage, width: "w-[120px]" }, // 세부 페이지
+                  { val: item.screen, width: "w-[150px]" },
+                  { val: item.subPage, width: "w-[120px]" },
                   {
                     val: item.epic,
                     width: "w-[150px]",
                     isBadge: true,
-                    badgeColor: "#DBF0D6", // 원하는 배경색 전달
+                    badgeColor: "#DBF0D6",
                   },
-                  { val: item.feature, width: "w-[390px]" }, // 기능
-                  { val: item.description, width: "w-[370px]" }, // 설명
+                  { val: item.feature, width: "w-[390px]" },
+                  { val: item.description, width: "w-[370px]" },
                 ].map((cell, i) => (
                   <TableCell
                     key={i}
@@ -160,6 +207,7 @@ export default function BacklogPage() {
                   </TableCell>
                 ))}
 
+                {/* 구현/디자인 상태 아이콘 셀 */}
                 {[
                   { key: "isDone", status: item.isDone },
                   { key: "isDesigned", status: item.isDesigned },
@@ -175,7 +223,7 @@ export default function BacklogPage() {
                       onClick={() =>
                         toggleStatus(
                           item.id,
-                          cell.key as "isDone" | "isDesigned"
+                          cell.key as "isDone" | "isDesigned",
                         )
                       }
                     >
@@ -191,22 +239,16 @@ export default function BacklogPage() {
           </TableBody>
         </Table>
 
+        {/* 컬럼 추가 버튼 */}
         <div className="p-4.5 px-2.5 border-t border-gray-ddd">
-          <Button
-            className="
-              bg-transparent 
-              p-0 
-              text-gray-999 text-base 
-              hover:text-gray-600 hover:bg-transparent 
-              font-regular"
-          >
+          <Button className="bg-transparent p-0 text-gray-999 text-base hover:text-gray-600 hover:bg-transparent font-regular">
             <Icon type="plus" size="16" />
             Add Column
           </Button>
         </div>
       </div>
 
-      {/* 페이지네이션 */}
+      {/* 페이지네이션 영역 */}
       <div className="mt-4">
         <CommonPagination
           currentPage={page}
@@ -215,7 +257,7 @@ export default function BacklogPage() {
         />
       </div>
 
-      {/* Epic 관리 */}
+      {/* Epic 관리 영역 */}
       <div className="mt-7.5 border-gray-100">
         <h3 className="text-lg font-bold mb-5 pb-5 border-b border-gray-ddd">
           Epic 관리
@@ -229,7 +271,11 @@ export default function BacklogPage() {
             <Icon type="x" size="16" />
             Epic 태그가 들어갑니다.
           </Badge>
-          <Button variant="secondary" className="text-gray-999">
+          <Button
+            variant="secondary"
+            size="md"
+            className="text-gray-999 text-sm"
+          >
             <Icon type="plus" size="16" />
             Add Epic
           </Button>
