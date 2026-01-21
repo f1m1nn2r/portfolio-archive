@@ -8,14 +8,6 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   icon?: IconType;
 }
 
-// ------------------ 관리자 페이지 카드
-export interface SummaryCardProps {
-  title: string;
-  value: string | number;
-  icon: IconType;
-  bgColor: string;
-}
-
 // ------------------ 뱃지
 export interface BadgeProps {
   children: React.ReactNode;
@@ -28,14 +20,6 @@ export interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
-}
-
-// ------------------ 경력 모달
-export interface ExperienceModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  mode: "add" | "edit";
-  initialData?: any; // 실제 경력 타입으로 수정 필요
 }
 
 // ------------------ 드롭다운 메뉴

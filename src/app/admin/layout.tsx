@@ -17,12 +17,13 @@ export default function AdminLayout({
     { name: "Backlog", icon: "clipboard", href: "/admin/backlog" },
     { name: "Experience", icon: "briefcase", href: "/admin/experience" },
     { name: "Email", icon: "envelope", href: "/admin/email" },
+    { name: "DB Schema", icon: "data", href: "/admin/schema" },
     { name: "Writing", icon: "editAlt", href: "/admin/writing" },
   ];
 
   return (
-    <div className="flex min-h-screen bg-bg-light p-5 gap-2.5">
-      <aside className="w-64 flex flex-col">
+    <div className="flex min-h-screen bg-bg-light p-5 gap-2.5 items-start">
+      <aside className="w-64 flex flex-col sticky top-5">
         <div
           className="
              bg-white p-2.5 rounded-lg border border-gray-ddd  
