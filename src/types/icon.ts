@@ -19,6 +19,7 @@ export const ICON_MAP = {
   briefcase: BiIcons.BiBriefcase,
   envelope: BiIcons.BiEnvelope,
   editAlt: BiIcons.BiEditAlt,
+  data: BiIcons.BiData,
   // ------------------ END 관리자 페이지 좌측 메뉴 아이콘
 
   // ------------------ 관리자 페이지 - 백로그 페이지 내 아이콘
@@ -37,6 +38,11 @@ export const ICON_MAP = {
   envelopeOpen: BiIcons.BiEnvelopeOpen,
   star: BiIcons.BiStar,
   // ------------------ END 관리자 페이지 - 이메일 페이지 내 아이콘
+
+  // ------------------ 관리자 페이지 - 스키마 페이지 내 아이콘
+  table: BiIcons.BiTable,
+  columns: BiIcons.BiColumns,
+  // ------------------ END 관리자 페이지 - 스키마 페이지 내 아이콘
 };
 
 export type IconType = keyof typeof ICON_MAP;
