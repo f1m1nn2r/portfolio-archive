@@ -1,12 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { SummaryCard } from "@/components/admin/SummaryCard";
 import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
 import { CommonPagination } from "@/components/common/Pagination";
 import { Dropdown } from "@/components/common/Dropdown";
 import { MOCK_EMAILS } from "@/mock/email";
+import { AdminSummaryItem } from "@/types/admin";
+import { AdminSummaryGrid } from "@/components/admin/layout/AdminSummaryGrid";
+import { AdminPageLayout } from "@/components/admin/layout/AdminPageLayout";
 
 export default function EmailPage() {
   const [emails, setEmails] = useState(MOCK_EMAILS);
@@ -68,27 +70,26 @@ export default function EmailPage() {
     },
   ];
 
-  return (
-    <div className="p-10 pb-25 min-h-screen bg-white rounded-lg border border-gray-ddd">
-      <h1 className="text-2xl font-semibold mb-8 pb-8 border-b border-gray-ddd">
-        Email
-      </h1>
+  // ------------------ 요약 아이템 배열 영역
+  const summaryItems: AdminSummaryItem[] = [
+    {
+      title: "총 이메일",
+      value: `${emails.length}개`,
+      icon: "mailSend",
+      bgColor: "bg-bg-purple",
+    },
+    {
+      title: "읽지 않음",
+      value: `${unreadCount}개`,
+      icon: "envelopeOpen",
+      bgColor: "bg-bg-blue",
+    },
+  ];
 
-      {/* 요약 카드 영역 */}
-      <div className="grid grid-cols-2 gap-6 mb-8">
-        <SummaryCard
-          title="총 이메일"
-          value={`${emails.length}개`}
-          icon="mailSend"
-          bgColor="bg-[#F5F0FF]"
-        />
-        <SummaryCard
-          title="읽지 않음"
-          value={`${unreadCount}개`}
-          icon="envelopeOpen"
-          bgColor="bg-[#EBF5FF]"
-        />
-      </div>
+  return (
+    <AdminPageLayout title="Email">
+      {/* 상단 요약 영역 */}
+      <AdminSummaryGrid items={summaryItems} />
 
       {/* 검색 및 필터 */}
       <div className="mb-4 flex justify-end gap-2">
@@ -204,13 +205,11 @@ export default function EmailPage() {
         </div>
       </div>
 
-      <div className="mt-6">
-        <CommonPagination
-          currentPage={page}
-          totalPages={totalPages}
-          onPageChange={setPage}
-        />
-      </div>
-    </div>
+      <CommonPagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
+    </AdminPageLayout>
   );
 }

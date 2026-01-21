@@ -3,7 +3,7 @@
 import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
 import { Badge } from "@/components/common/Badge";
-import { ExperienceModalProps } from "@/types/common/ui";
+import { ExperienceModalProps } from "@/types/admin";
 
 // 반복되는 섹션 레이아웃
 const FormSection = ({

@@ -1,13 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { SummaryCard } from "@/components/admin/SummaryCard";
 import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
 import { Badge } from "@/components/common/Badge";
 import { CommonPagination } from "@/components/common/Pagination";
 import { MOCK_EXPERIENCE } from "@/mock/experience";
 import { ExperienceModal } from "@/components/admin/experience/Modal";
+import { AdminPageLayout } from "@/components/admin/layout/AdminPageLayout";
+import { AdminSummaryGrid } from "@/components/admin/layout/AdminSummaryGrid";
+import { AdminSummaryItem } from "@/types/admin";
+import { AdminActionBar } from "@/components/admin/layout/AdminActionBar";
 
 export default function ExperiencePage() {
   const [page, setPage] = useState(1);
@@ -28,38 +31,37 @@ export default function ExperiencePage() {
     setIsModalOpen(true);
   };
 
-  return (
-    <div className="p-10 pb-25 min-h-screen bg-white rounded-lg border border-gray-ddd">
-      <h1 className="text-2xl font-semibold mb-8 pb-8 border-b border-gray-ddd">
-        Experience
-      </h1>
+  // ------------------ 요약 아이템 배열 영역
+  const summaryItems: AdminSummaryItem[] = [
+    {
+      title: "총 경력",
+      value: "3년 8개월",
+      icon: "briefcase",
+      bgColor: "bg-bg-purple",
+    },
+    {
+      title: "등록된 회사 수",
+      value: `${MOCK_EXPERIENCE.length}개`,
+      icon: "building",
+      bgColor: "bg-bg-blue",
+    },
+  ];
 
+  return (
+    <AdminPageLayout title="Experience">
       {/* 상단 요약 영역 */}
-      <div className="grid grid-cols-2 gap-6 mb-8">
-        <SummaryCard
-          title="총 경력"
-          value="3년 8개월"
-          icon="briefcase"
-          bgColor="bg-[#F5F0FF]"
-        />
-        <SummaryCard
-          title="등록된 회사 수"
-          value={`${MOCK_EXPERIENCE.length}개`}
-          icon="building"
-          bgColor="bg-[#EBF5FF]"
-        />
-      </div>
+      <AdminSummaryGrid items={summaryItems} />
 
       {/* 새 경력 추가 버튼 */}
-      <div className="mb-6 flex justify-end">
+      <AdminActionBar>
         <Button
           variant="secondary"
-          className="border-gray-ddd text-sm"
+          className="border-gray-ddd"
           onClick={openAddModal}
         >
           <Icon type="plus" size={16} />새 경력 추가
         </Button>
-      </div>
+      </AdminActionBar>
 
       {/* 경력 리스트 */}
       <div className="flex flex-col gap-6 mb-10">
@@ -147,6 +149,6 @@ export default function ExperiencePage() {
         totalPages={totalPages}
         onPageChange={(newPage) => setPage(newPage)}
       />
-    </div>
+    </AdminPageLayout>
   );
 }
