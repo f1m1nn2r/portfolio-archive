@@ -1,21 +1,72 @@
 import Image from "next/image";
-import { Experience } from "@/types/admin/experience";
-
-async function getProfileSettings() {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/profile-settings`,
-    {
-      cache: "no-store",
-    },
-  );
-  return res.json();
-}
+import { Experience } from "@/types/api/experience";
 
 async function getExperiences(): Promise<Experience[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/experience`, {
-    cache: "no-store",
-  });
-  return res.json();
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/experience`,
+      {
+        cache: "no-store",
+      },
+    );
+
+    if (!res.ok) {
+      throw new Error(`경력 정보를 불러오는데 실패했습니다: ${res.status}`);
+    }
+
+    const json = await res.json();
+
+    if (json.success && Array.isArray(json.data)) {
+      return json.data;
+    }
+
+    if (Array.isArray(json)) {
+      return json;
+    }
+
+    console.error("예상치 못한 API 응답 형식:", json);
+    return [];
+  } catch (error) {
+    console.error("경력 정보 조회 실패:", error);
+    return [];
+  }
+}
+
+async function getProfileSettings() {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/profile-settings`,
+      {
+        cache: "no-store",
+      },
+    );
+
+    if (!res.ok) {
+      throw new Error(`프로필 정보를 불러오는데 실패했습니다: ${res.status}`);
+    }
+
+    const json = await res.json();
+
+    if (json.success && json.data) {
+      return json.data;
+    }
+
+    if (json && !json.success) {
+      return json;
+    }
+
+    console.error("예상치 못한 프로필 응답 형식:", json);
+    return {
+      main_title: "",
+      main_description: "",
+    };
+  } catch (error) {
+    console.error("프로필 정보 조회 실패:", error);
+    return {
+      main_title: "",
+      main_description: "",
+    };
+  }
 }
 
 function formatPeriod(start: string, end: string | null): string {
