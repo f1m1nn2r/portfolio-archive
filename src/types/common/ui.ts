@@ -33,3 +33,13 @@ export interface DropdownProps {
   items: DropdownItem[]; // 메뉴 리스트
   width?: string; // 드롭다운 너비
 }
+
+// ------------------ 삭제 모달
+export interface DeleteModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title?: string;
+  description?: string;
+  isLoading?: boolean;
+}

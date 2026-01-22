@@ -14,6 +14,11 @@ export default function AdminLayout({
   const pathname = usePathname();
 
   const menuItems: MenuItem[] = [
+    {
+      name: "Profile Settings",
+      icon: "userCircle",
+      href: "/admin/profile-settings",
+    },
     { name: "Backlog", icon: "clipboard", href: "/admin/backlog" },
     { name: "Experience", icon: "briefcase", href: "/admin/experience" },
     { name: "Email", icon: "envelope", href: "/admin/email" },

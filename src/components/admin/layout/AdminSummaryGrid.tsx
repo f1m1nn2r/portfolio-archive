@@ -1,4 +1,4 @@
-import { SummaryCard } from "@/components/admin/SummaryCard";
+import { AdminSummaryCard } from "@/components/admin/layout/AdminSummaryCard";
 import { AdminSummaryGridProps } from "@/types/admin";
 
 export const AdminSummaryGrid = ({
@@ -8,7 +8,7 @@ export const AdminSummaryGrid = ({
   return (
     <div className={`grid grid-cols-${columns} gap-6 mb-8`}>
       {items.map((item, idx) => (
-        <SummaryCard key={idx} {...item} />
+        <AdminSummaryCard key={idx} {...item} />
       ))}
     </div>
   );

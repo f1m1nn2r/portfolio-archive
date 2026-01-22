@@ -59,7 +59,7 @@
   --color-bg-blue: #eef4fd; /* 연파랑 배경 */
 
   --color-point-pink: #f6b9ba; /* 포인트 핑크 */
-  --color-point-red: #fc8181; /* 포인트 레드 */
+  --color-point-red: #fc8181; /* 포인트 레드(연한) */
   --color-point-green: #729969; /* 포인트 그린 */
 }
 
@@ -146,4 +146,11 @@ body {
 }
 body * {
   letter-spacing: -0.5px;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
+.react-datepicker__input-container {
+  width: 100%;
 }

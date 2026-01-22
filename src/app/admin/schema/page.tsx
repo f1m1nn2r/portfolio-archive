@@ -1,97 +1,109 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
 import { AdminPageLayout } from "@/components/admin/layout/AdminPageLayout";
 import { AdminSummaryGrid } from "@/components/admin/layout/AdminSummaryGrid";
 import { AdminActionBar } from "@/components/admin/layout/AdminActionBar";
-
-import { AdminTableSection } from "@/components/admin/table/AdminTableSection";
-import { Dropdown } from "@/components/common/Dropdown";
-import { AdminSummaryItem } from "@/types/admin";
+import { SchemaItem } from "@/types/admin";
 import { SCHEMA_DATA } from "@/mock/schema";
-import { AdminTable } from "@/components/admin/table/AdminTable";
+import { SchemaTable } from "@/components/admin/schema/SchemaTable";
+import { useSelectionData } from "@/hooks/useSelectionData";
+import { useSelectionHandler } from "@/hooks/useSelectionHandler";
+import { AdminTableColumn } from "@/types/admin/table";
+import { useSummaryData } from "@/hooks/useSummaryData";
+import { LoadingState } from "@/components/common/LoadingState";
+
+const SCHEMA_COLUMNS: AdminTableColumn<SchemaItem>[] = [
+  { label: "checkbox", width: "w-15", center: true },
+  { label: "컬럼명", width: "w-1/8", key: "name" },
+  { label: "타입", width: "w-1/6", key: "type" },
+  { label: "제약 조건", width: "w-1/6", key: "constraint" },
+  { label: "설명", key: "desc" },
+];
+
+const TABLE_NAMES: Record<string, string> = {
+  backlog: "backlog",
+  experience: "experience",
+  emails: "emails",
+  schema: "db_schema_management",
+};
 
 export default function DBSchemaPage() {
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // ------------------ 요약 아이템 계산
-  const summaryItems: AdminSummaryItem[] = [
+  // 초기 로딩 처리
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const allSchemaData = useMemo(
+    () => Object.values(SCHEMA_DATA).flat() as SchemaItem[],
+    [],
+  );
+
+  const { data: schemaData, deleteItems } = useSelectionData(allSchemaData);
+
+  const { selectedIds, toggleSelect, toggleSelectAll } = useSelectionHandler({
+    data: schemaData,
+    getId: (item) => item.id,
+    onDelete: deleteItems,
+  });
+
+  const summaryItems = useSummaryData([
     {
-      title: "총 테이블 개수",
-      value: `${Object.keys(SCHEMA_DATA).length}개`,
       icon: "table",
       bgColor: "bg-bg-purple",
+      label: "총 테이블 개수",
+      getValue: () => `${Object.keys(SCHEMA_DATA).length}개`,
     },
     {
-      title: "총 컬럼 개수",
-      value: `${Object.values(SCHEMA_DATA).flat().length}개`,
       icon: "listUl",
       bgColor: "bg-bg-blue",
+      label: "총 컬럼 개수",
+      getValue: () => `${schemaData.length}개`,
     },
+  ]);
+
+  // 필터 아이템
+  const filterItems = [
+    { label: "전체", onClick: () => console.log("전체 보기") },
+    { label: "PK만 보기", onClick: () => console.log("PK만 보기") },
   ];
 
-  // ------------------ 테이블 컬럼 정의
-  const SCHEMA_COLUMNS = [
-    { label: "checkbox", width: "w-15", center: true },
-    { label: "컬럼명", width: "w-1/8", key: "name" },
-    { label: "타입", width: "w-1/6", key: "type" },
-    { label: "제약 조건", width: "w-1/6", key: "constraint" },
-    { label: "설명", key: "desc" },
-  ];
-
-  // ------------------ 핸들러
-  const toggleSelect = (id: string) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((sid) => sid !== id) : [...prev, id],
+  // 테이블별 선택 항목 삭제 핸들러
+  const handleDeleteSelected = (tableName: string, data: SchemaItem[]) => {
+    const tableIds = data.map((d) => d.id);
+    const selectedInTable = selectedIds.filter((id) =>
+      tableIds.includes(String(id)),
     );
+    console.log(`${tableName} 테이블에서 삭제:`, selectedInTable);
+    deleteItems(selectedInTable);
   };
 
-  const filterItems = [
-    { label: "전체", onClick: () => {} },
-    { label: "PK만 보기", onClick: () => {} },
-  ];
+  // 테이블 삭제 핸들러
+  const handleDeleteTable = (tableName: string) => {
+    console.log(`${tableName} 테이블 전체 삭제`);
+    // 해당 테이블의 모든 항목 삭제
+    const tableData = SCHEMA_DATA[
+      tableName as keyof typeof SCHEMA_DATA
+    ] as SchemaItem[];
+    const tableIds = tableData.map((item) => item.id);
+    deleteItems(tableIds);
+  };
 
-  // ------------------ 테이블 렌더링 함수
-  const renderSchemaTable = (tableName: string, data: any[]) => (
-    <AdminTableSection
-      title={`${tableName} 테이블 관리`}
-      showDeleteButton
-      onDelete={() => console.log(`${tableName} 삭제`)}
-      actionButtons={
-        <AdminActionBar>
-          <Button
-            variant="secondary"
-            icon="trash"
-            disabled={!selectedIds.some((id) => data.some((d) => d.id === id))}
-          >
-            선택 항목 삭제
-          </Button>
-          <Dropdown
-            trigger={
-              <Button variant="secondary" icon="chevronDown">
-                필터
-              </Button>
-            }
-            items={filterItems}
-          />
-        </AdminActionBar>
-      }
-    >
-      <AdminTable
-        columns={SCHEMA_COLUMNS}
-        data={data}
-        selectedIds={selectedIds}
-        onToggleSelect={toggleSelect}
-        getItemId={(item) => item.id}
-        renderCell={(item, col) => {
-          if (col.key) return item[col.key as keyof typeof item];
-          return null;
-        }}
-      />
-    </AdminTableSection>
-  );
+  if (loading) {
+    return (
+      <AdminPageLayout title="DB Schema">
+        <LoadingState message="스키마 정보를 불러오는 중..." />
+      </AdminPageLayout>
+    );
+  }
 
   return (
     <AdminPageLayout title="DB Schema">
@@ -107,10 +119,20 @@ export default function DBSchemaPage() {
 
       {/* 테이블 영역 */}
       <div className="space-y-12">
-        {renderSchemaTable("backlog", SCHEMA_DATA.backlog)}
-        {renderSchemaTable("experience", SCHEMA_DATA.experience)}
-        {renderSchemaTable("emails", SCHEMA_DATA.emails)}
-        {renderSchemaTable("db_schema_management", SCHEMA_DATA.schema)}
+        {Object.entries(SCHEMA_DATA).map(([tableKey, tableData]) => (
+          <SchemaTable
+            key={tableKey}
+            tableName={TABLE_NAMES[tableKey] || tableKey}
+            data={tableData as SchemaItem[]}
+            columns={SCHEMA_COLUMNS}
+            selectedIds={selectedIds}
+            onToggleSelect={toggleSelect}
+            onToggleSelectAll={toggleSelectAll}
+            onDeleteTable={handleDeleteTable}
+            onDeleteSelected={handleDeleteSelected}
+            filterItems={filterItems}
+          />
+        ))}
       </div>
     </AdminPageLayout>
   );
