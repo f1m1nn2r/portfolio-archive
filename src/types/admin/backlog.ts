@@ -13,6 +13,12 @@ export interface Backlog {
 
 export interface Epic {
   id: string;
-  name: string; // 에픽 명칭 (ex. 경력 관리)
-  color: string; // 태그 색상 (랜덤 또는 지정)
+  label: string;
+  color: string;
+}
+
+export interface EpicManagerProps {
+  epics: readonly Epic[];
+  onRemove: (id: string) => void;
+  onAdd: () => void;
 }
