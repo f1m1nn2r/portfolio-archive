@@ -26,3 +26,8 @@ export const MOCK_BACKLOG: Backlog[] = [
     createdAt: "2024-01-16T14:30:00Z",
   },
 ];
+
+export const MOCK_EPICS = [
+  { id: "1", label: "경력 관리", color: "#DBF0D6" },
+  { id: "2", label: "Epic 태그가 들어갑니다.", color: "#C7E0E9" },
+] as const;
