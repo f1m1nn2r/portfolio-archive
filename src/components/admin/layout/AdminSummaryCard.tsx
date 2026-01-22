@@ -1,7 +1,7 @@
 import { Icon } from "@/components/common/Icon";
 import { SummaryCardProps } from "@/types/admin";
 
-export const SummaryCard = ({
+export const AdminSummaryCard = ({
   title,
   value,
   icon,
