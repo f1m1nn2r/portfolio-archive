@@ -3,4 +3,5 @@ export const TABLES = {
   SCHEMA: "db_schema_management",
   BACKLOG: "backlog",
   EXPERIENCE: "experience",
+  PROJECTS: "projects",
 } as const;
