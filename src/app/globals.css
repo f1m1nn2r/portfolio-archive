@@ -154,3 +154,7 @@ body * {
 .react-datepicker__input-container {
   width: 100%;
 }
+
+.lucide-chevron-down {
+  display: none;
+}

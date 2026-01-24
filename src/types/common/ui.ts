@@ -43,3 +43,9 @@ export interface DeleteModalProps {
   description?: string;
   isLoading?: boolean;
 }
+
+// ------------------ 페이지 레이아웃
+export interface PageLayoutProps {
+  children: React.ReactNode;
+  className?: string; // 추가적인 클래스가 필요할 경우 대비
+}
