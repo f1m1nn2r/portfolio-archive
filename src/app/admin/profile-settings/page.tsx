@@ -7,6 +7,7 @@ import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
 import { ProfileFormData } from "@/types/admin";
 import { LoadingState } from "@/components/common/LoadingState";
+import { getProfileSettings } from "@/services";
 
 export default function ProfileSettingsPage() {
   const [formData, setFormData] = useState<ProfileFormData>({
@@ -27,14 +28,13 @@ export default function ProfileSettingsPage() {
   // 초기 데이터 로드
   useEffect(() => {
     const fetchProfileData = async () => {
+      setIsFetching(true);
       try {
-        const response = await fetch("/api/profile-settings");
-        if (!response.ok) throw new Error("Failed to fetch");
-        const data = await response.json();
+        const data = await getProfileSettings();
         setFormData(data);
       } catch (error) {
-        console.error("Fetch error:", error);
         alert("데이터를 불러오는데 실패했습니다.");
+        console.log(error);
       } finally {
         setIsFetching(false);
       }
