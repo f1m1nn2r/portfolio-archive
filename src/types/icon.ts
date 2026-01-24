@@ -12,6 +12,7 @@ export const ICON_MAP = {
   chevronDown: BiIcons.BiChevronDown,
   save: BiIcons.BiSave,
   search: BiIcons.BiSearch,
+  solidDownArrowAlt: BiIcons.BiSolidDownArrow,
   // ------------------ END 자주 사용되는 아이콘
 
   // ------------------ 관리자 페이지 좌측 메뉴 아이콘
@@ -32,6 +33,7 @@ export const ICON_MAP = {
   // ------------------ 관리자 페이지 - 경력 페이지 내 아이콘
   building: BiIcons.BiBuilding,
   calendarAlt: BiIcons.BiCalendarAlt,
+  task: BiIcons.BiTask,
   // ------------------ END 관리자 페이지 - 경력 페이지 내 아이콘
 
   // ------------------ 관리자 페이지 - 이메일 페이지 내 아이콘

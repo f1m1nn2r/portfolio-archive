@@ -44,3 +44,52 @@ export const MOCK_EXPERIENCE = [
     skills: ["PHP", "SCSS"],
   },
 ];
+
+export interface Project {
+  id: string;
+  title: string;
+  period: string;
+  description: string[];
+}
+export const MOCK_PROJECTS: Project[] = [
+  {
+    id: "1",
+    title: "프로젝트명",
+    period: "2000.00-2000.00",
+    description: [
+      "프로젝트 설명이 3줄 들어갑니다.",
+      "프로젝트 설명이 3줄 들어갑니다.",
+      "프로젝트 설명이 3줄 들어갑니다.",
+    ],
+  },
+  {
+    id: "2",
+    title: "프로젝트명",
+    period: "2000.00-2000.00",
+    description: [
+      "프로젝트 설명이 3줄 들어갑니다.",
+      "프로젝트 설명이 3줄 들어갑니다.",
+      "프로젝트 설명이 3줄 들어갑니다.",
+    ],
+  },
+  {
+    id: "3",
+    title: "프로젝트명",
+    period: "2000.00-2000.00",
+    description: [
+      "프로젝트 설명이 3줄 들어갑니다.",
+      "프로젝트 설명이 3줄 들어갑니다.",
+      "프로젝트 설명이 3줄 들어갑니다.",
+    ],
+  },
+  {
+    id: "4",
+    title: "프로젝트명",
+    period: "2000.00-2000.00",
+    description: [
+      "프로젝트 설명이 3줄 들어갑니다.",
+      "프로젝트 설명이 3줄 들어갑니다.",
+      "프로젝트 설명이 3줄 들어갑니다.",
+    ],
+  },
+];
