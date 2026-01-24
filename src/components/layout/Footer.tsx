@@ -23,11 +23,16 @@ const MAIN_LINKS: MainLink[] = [
 ];
 
 const DOCUMENT_LINKS = [
-  { icon: "📄", label: "와이어 프레임/프로토타입", href: "#" },
-  { icon: "📄", label: "기능 명세서", href: "#" },
-  { icon: "📄", label: "백로그", href: "/backlog" },
-  { icon: "📄", label: "기술 구현 문서", href: "#" },
-  { icon: "📄", label: "트러블 슈팅", href: "#" },
+  {
+    icon: "📄",
+    label: "와이어 프레임/프로토타입",
+    href: "https://www.figma.com/design/JG4gfkkbaCxxnanJaEfLti/2026-%EC%9D%B4%EB%A0%A5%EC%84%9C--%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4?node-id=0-1&t=UxVLKsCl0Rhyn89e-1",
+    external: true,
+  },
+  { icon: "📄", label: "기능 명세서", href: "#", external: true },
+  { icon: "📄", label: "백로그", href: "/backlog", external: false },
+  { icon: "📄", label: "기술 구현 문서", href: "#", external: true },
+  { icon: "📄", label: "트러블 슈팅", href: "#", external: true },
 ] as const;
 
 function FooterLink({
@@ -60,9 +65,13 @@ export default async function Footer() {
         <div className="flex flex-col gap-10">
           {/* 연락처 및 주요 링크 */}
           <div className="flex flex-col gap-4">
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tighter break-all">
+              {profile.email}
+            </h2>
+            {/* 연락처는... 생각해보니 너무 내 개인 정보라...
             <h2 className="text-4xl md:text-5xl font-bold tracking-tighter">
               {profile.phone}
-            </h2>
+            </h2> */}
             <div className="flex gap-6 mt-2">
               {MAIN_LINKS.map((link) => {
                 const url = profile[link.useProfileUrl];
@@ -81,9 +90,13 @@ export default async function Footer() {
           </div>
 
           {/* 문서 링크 */}
-          <nav className="flex flex-col gap-3">
+          <nav className="w-full flex flex-col justify-end gap-3">
             {DOCUMENT_LINKS.map((link) => (
-              <FooterLink key={link.label} href={link.href}>
+              <FooterLink
+                key={link.label}
+                href={link.href}
+                external={link.external}
+              >
                 {link.icon} {link.label}
               </FooterLink>
             ))}
@@ -91,11 +104,11 @@ export default async function Footer() {
         </div>
 
         {/* 오른쪽 이메일 섹션 */}
-        <div className="flex items-start">
+        {/* <div className="flex items-start">
           <h2 className="text-4xl md:text-5xl font-bold tracking-tighter break-all">
             {profile.email}
           </h2>
-        </div>
+        </div> */}
       </div>
     </footer>
   );
