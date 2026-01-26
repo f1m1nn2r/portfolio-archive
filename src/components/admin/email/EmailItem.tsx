@@ -1,5 +1,5 @@
 import { Icon } from "@/components/common/Icon";
-import { EmailMessage } from "@/types/admin/email";
+import { ContactMessage } from "@/types/admin/contact";
 
 export function EmailItem({
   email,
@@ -7,14 +7,14 @@ export function EmailItem({
   onToggleSelect,
   onToggleStar,
 }: {
-  email: EmailMessage;
+  email: ContactMessage;
   isSelected: boolean;
   onToggleSelect: (id: string) => void;
   onToggleStar: (id: string) => void;
 }) {
   return (
     <div
-      className={`flex gap-7.5 p-10 border-b border-gray-ddd last:border-b-0 hover:bg-gray-50 transition-colors ${
+      className={`flex gap-7.5 p-10 hover:bg-gray-50 transition-colors ${
         !email.isRead ? "bg-white font-semibold" : "bg-white"
       }`}
     >
@@ -54,6 +54,9 @@ export function EmailItem({
             year: "numeric",
             month: "2-digit",
             day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
           })}
         </span>
       </div>

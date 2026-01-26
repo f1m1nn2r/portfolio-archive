@@ -1,4 +1,4 @@
-import { EmailMessage } from "@/types/admin/email";
+import { EmailMessage } from "@/types/admin/contact";
 
 export const MOCK_EMAILS: EmailMessage[] = [
   {

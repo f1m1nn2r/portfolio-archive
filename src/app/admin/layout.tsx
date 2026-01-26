@@ -21,7 +21,7 @@ export default function AdminLayout({
     },
     { name: "Backlog", icon: "clipboard", href: "/admin/backlog" },
     { name: "Experience", icon: "briefcase", href: "/admin/experience" },
-    { name: "Email", icon: "envelope", href: "/admin/email" },
+    { name: "Contacts", icon: "envelope", href: "/admin/contacts" },
     { name: "DB Schema", icon: "data", href: "/admin/schema" },
     { name: "Writing", icon: "editAlt", href: "/admin/writing" },
   ];
@@ -55,7 +55,7 @@ export default function AdminLayout({
         >
           <ul className="space-y-2">
             {menuItems.map((item) => {
-              const isActive = pathname === item.href;
+              const isActive = pathname.startsWith(item.href);
 
               return (
                 <li key={item.name}>
