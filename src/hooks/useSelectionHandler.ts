@@ -1,42 +1,38 @@
 import { useState, useCallback } from "react";
 
-interface UseSelectionHandlerProps<T> {
+interface UseSelectionHandlerProps<T, ID extends string | number> {
   data: T[];
-  getId: (item: T) => string | number;
-  onDelete?: (ids: (string | number)[]) => void;
+  getId: (item: T) => ID;
+  onDelete?: (ids: ID[]) => void | Promise<void>; // Promise 대응 추가
 }
 
-export function useSelectionHandler<T>({
+export function useSelectionHandler<T, ID extends string | number>({
   data,
   getId,
   onDelete,
-}: UseSelectionHandlerProps<T>) {
-  const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]); // ⭐ 수정
+}: UseSelectionHandlerProps<T, ID>) {
+  const [selectedIds, setSelectedIds] = useState<ID[]>([]);
 
-  // 개별 선택 토글
-  const toggleSelect = useCallback((id: string | number) => {
+  const toggleSelect = useCallback((id: ID) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((sid) => sid !== id) : [...prev, id],
     );
   }, []);
 
-  // 전체 선택/해제
   const toggleSelectAll = useCallback(() => {
     setSelectedIds((prev) =>
       prev.length === data.length ? [] : data.map(getId),
     );
   }, [data, getId]);
 
-  // 선택 초기화
   const clearSelection = useCallback(() => {
     setSelectedIds([]);
   }, []);
 
-  // 선택 항목 삭제
-  const deleteSelected = useCallback(() => {
-    if (onDelete) {
-      onDelete(selectedIds);
-      clearSelection();
+  const deleteSelected = useCallback(async () => {
+    if (onDelete && selectedIds.length > 0) {
+      await onDelete(selectedIds); // 삭제 로직 실행
+      clearSelection(); // 선택 비우기
     }
   }, [selectedIds, onDelete, clearSelection]);
 
@@ -46,7 +42,6 @@ export function useSelectionHandler<T>({
     toggleSelectAll,
     clearSelection,
     deleteSelected,
-    hasSelection: selectedIds.length > 0,
     selectionCount: selectedIds.length,
     isAllSelected: selectedIds.length === data.length && data.length > 0,
   };

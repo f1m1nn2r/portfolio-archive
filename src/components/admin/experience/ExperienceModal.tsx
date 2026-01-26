@@ -9,6 +9,8 @@ import { Badge } from "@/components/common/Badge";
 import { ExperienceModalProps } from "@/types/admin/experience";
 import { useExperienceForm } from "@/hooks/useExperienceForm";
 import { FormSection, FormField } from "@/components/common/form";
+import { useExperience } from "@/hooks/useExperience";
+import { showToast } from "@/utils/toast";
 
 export const ExperienceModal = ({
   isOpen,
@@ -36,6 +38,8 @@ export const ExperienceModal = ({
     validate,
   } = useExperienceForm(initialData);
 
+  const { saveExperience, deleteExperience } = useExperience();
+
   // 스킬 추가 (Enter)
   const handleSkillKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && skillInput.trim()) {
@@ -52,35 +56,25 @@ export const ExperienceModal = ({
     try {
       setSaving(true);
 
+      // 훅에 전달할 최신 데이터 구성
       const dataToSend = {
         ...formData,
         is_finished: isFinished,
       };
 
-      const url =
-        mode === "edit"
-          ? `/api/experience/${initialData?.id}`
-          : "/api/experience";
+      const success = await saveExperience(mode, initialData?.id, dataToSend);
 
-      const method = mode === "edit" ? "PATCH" : "POST";
-
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dataToSend),
-      });
-
-      const result = await res.json();
-
-      if (res.ok || result.success) {
-        alert(mode === "edit" ? "수정되었습니다." : "추가되었습니다.");
+      if (success) {
+        showToast.success(
+          mode === "edit" ? "수정되었습니다." : "추가되었습니다.",
+        );
         onSaveSuccess();
       } else {
-        throw new Error(result.error || "저장 실패");
+        throw new Error("저장 실패");
       }
     } catch (error) {
+      showToast.error("저장에 실패했습니다.");
       console.error("저장 실패:", error);
-      alert("저장에 실패했습니다.");
     } finally {
       setSaving(false);
     }
@@ -89,25 +83,9 @@ export const ExperienceModal = ({
   // 삭제
   const handleDelete = async () => {
     if (!initialData?.id) return;
-    if (!confirm("정말 삭제하시겠습니까?")) return;
 
-    try {
-      const res = await fetch(`/api/experience/${initialData.id}`, {
-        method: "DELETE",
-      });
-
-      const result = await res.json();
-
-      if (res.ok || result.success) {
-        alert("삭제되었습니다.");
-        onSaveSuccess();
-      } else {
-        throw new Error(result.error || "삭제 실패");
-      }
-    } catch (error) {
-      console.error("삭제 실패:", error);
-      alert("삭제에 실패했습니다.");
-    }
+    await deleteExperience(initialData.id);
+    onSaveSuccess();
   };
 
   if (!isOpen) return null;

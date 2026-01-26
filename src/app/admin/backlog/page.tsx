@@ -13,9 +13,9 @@ import { BacklogColumns } from "@/components/admin/backlog/BacklogColumns";
 import { EpicManager } from "@/components/admin/backlog/BacklogEpicManager";
 import { useSelectionHandler } from "@/hooks/useSelectionHandler";
 import { useSelectionData } from "@/hooks/useSelectionData";
-import DeleteModal from "@/components/common/DeleteModal";
 import { useSummaryData } from "@/hooks/useSummaryData";
 import { LoadingState } from "@/components/common/LoadingState";
+import DeleteModal from "@/components/common/DeleteModal";
 
 const MOCK_EPICS: Epic[] = [
   { id: "1", label: "경력 관리", color: "#DBF0D6" },

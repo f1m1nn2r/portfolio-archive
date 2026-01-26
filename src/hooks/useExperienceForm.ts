@@ -1,73 +1,61 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Experience } from "@/types/api/experience";
 import { ExperienceFormData } from "@/types/admin";
+import { showToast } from "@/utils/toast";
 
 export function useExperienceForm(initialData?: Experience | null) {
-  const [formData, setFormData] = useState<ExperienceFormData>({
-    company: "",
-    team: "",
-    start_date: "",
-    end_date: null,
-    description: [],
-    skills: [],
-  });
+  // 1. 초기 상태 설정 (useEffect 대신 useState 초기값 함수 사용)
+  const [formData, setFormData] = useState<ExperienceFormData>(() => ({
+    company: initialData?.company || "",
+    team: initialData?.team || "",
+    start_date: initialData?.start_date || "",
+    end_date: initialData?.end_date || null,
+    description: initialData?.description || [],
+    skills: initialData?.skills || [],
+  }));
 
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
-  const [descriptionInput, setDescriptionInput] = useState("");
+  const [startDate, setStartDate] = useState<Date | null>(
+    initialData ? new Date(initialData.start_date) : null,
+  );
+  const [endDate, setEndDate] = useState<Date | null>(
+    initialData?.end_date ? new Date(initialData.end_date) : null,
+  );
+
+  // 텍스트 영역용 로컬 상태
+  const [descriptionInput, setDescriptionInput] = useState(
+    initialData?.description.join("\n") || "",
+  );
   const [skillInput, setSkillInput] = useState("");
 
-  // 날짜 포맷팅
+  // 날짜 포맷팅 유틸
   const formatDate = (date: Date | null): string | null => {
     if (!date) return null;
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
+    return date.toISOString().split("T")[0]; // YYYY-MM-DD
   };
 
   // 재직 여부 계산
   const isFinished = endDate ? endDate < new Date() : false;
 
-  // 초기 데이터 설정
-  useEffect(() => {
-    if (initialData) {
-      setFormData({
-        company: initialData.company,
-        team: initialData.team,
-        start_date: initialData.start_date,
-        end_date: initialData.end_date,
-        description: initialData.description,
-        skills: initialData.skills,
-      });
-      setDescriptionInput(initialData.description.join("\n"));
-      setStartDate(new Date(initialData.start_date));
-      setEndDate(initialData.end_date ? new Date(initialData.end_date) : null);
-    } else {
-      resetForm();
-    }
-  }, [initialData]);
-
-  // description 업데이트
-  useEffect(() => {
+  // 폼 업데이트 핸들러 (descriptionInput 변경 시 동기화)
+  const syncDescription = (value: string) => {
+    setDescriptionInput(value);
     setFormData((prev) => ({
       ...prev,
-      description: descriptionInput
-        .split("\n")
-        .filter((line) => line.trim() !== ""),
+      description: value.split("\n").filter((line) => line.trim() !== ""),
     }));
-  }, [descriptionInput]);
+  };
 
-  // 날짜 변경 시 formData 업데이트
-  useEffect(() => {
-    setFormData((prev) => ({
-      ...prev,
-      start_date: formatDate(startDate) || "",
-      end_date: formatDate(endDate),
-    }));
-  }, [startDate, endDate]);
+  // 날짜 변경 핸들러
+  const handleStartDateChange = (date: Date | null) => {
+    setStartDate(date);
+    setFormData((prev) => ({ ...prev, start_date: formatDate(date) || "" }));
+  };
 
-  // 스킬 추가
+  const handleEndDateChange = (date: Date | null) => {
+    setEndDate(date);
+    setFormData((prev) => ({ ...prev, end_date: formatDate(date) }));
+  };
+
   const addSkill = (skill: string) => {
     if (skill.trim() && !formData.skills.includes(skill.trim())) {
       setFormData((prev) => ({
@@ -77,7 +65,6 @@ export function useExperienceForm(initialData?: Experience | null) {
     }
   };
 
-  // 스킬 삭제
   const removeSkill = (skillToRemove: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -85,26 +72,9 @@ export function useExperienceForm(initialData?: Experience | null) {
     }));
   };
 
-  // 폼 초기화
-  const resetForm = () => {
-    setFormData({
-      company: "",
-      team: "",
-      start_date: "",
-      end_date: null,
-      description: [],
-      skills: [],
-    });
-    setDescriptionInput("");
-    setSkillInput("");
-    setStartDate(null);
-    setEndDate(null);
-  };
-
-  // 유효성 검증
   const validate = () => {
     if (!formData.company || !formData.team || !formData.start_date) {
-      alert("필수 항목을 입력해주세요.");
+      showToast.error("필수 항목을 입력해주세요.");
       return false;
     }
     return true;
@@ -114,17 +84,16 @@ export function useExperienceForm(initialData?: Experience | null) {
     formData,
     setFormData,
     startDate,
-    setStartDate,
+    setStartDate: handleStartDateChange,
     endDate,
-    setEndDate,
+    setEndDate: handleEndDateChange,
     descriptionInput,
-    setDescriptionInput,
+    setDescriptionInput: syncDescription,
     skillInput,
     setSkillInput,
     isFinished,
     addSkill,
     removeSkill,
-    resetForm,
     validate,
   };
 }

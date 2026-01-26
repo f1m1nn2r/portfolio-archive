@@ -1,4 +1,4 @@
-export interface EmailMessage {
+export interface ContactMessage {
   id: string;
   senderName: string; // Name/Company
   senderEmail: string; // 이메일 주소

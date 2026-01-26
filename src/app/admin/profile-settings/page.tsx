@@ -1,72 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
 import { AdminPageLayout } from "@/components/admin/layout/AdminPageLayout";
 import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
-import { ProfileFormData } from "@/types/admin";
 import { LoadingState } from "@/components/common/LoadingState";
-import { getProfileSettings } from "@/services";
+import { useProfileForm } from "@/hooks/useProfileForm";
 
 export default function ProfileSettingsPage() {
-  const [formData, setFormData] = useState<ProfileFormData>({
-    main_title: "",
-    main_description: "",
-    phone: "",
-    email: "",
-    resume_url: "",
-    pdf_url: "",
-    github_url: "",
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [isFetching, setIsFetching] = useState(true);
+  const { formData, isFetching, isLoading, handleInputChange, handleSave } =
+    useProfileForm();
 
   const inputStyles =
     "w-full p-5 border border-gray-ddd rounded-lg text-base outline-none focus:border-gray-555 transition-colors";
-
-  // 초기 데이터 로드
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      setIsFetching(true);
-      try {
-        const data = await getProfileSettings();
-        setFormData(data);
-      } catch (error) {
-        alert("데이터를 불러오는데 실패했습니다.");
-        console.log(error);
-      } finally {
-        setIsFetching(false);
-      }
-    };
-
-    fetchProfileData();
-  }, []);
-
-  // 입력값 변경 핸들러
-  const handleInputChange = (field: keyof ProfileFormData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  // 저장 핸들러
-  const handleSave = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/profile-settings", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) throw new Error("Failed to save");
-      alert("저장되었습니다!");
-    } catch (error) {
-      console.error("Save error:", error);
-      alert("저장에 실패했습니다.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   if (isFetching) {
     return (
