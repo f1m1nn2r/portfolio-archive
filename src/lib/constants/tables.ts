@@ -4,4 +4,5 @@ export const TABLES = {
   BACKLOG: "backlog",
   EXPERIENCE: "experience",
   PROJECTS: "projects",
+  CONTACTS: "contacts",
 } as const;
