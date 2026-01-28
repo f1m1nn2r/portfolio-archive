@@ -31,9 +31,16 @@ export function useSelectionHandler<T, ID extends string | number>({
 
   const deleteSelected = useCallback(async () => {
     if (onDelete && selectedIds.length > 0) {
-      await onDelete(selectedIds); // 삭제 로직 실행
-      clearSelection(); // 선택 비우기
+      try {
+        await onDelete(selectedIds);
+        clearSelection();
+        return true;
+      } catch (error) {
+        console.error("삭제 중 오류 발생:", error);
+        return false;
+      }
     }
+    return false; // 선택된 게 없거나 onDelete가 없을 때
   }, [selectedIds, onDelete, clearSelection]);
 
   return {

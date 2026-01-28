@@ -4,12 +4,14 @@ import { Experience } from "@/types/api/experience";
 import { getExperiences, deleteExperienceApi } from "@/services/experience";
 import { showToast } from "@/utils/toast";
 
-export function useExperience() {
+export function useExperience(fallbackData?: Experience[]) {
   const {
     data: experiences,
     isLoading: loading,
     mutate,
-  } = useSWR<Experience[]>("/api/experience", getExperiences);
+  } = useSWR<Experience[]>("/api/experience", getExperiences, {
+    fallbackData,
+  });
 
   const saveExperience = async (
     mode: "add" | "edit",
@@ -34,22 +36,22 @@ export function useExperience() {
 
   const deleteExperience = useCallback(
     async (id: number) => {
-      if (!confirm("정말 삭제하시겠습니까?")) return;
-
       try {
         await deleteExperienceApi(id);
         showToast.delete();
         mutate();
+        return true;
       } catch (error) {
         showToast.error("삭제에 실패했습니다.");
         console.error("삭제 실패:", error);
+        return false;
       }
     },
     [mutate],
   );
 
   return {
-    experiences: experiences || [],
+    experiences: experiences || fallbackData || [],
     loading,
     fetchExperiences: mutate,
     saveExperience,

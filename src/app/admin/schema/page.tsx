@@ -9,10 +9,10 @@ import { AdminActionBar } from "@/components/admin/layout/AdminActionBar";
 import { SchemaItem } from "@/types/admin";
 import { SCHEMA_DATA } from "@/mock/schema";
 import { SchemaTable } from "@/components/admin/schema/SchemaTable";
-import { useSelectionData } from "@/hooks/useSelectionData";
-import { useSelectionHandler } from "@/hooks/useSelectionHandler";
+import { useSelectionData } from "@/hooks/common/useSelectionData";
+import { useSelectionHandler } from "@/hooks/common/useSelectionHandler";
 import { AdminTableColumn } from "@/types/admin/table";
-import { useSummaryData } from "@/hooks/useSummaryData";
+import { useSummaryData } from "@/hooks/common/useSummaryData";
 import { LoadingState } from "@/components/common/LoadingState";
 
 const SCHEMA_COLUMNS: AdminTableColumn<SchemaItem>[] = [

@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
-import { useExperience } from "@/hooks/useExperience";
-import { useProjects } from "@/hooks/useProjects";
+import { useExperience } from "@/hooks/experience/useExperience";
+import { useProjects } from "@/hooks/project/useProjects";
 import { useProjectStore } from "@/store/useProjectStore";
 import { calculateTotalExperience } from "@/utils/date";
 import { Experience } from "@/types/api/experience";
@@ -14,7 +14,7 @@ export function useExperiencePage() {
   // 데이터 데이터 로딩
   const { experiences, loading, fetchExperiences, deleteExperience } =
     useExperience();
-  const { projects, allProjects, fetchProjects } = useProjects({
+  const { projects, allProjects, fetchProjects, deleteProject } = useProjects({
     experienceId: selectedCompany,
     year: selectedYear,
   });
@@ -26,6 +26,13 @@ export function useExperiencePage() {
   const [expModalMode, setExpModalMode] = useState<"add" | "edit">("add");
   const [selectedExperience, setSelectedExperience] =
     useState<Experience | null>(null);
+
+  // 삭제 모달 상태
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    type: "experience" | "project" | null;
+    id: number | null;
+  }>({ isOpen: false, type: null, id: null });
 
   // 연도 계산 로직
   const availableYears = useMemo(() => {
@@ -56,8 +63,14 @@ export function useExperiencePage() {
         icon: "building",
         bgColor: "bg-bg-blue",
       },
+      {
+        title: "총 작업물",
+        value: `${allProjects.length}개`,
+        icon: "task",
+        bgColor: "bg-[#FDF0EE]",
+      },
     ],
-    [experiences],
+    [experiences, allProjects],
   );
 
   // 핸들러 모음
@@ -88,6 +101,24 @@ export function useExperiencePage() {
     setCompany: setSelectedCompany,
     setYear: setSelectedYear,
     closeExpModal: () => setIsExpModalOpen(false),
+    openDeleteModal: (type: "experience" | "project", id: number) => {
+      setDeleteModal({ isOpen: true, type, id });
+    },
+    confirmDelete: async () => {
+      if (!deleteModal.id || !deleteModal.type) return;
+
+      const success =
+        deleteModal.type === "experience"
+          ? await deleteExperience(deleteModal.id)
+          : await deleteProject(deleteModal.id);
+
+      if (success) {
+        setDeleteModal({ isOpen: false, type: null, id: null });
+      }
+    },
+
+    closeDeleteModal: () =>
+      setDeleteModal({ isOpen: false, type: null, id: null }),
   };
 
   return {
@@ -106,7 +137,11 @@ export function useExperiencePage() {
       data: selectedProject,
       close: closeEditModal,
     },
-    deleteExperience,
+    deleteModal: {
+      ...deleteModal,
+      onConfirm: handlers.confirmDelete,
+      onClose: handlers.closeDeleteModal,
+    },
     handlers,
   };
 }

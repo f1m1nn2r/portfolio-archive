@@ -1,9 +1,17 @@
 import { useState, useEffect } from "react";
+import useSWR from "swr"; // 추가
 import { ProfileFormData } from "@/types/admin";
 import { getProfileSettings } from "@/services";
 import { showToast } from "@/utils/toast";
 
 export function useProfileForm() {
+  // SWR로 프로필 데이터를 전역 관리
+  const {
+    data: initialData,
+    isLoading: isFetching,
+    mutate,
+  } = useSWR<ProfileFormData>("/api/profile-settings", getProfileSettings);
+
   const [formData, setFormData] = useState<ProfileFormData>({
     main_title: "",
     main_description: "",
@@ -14,31 +22,19 @@ export function useProfileForm() {
     github_url: "",
   });
 
-  const [isLoading, setIsLoading] = useState(false); // 저장 중 상태
-  const [isFetching, setIsFetching] = useState(true); // 데이터 로딩 상태
+  const [isLoading, setIsLoading] = useState(false);
 
-  // 초기 데이터 패칭
+  // SWR에서 데이터가 로드되거나 변경될 때만 로컬 폼 상태 업데이트
   useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        const data = await getProfileSettings();
-        setFormData(data);
-      } catch (error) {
-        showToast.error("데이터를 불러오는데 실패했습니다.");
-        console.log(error);
-      } finally {
-        setIsFetching(false);
-      }
-    };
-    fetchProfileData();
-  }, []);
+    if (initialData) {
+      setFormData(initialData);
+    }
+  }, [initialData]);
 
-  // 공통 입력 핸들러
   const handleInputChange = (field: keyof ProfileFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // 저장 처리
   const handleSave = async () => {
     setIsLoading(true);
     try {
@@ -49,6 +45,8 @@ export function useProfileForm() {
       });
 
       if (!response.ok) throw new Error("저장 실패");
+
+      await mutate();
 
       showToast.success("프로필 정보가 수정되었습니다.");
     } catch (error) {
