@@ -27,3 +27,8 @@ export interface AdminTableProps<T> {
   getItemId: (item: T) => string | number;
   rowClassName?: (item: T, isSelected: boolean) => string;
 }
+
+export interface AdminEditableCellProps {
+  value: string | null | undefined;
+  onSave: (newValue: string) => void;
+}
