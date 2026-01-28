@@ -1,6 +1,6 @@
-import { EmailMessage } from "@/types/admin/contact";
+import { ContactMessage } from "@/types/admin/contact";
 
-export const MOCK_EMAILS: EmailMessage[] = [
+export const MOCK_EMAILS: ContactMessage[] = [
   {
     id: "1",
     senderName: "홍길동",

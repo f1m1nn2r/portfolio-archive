@@ -60,7 +60,11 @@ export default function ExperiencePage() {
                 key={exp.id}
                 experience={exp}
                 onEdit={handlers.openEditExp}
-                onDelete={() => handlers.openDeleteModal("experience", exp.id)}
+                onDelete={() => {
+                  if (exp.id) {
+                    handlers.openDeleteModal("experience", exp.id);
+                  }
+                }}
               />
             ))
           )}

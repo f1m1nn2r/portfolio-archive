@@ -126,7 +126,8 @@ export default function DBSchemaPage() {
             data={tableData as SchemaItem[]}
             columns={SCHEMA_COLUMNS}
             selectedIds={selectedIds}
-            onToggleSelect={toggleSelect}
+            // 빌드 에러 수정을 위하여 우선 수정
+            onToggleSelect={(id) => toggleSelect(String(id))}
             onToggleSelectAll={toggleSelectAll}
             onDeleteTable={handleDeleteTable}
             onDeleteSelected={handleDeleteSelected}

@@ -8,11 +8,12 @@ import { ExperienceCard } from "@/components/experience/ExperienceCard";
 import { PageLayout } from "@/components/common/PageLayout";
 import { useExperience } from "@/hooks/experience/useExperience";
 import { useProjects } from "@/hooks/project/useProjects";
+import { ExperienceClientProps } from "@/types/ui/experience";
 
 export default function ExperienceClient({
   initialExperiences,
   initialProjects,
-}) {
+}: ExperienceClientProps) {
   const [selectedCompany, setSelectedCompany] = useState<string>("all");
   const [selectedYear, setSelectedYear] = useState<string>("all");
 
