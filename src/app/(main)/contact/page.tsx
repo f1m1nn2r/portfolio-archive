@@ -75,7 +75,8 @@ export default function ContactPage() {
       <div className="mb-25">
         <h1 className="text-[80px] font-bold leading-none mb-3">Contact me</h1>
         <p className="text-lg text-gray-222 leading-relaxed">
-          남겨주신 메시지는 대시보드를 통해 실시간으로 확인하고 있습니다.
+          남겨주신 메시지는 대시보드와 개인 이메일을 통해 실시간으로 확인하고
+          있습니다.
         </p>
       </div>
 
