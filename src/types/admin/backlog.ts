@@ -3,7 +3,7 @@ export interface Backlog {
   no: number;
   screen: string;
   sub_page: string;
-  epic: string;
+  // epic: string;
   feature: string;
   description: string;
   is_done: boolean;
@@ -11,18 +11,20 @@ export interface Backlog {
   priority: "high" | "medium" | "low";
   order: number;
   created_at: string;
+  epic_ids: string[];
 }
 
 export interface Epic {
   id: string;
   label: string;
   color: string;
+  created_at?: string;
 }
 
 export interface EpicManagerProps {
   epics: readonly Epic[];
   onRemove: (id: string) => void;
-  onAdd: () => void;
+  onAdd: (label: string) => void;
 }
 
 export interface BacklogResponse {
