@@ -1,70 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import { showToast } from "@/utils/toast";
 import { PageLayout } from "@/components/common/PageLayout";
+import { useContactForm } from "@/hooks/contact/useContactForm";
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    from: "", // 보내는 이메일
-    nameCompany: "", // 이름/소속
-    message: "", // 내용
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [honeypot, setHoneypot] = useState("");
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // 간단한 유효성 검사
-    if (!formData.from || !formData.message) {
-      showToast.error("이메일과 내용을 입력해주세요.");
-      return;
-    }
-
-    //허니팟 필드에 값이 있다면 봇으로 간주하고 중단
-    if (honeypot) {
-      console.log("Bot detected!");
-      showToast.success("메시지가 성공적으로 전달되었습니다."); // 속이기 위해 성공 메시지만 띄움
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        // Tip: 서버 route.ts에서 받을 이름과 똑같이 맞춰서 보냅니다.
-        body: JSON.stringify({
-          senderEmail: formData.from,
-          senderName: formData.nameCompany,
-          message: formData.message,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "발송 실패");
-      }
-
-      showToast.success("메시지가 성공적으로 전달되었습니다.");
-      setFormData({ from: "", nameCompany: "", message: "" }); // 폼 초기화
-    } catch (error) {
-      showToast.error("메시지 전송에 실패했습니다. 다시 시도해주세요.");
-      console.error("전송 에러:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const {
+    formData,
+    isLoading,
+    honeypot,
+    setHoneypot,
+    handleChange,
+    handleSubmit,
+  } = useContactForm();
 
   const labelStyles = "text-lg font-medium mb-2 block";
   const inputStyles =
@@ -82,6 +29,7 @@ export default function ContactPage() {
 
       <form onSubmit={handleSubmit} className="max-w-[800px] ml-auto">
         <div className="grid grid-cols-2 gap-x-12 gap-y-12">
+          {/* Honeypot Field */}
           <div className="hidden" aria-hidden="true">
             <input
               type="text"
@@ -93,7 +41,6 @@ export default function ContactPage() {
             />
           </div>
 
-          {/* From Email */}
           <div>
             <label className={labelStyles}>from</label>
             <input
@@ -107,7 +54,6 @@ export default function ContactPage() {
             />
           </div>
 
-          {/* Name/Company */}
           <div>
             <label className={labelStyles}>Name/Company</label>
             <input
@@ -120,7 +66,6 @@ export default function ContactPage() {
             />
           </div>
 
-          {/* Message */}
           <div className="col-span-2">
             <label className={labelStyles}>Message</label>
             <textarea
@@ -143,7 +88,7 @@ export default function ContactPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="px-6 py-1.5 rounded-full text-base text-white font-medium transition-all border border-black bg-black"
+            className="px-6 py-1.5 rounded-full text-base text-white font-medium transition-all border border-black bg-black disabled:bg-gray-400"
           >
             {isLoading ? "Sending..." : "Submit"}
           </button>
