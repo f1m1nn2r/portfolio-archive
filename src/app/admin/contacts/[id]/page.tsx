@@ -5,7 +5,7 @@ import { AdminPageLayout } from "@/components/admin/layout/AdminPageLayout";
 import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
 import { LoadingState } from "@/components/common/LoadingState";
-import { useContact } from "@/hooks/useContact";
+import { useContact } from "@/hooks/contact/useContact";
 import { useEffect, useRef } from "react";
 
 export default function ContactsDetailPage() {

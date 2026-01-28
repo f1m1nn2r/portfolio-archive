@@ -12,6 +12,12 @@ export interface Project {
   updated_at?: string;
 }
 
+export interface UseProjectsOptions {
+  experienceId?: string;
+  year?: string;
+  fallbackData?: Project[]; // 초기 데이터 타입 추가
+}
+
 export type CreateProjectDto = Omit<
   Project,
   "id" | "created_at" | "updated_at"

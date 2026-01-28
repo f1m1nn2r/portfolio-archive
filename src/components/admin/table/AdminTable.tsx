@@ -19,7 +19,8 @@ export function AdminTable<T>({
   showAddColumn = true,
   getItemId,
   rowClassName,
-}: AdminTableProps<T>) {
+  onAdd,
+}: AdminTableProps<T> & { onAdd?: () => void }) {
   return (
     <div className="bg-white rounded-lg border border-gray-ddd overflow-hidden">
       <Table>
@@ -110,7 +111,10 @@ export function AdminTable<T>({
 
       {showAddColumn && (
         <div className="p-4.5 px-2.5 border-t border-gray-ddd">
-          <Button className="bg-transparent p-0 text-gray-999 text-base hover:text-gray-600 hover:bg-transparent font-regular">
+          <Button
+            className="bg-transparent p-0 text-gray-999 text-base hover:text-gray-600 hover:bg-transparent font-regular"
+            onClick={onAdd}
+          >
             <Icon type="plus" size="16" />
             Add Column
           </Button>

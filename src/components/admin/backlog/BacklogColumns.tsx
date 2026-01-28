@@ -1,10 +1,14 @@
 import { Icon } from "@/components/common/Icon";
-import { Badge } from "@/components/common/Badge";
 import { Backlog } from "@/types/admin/backlog";
 import { AdminTableColumn } from "@/types/admin/table";
+import { AdminEditableCell } from "@/components/admin/table/AdminEditableCell";
 
 export const BacklogColumns = (
-  toggleStatus: (id: string, field: "isDone" | "isDesigned") => void,
+  updateField: <K extends keyof Backlog>(
+    id: string,
+    field: K,
+    value: Backlog[K],
+  ) => void,
 ): AdminTableColumn<Backlog>[] => [
   {
     label: "checkbox",
@@ -20,36 +24,41 @@ export const BacklogColumns = (
   {
     label: "화면",
     width: "w-[150px]",
-    renderCell: (item) => <span className="truncate block">{item.screen}</span>,
+    renderCell: (item) => (
+      <AdminEditableCell
+        value={item.screen}
+        onSave={(val) => updateField(item.id, "screen", val)}
+      />
+    ),
   },
   {
     label: "세부 페이지",
     width: "w-[120px]",
     renderCell: (item) => (
-      <span className="truncate block">{item.subPage}</span>
-    ),
-  },
-  {
-    label: "Epic",
-    width: "w-[150px]",
-    renderCell: (item) => (
-      <Badge backgroundColor="#DBF0D6" className="gap-1">
-        {item.epicId}
-      </Badge>
+      <AdminEditableCell
+        value={item.sub_page}
+        onSave={(val) => updateField(item.id, "sub_page", val)}
+      />
     ),
   },
   {
     label: "기능",
     width: "w-[390px]",
     renderCell: (item) => (
-      <span className="truncate block">{item.feature}</span>
+      <AdminEditableCell
+        value={item.feature}
+        onSave={(val) => updateField(item.id, "feature", val)}
+      />
     ),
   },
   {
     label: "설명",
     width: "w-[370px]",
     renderCell: (item) => (
-      <span className="truncate block">{item.description}</span>
+      <AdminEditableCell
+        value={item.description}
+        onSave={(val) => updateField(item.id, "description", val)}
+      />
     ),
   },
   {
@@ -58,11 +67,11 @@ export const BacklogColumns = (
     width: "w-[100px]",
     renderCell: (item) => (
       <button
-        onClick={() => toggleStatus(item.id, "isDone")}
-        className="flex justify-center cursor-pointer hover:opacity-70"
-        aria-label={`구현 상태 토글: ${item.isDone ? "완료" : "미완료"}`}
+        onClick={() => updateField(item.id, "is_done", !item.is_done)}
+        className="flex justify-center cursor-pointer hover:opacity-70 mx-auto"
+        aria-label={`구현 상태 토글: ${item.is_done ? "완료" : "미완료"}`}
       >
-        <Icon type={item.isDone ? "checkboxChecked" : "checkbox"} size={24} />
+        <Icon type={item.is_done ? "checkboxChecked" : "checkbox"} size={24} />
       </button>
     ),
   },
@@ -72,12 +81,12 @@ export const BacklogColumns = (
     width: "w-[100px]",
     renderCell: (item) => (
       <button
-        onClick={() => toggleStatus(item.id, "isDesigned")}
-        className="flex justify-center cursor-pointer hover:opacity-70"
-        aria-label={`디자인 상태 토글: ${item.isDesigned ? "완료" : "미완료"}`}
+        onClick={() => updateField(item.id, "is_designed", !item.is_designed)}
+        className="flex justify-center cursor-pointer hover:opacity-70 mx-auto"
+        aria-label={`디자인 상태 토글: ${item.is_designed ? "완료" : "미완료"}`}
       >
         <Icon
-          type={item.isDesigned ? "checkboxChecked" : "checkbox"}
+          type={item.is_designed ? "checkboxChecked" : "checkbox"}
           size={24}
         />
       </button>

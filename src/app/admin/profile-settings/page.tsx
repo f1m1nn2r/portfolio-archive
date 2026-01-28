@@ -5,7 +5,7 @@ import { AdminPageLayout } from "@/components/admin/layout/AdminPageLayout";
 import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
 import { LoadingState } from "@/components/common/LoadingState";
-import { useProfileForm } from "@/hooks/useProfileForm";
+import { useProfileForm } from "@/hooks/profile/useProfileForm";
 
 export default function ProfileSettingsPage() {
   const { formData, isFetching, isLoading, handleInputChange, handleSave } =

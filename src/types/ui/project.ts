@@ -12,6 +12,7 @@ export interface ProjectModalProps {
 export interface ProjectCardProps {
   project: Project;
   isAdmin?: boolean; // 관리자 모드인지?
+  onDelete?: (id: number) => void;
 }
 
 export interface ProjectFormData {
