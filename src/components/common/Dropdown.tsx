@@ -1,0 +1,71 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import { DropdownProps } from "@/types/common/ui";
+
+export const Dropdown = ({
+  trigger,
+  items,
+  width = "w-[150px]",
+}: DropdownProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // 메뉴 토글 함수
+  const toggleDropdown = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 부모(리스트 아이템 등)의 클릭 이벤트 전파 방지
+    setIsOpen((prev) => !prev);
+  };
+
+  // 외부 영역 클릭 시 닫기 로직
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
+  return (
+    <div className="relative inline-block" ref={dropdownRef}>
+      {/* 트리거 영역: 클릭 이벤트 연결 */}
+      <div onClick={toggleDropdown} className="cursor-pointer">
+        {trigger}
+      </div>
+
+      {/* 드롭다운 메뉴 영역: isOpen 상태에 따라 노출 */}
+      {isOpen && (
+        <div
+          className={`
+            absolute top-full left-0 mt-2
+            ${width} bg-white border border-gray-ddd rounded-md shadow-lg z-20 py-2
+          `}
+        >
+          {items.map((item, idx) => (
+            <div
+              key={idx}
+              className="px-4 py-2 text-sm md:text-base font-medium hover:bg-bg-light transition-colors cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                item.onClick();
+                setIsOpen(false); // 아이템 클릭 시 메뉴 닫기
+              }}
+            >
+              {item.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
