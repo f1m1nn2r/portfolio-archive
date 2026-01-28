@@ -11,7 +11,8 @@ import { ExperienceCard } from "@/components/admin/experience/ExperienceCard";
 import { LoadingState } from "@/components/common/LoadingState";
 import { ExperienceFilters } from "@/components/admin/experience/ExperienceFilters";
 import { ProjectCard } from "@/components/admin/experience/ProjectCard";
-import { useExperiencePage } from "@/hooks/useExperiencePage";
+import { useExperiencePage } from "@/hooks/experience/useExperiencePage";
+import DeleteModal from "@/components/common/DeleteModal";
 
 export default function ExperiencePage() {
   const {
@@ -22,7 +23,7 @@ export default function ExperiencePage() {
     summaryItems,
     expModal,
     projectModal,
-    deleteExperience,
+    deleteModal,
     handlers,
   } = useExperiencePage();
 
@@ -36,8 +37,7 @@ export default function ExperiencePage() {
 
   return (
     <AdminPageLayout title="Experience">
-      <AdminSummaryGrid items={summaryItems} />
-
+      <AdminSummaryGrid items={summaryItems} columns={3} />
       {/* 경력 관리 섹션 */}
       <section className="mt-10">
         <h3 className="text-lg font-bold pb-5 mb-5 border-b border-gray-ddd">
@@ -60,13 +60,12 @@ export default function ExperiencePage() {
                 key={exp.id}
                 experience={exp}
                 onEdit={handlers.openEditExp}
-                onDelete={deleteExperience}
+                onDelete={() => handlers.openDeleteModal("experience", exp.id)}
               />
             ))
           )}
         </div>
       </section>
-
       {/* 작업물 관리 섹션 */}
       <section className="mt-20">
         <h3 className="text-lg font-bold pb-5 mb-5 border-b border-gray-ddd">
@@ -92,12 +91,16 @@ export default function ExperiencePage() {
             </div>
           ) : (
             projects.map((project) => (
-              <ProjectCard key={project.id} project={project} isAdmin={true} />
+              <ProjectCard
+                key={project.id}
+                project={project}
+                isAdmin={true}
+                onDelete={(id) => handlers.openDeleteModal("project", id)}
+              />
             ))
           )}
         </div>
       </section>
-
       {/* 모달 관리 (Key 패턴 적용) */}
       <ExperienceModal
         key={expModal.data?.id || "new-exp"}
@@ -115,6 +118,12 @@ export default function ExperiencePage() {
         initialData={projectModal.data}
         experiences={experiences}
         onSaveSuccess={handlers.onProjectSaveSuccess}
+      />
+      <DeleteModal
+        isOpen={deleteModal.isOpen}
+        onClose={deleteModal.onClose}
+        onConfirm={deleteModal.onConfirm}
+        title={deleteModal.type === "experience" ? "경력 삭제" : "작업물 삭제"}
       />
     </AdminPageLayout>
   );
