@@ -43,7 +43,7 @@ export async function POST(request: Request) {
       {
         screen: body.screen || "",
         sub_page: body.sub_page || "",
-        epic: body.epic || null,
+        // epic: body.epic || null,
         feature: body.feature || "",
         description: body.description || "",
         is_done: body.is_done ?? false,

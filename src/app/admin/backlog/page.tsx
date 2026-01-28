@@ -10,8 +10,8 @@ import { LoadingState } from "@/components/common/LoadingState";
 import { Button } from "@/components/common/Button";
 import { Backlog } from "@/types/admin";
 import { useBacklogPage } from "@/hooks/backlog/useBacklogPage";
+import { BacklogEpicManager } from "@/components/admin/backlog/BacklogEpicManager";
 import DeleteModal from "@/components/common/DeleteModal";
-import { EpicManager } from "@/components/admin/backlog/BacklogEpicManager";
 
 export default function BacklogPage() {
   const {
@@ -20,6 +20,7 @@ export default function BacklogPage() {
     page,
     totalPages,
     columns,
+    epics,
     summaryItems,
     selection,
     deleteModal,
@@ -37,7 +38,7 @@ export default function BacklogPage() {
 
   return (
     <AdminPageLayout title="Backlog">
-      <AdminSummaryGrid items={summaryItems} />
+      <AdminSummaryGrid items={summaryItems} columns={3} />
 
       <AdminActionBar>
         <div className="flex gap-2 ml-auto">
@@ -61,7 +62,7 @@ export default function BacklogPage() {
         selectedIds={selection.selectedIds}
         onToggleSelect={(id) => selection.toggleSelect(String(id))}
         onToggleSelectAll={selection.toggleSelectAll}
-        getItemId={(item) => item.id}
+        getItemId={(item) => String(item.id)}
         onAdd={addBacklog}
       />
 
@@ -71,7 +72,11 @@ export default function BacklogPage() {
         onPageChange={handlers.handlePageChange}
       />
 
-      {/* <EpicManager /> */}
+      <BacklogEpicManager
+        epics={epics}
+        onAdd={(name) => handlers.addEpic(name)}
+        onRemove={(id) => handlers.removeEpic(id)}
+      />
 
       <DeleteModal
         isOpen={deleteModal.isOpen}

@@ -1,7 +1,8 @@
 import { Icon } from "@/components/common/Icon";
-import { Backlog } from "@/types/admin/backlog";
+import { Backlog, Epic } from "@/types/admin/backlog";
 import { AdminTableColumn } from "@/types/admin/table";
 import { AdminEditableCell } from "@/components/admin/table/AdminEditableCell";
+import { AdminMultiSelectCell } from "../table/AdminMultiSelectCell";
 
 export const BacklogColumns = (
   updateField: <K extends keyof Backlog>(
@@ -9,6 +10,8 @@ export const BacklogColumns = (
     field: K,
     value: Backlog[K],
   ) => void,
+  currentPage: number,
+  allEpics: readonly Epic[],
 ): AdminTableColumn<Backlog>[] => [
   {
     label: "checkbox",
@@ -19,7 +22,11 @@ export const BacklogColumns = (
     label: "NO",
     width: "w-15",
     center: true,
-    renderCell: (item) => item.no,
+    renderCell: (_, index) => {
+      const itemsPerPage = 20; // 한 페이지당 개수
+      const calculatedNo = (currentPage - 1) * itemsPerPage + index + 1;
+      return <span>{calculatedNo}</span>;
+    },
   },
   {
     label: "화면",
@@ -38,6 +45,24 @@ export const BacklogColumns = (
       <AdminEditableCell
         value={item.sub_page}
         onSave={(val) => updateField(item.id, "sub_page", val)}
+      />
+    ),
+  },
+  {
+    label: "Epic",
+    width: "w-[200px]",
+    renderCell: (item) => (
+      <AdminMultiSelectCell
+        selectedIds={item.epic_ids || []}
+        allEpics={allEpics}
+        onToggle={(epicId) => {
+          const currentIds = item.epic_ids || [];
+          const newIds = currentIds.includes(epicId)
+            ? currentIds.filter((id) => id !== epicId)
+            : [...currentIds, epicId];
+
+          updateField(item.id, "epic_ids", newIds);
+        }}
       />
     ),
   },

@@ -1,9 +1,9 @@
-// src/hooks/useBacklogPage.ts
 import { useState, useCallback, useMemo } from "react";
 import { useBacklog } from "@/hooks/backlog/useBacklog";
 import { useSelectionHandler } from "@/hooks/common/useSelectionHandler";
 import { useSummaryData } from "@/hooks/common/useSummaryData";
 import { BacklogColumns } from "@/components/admin/backlog/BacklogColumns";
+import { useEpics } from "@/hooks/backlog/useEpics";
 
 export function useBacklogPage() {
   const [page, setPage] = useState(1);
@@ -20,10 +20,12 @@ export function useBacklogPage() {
     deleteBacklogs,
   } = useBacklog();
 
+  const { epics, addEpic, removeEpic } = useEpics();
+
   // 2. 선택 핸들러 로직
   const selection = useSelectionHandler({
     data: backlogData,
-    getId: (item) => item.id,
+    getId: (item) => String(item.id),
     onDelete: async (ids) => {
       await deleteBacklogs(ids);
     },
@@ -43,12 +45,21 @@ export function useBacklogPage() {
       label: "구현 완료 상태",
       getValue: () => `${stats.completionRate}%`,
     },
+    {
+      icon: "x",
+      bgColor: "bg-[#F3FDEE]",
+      label: "미구현 작업",
+      getValue: () => {
+        const pendingCount = backlogData.filter((item) => !item.is_done).length;
+        return `${pendingCount}개`;
+      },
+    },
   ]);
 
   // 4. 테이블 컬럼 정의
   const columns = useMemo(
-    () => BacklogColumns(updateBacklogField),
-    [updateBacklogField],
+    () => BacklogColumns(updateBacklogField, page, epics),
+    [updateBacklogField, epics, page],
   );
 
   // 5. 페이지네이션 계산 로직
@@ -68,7 +79,8 @@ export function useBacklogPage() {
       const success = await selection.deleteSelected();
       if (success === true) setIsDeleteModalOpen(false);
     }, [selection]),
-    // 필요 시 Epic 관련 핸들러도 여기 추가
+    addEpic: (label: string) => addEpic(label),
+    removeEpic: (id: string) => removeEpic(id),
   };
 
   return {
@@ -83,6 +95,7 @@ export function useBacklogPage() {
     deleteModal: {
       isOpen: isDeleteModalOpen,
     },
+    epics,
     handlers,
     addBacklog,
   };

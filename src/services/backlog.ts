@@ -8,7 +8,7 @@ export const getBacklogs = async (): Promise<BacklogResponse> => {
 
 export const deleteBacklogsApi = async (ids: string[]) => {
   const res = await fetch("/api/backlog", {
-    method: "POST",
+    method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ ids }),
   });

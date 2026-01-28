@@ -22,104 +22,109 @@ export function AdminTable<T>({
   onAdd,
 }: AdminTableProps<T> & { onAdd?: () => void }) {
   return (
-    <div className="bg-white rounded-lg border border-gray-ddd overflow-hidden">
-      <Table>
-        <TableHeader className="bg-bg-light">
-          <TableRow>
-            {columns.map((col, index) => (
-              <TableHead
-                key={index}
-                className={`
+    <div className="bg-white rounded-lg border border-gray-ddd">
+      <div className="overflow-hidden">
+        <Table className="table-fixed">
+          <TableHeader className="bg-bg-light">
+            <TableRow>
+              {columns.map((col, index) => (
+                <TableHead
+                  key={index}
+                  className={`
                   border-r border-gray-ddd last:border-r-0
                   text-base font-medium py-3.5
                   ${col.center ? "text-center" : ""}
                   ${col.width || ""}
                 `}
-              >
-                {col.renderHeader ? (
-                  col.renderHeader()
-                ) : col.label === "checkbox" ? (
-                  <div
-                    className="flex justify-center cursor-pointer"
-                    onClick={onToggleSelectAll}
-                  >
-                    <Icon
-                      type={
-                        selectedIds.length === data.length && data.length > 0
-                          ? "checkboxChecked"
-                          : "checkbox"
-                      }
-                      size={24}
-                    />
-                  </div>
-                ) : (
-                  col.label
-                )}
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
+                >
+                  {col.renderHeader ? (
+                    col.renderHeader()
+                  ) : col.label === "checkbox" ? (
+                    <div
+                      className="flex justify-center cursor-pointer"
+                      onClick={onToggleSelectAll}
+                    >
+                      <Icon
+                        type={
+                          selectedIds.length === data.length && data.length > 0
+                            ? "checkboxChecked"
+                            : "checkbox"
+                        }
+                        size={24}
+                      />
+                    </div>
+                  ) : (
+                    col.label
+                  )}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
 
-        <TableBody>
-          {data.map((item, rowIndex) => {
-            const itemId = getItemId(item);
-            const isSelected = selectedIds.includes(itemId);
+          <TableBody>
+            {data.map((item, rowIndex) => {
+              const itemId = getItemId(item);
+              const isSelected = selectedIds.includes(itemId);
 
-            return (
-              <TableRow
-                key={String(itemId)}
-                className={
-                  rowClassName
-                    ? rowClassName(item, isSelected)
-                    : `text-base hover:bg-gray-50 transition-colors ${
-                        isSelected ? "bg-gray-50" : ""
-                      }`
-                }
-              >
-                {columns.map((col, colIndex) => (
-                  <TableCell
-                    key={colIndex}
-                    className={`
+              return (
+                <TableRow
+                  key={String(itemId)}
+                  className={
+                    rowClassName
+                      ? rowClassName(item, isSelected)
+                      : `text-base hover:bg-gray-50 transition-colors ${
+                          isSelected ? "bg-gray-50" : ""
+                        }`
+                  }
+                >
+                  {columns.map((col, colIndex) => (
+                    <TableCell
+                      key={colIndex}
+                      className={`
                       border-r border-gray-ddd last:border-r-0
                       ${col.center ? "text-center" : ""}
                       ${col.width || ""}
                       py-3.5
                     `}
-                  >
-                    {col.renderCell ? (
-                      col.renderCell(item, rowIndex)
-                    ) : col.label === "checkbox" ? (
-                      <div
-                        className="flex justify-center cursor-pointer"
-                        onClick={() => onToggleSelect?.(itemId)}
-                      >
-                        <Icon
-                          type={isSelected ? "checkboxChecked" : "checkbox"}
-                          size={24}
-                        />
-                      </div>
-                    ) : (
-                      col.key && String(item[col.key])
-                    )}
-                  </TableCell>
-                ))}
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+                    >
+                      {col.renderCell ? (
+                        col.renderCell(item, rowIndex)
+                      ) : col.label === "checkbox" ? (
+                        <div
+                          className="flex justify-center cursor-pointer"
+                          onClick={() => onToggleSelect?.(itemId)}
+                        >
+                          <Icon
+                            type={isSelected ? "checkboxChecked" : "checkbox"}
+                            size={24}
+                          />
+                        </div>
+                      ) : (
+                        col.key && String(item[col.key])
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
 
-      {showAddColumn && (
-        <div className="p-4.5 px-2.5 border-t border-gray-ddd">
-          <Button
-            className="bg-transparent p-0 text-gray-999 text-base hover:text-gray-600 hover:bg-transparent font-regular"
-            onClick={onAdd}
-          >
-            <Icon type="plus" size="16" />
-            Add Column
-          </Button>
-        </div>
-      )}
+        {showAddColumn && (
+          <div className="p-4.5 px-2.5 border-t border-gray-ddd">
+            <Button
+              className="bg-transparent p-0 text-gray-999 text-base hover:text-gray-600 hover:bg-transparent font-regular"
+              onClick={(e) => {
+                e.stopPropagation();
+                onAdd?.();
+              }}
+            >
+              <Icon type="plus" size="16" />
+              Add Column
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
