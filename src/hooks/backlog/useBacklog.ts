@@ -28,7 +28,7 @@ export function useBacklog() {
     const newEntry: Partial<Backlog> = {
       screen: "",
       sub_page: "",
-      epic: "",
+      // epic: "",
       feature: "",
       description: "",
       is_done: false,
@@ -107,7 +107,7 @@ export function useBacklog() {
       if (!data) return false;
 
       const optimisticItems = backlogData.filter(
-        (item) => !ids.includes(item.id),
+        (item) => !ids.map(String).includes(String(item.id)),
       );
       const optimisticData: BacklogResponse = {
         ...data,
@@ -126,11 +126,12 @@ export function useBacklog() {
             revalidate: true,
           },
         );
+
         showToast.success("삭제되었습니다.");
         return true;
       } catch (error) {
         showToast.error("삭제 실패하였습니다.");
-        console.log(error);
+        console.error(error);
         return false;
       }
     },
