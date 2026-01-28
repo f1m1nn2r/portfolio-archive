@@ -7,12 +7,12 @@ import { CommonPagination } from "@/components/common/Pagination";
 import { Dropdown } from "@/components/common/Dropdown";
 import { AdminSummaryGrid } from "@/components/admin/layout/AdminSummaryGrid";
 import { AdminPageLayout } from "@/components/admin/layout/AdminPageLayout";
-import { useSelectionHandler } from "@/hooks/useSelectionHandler";
+import { useSelectionHandler } from "@/hooks/common/useSelectionHandler";
 import { EmailItem } from "@/components/admin/email/EmailItem";
 import { EmailSearchBar } from "@/components/admin/email/EmailSearchBar";
 import { LoadingState } from "@/components/common/LoadingState";
-import { useContact } from "@/hooks/useContact";
-import { useSummaryData } from "@/hooks/useSummaryData";
+import { useContact } from "@/hooks/contact/useContact";
+import { useSummaryData } from "@/hooks/common/useSummaryData";
 import { useRouter } from "next/navigation";
 
 export default function ContactsPage() {
@@ -51,6 +51,12 @@ export default function ContactsPage() {
       bgColor: "bg-bg-blue",
       label: "읽지 않음",
       getValue: () => `${contacts.filter((e) => !e.isRead).length}개`,
+    },
+    {
+      icon: "star",
+      bgColor: "bg-[#FCFDE1]",
+      label: "중요 메시지",
+      getValue: () => `${contacts.filter((e) => e.isStarred).length}개`,
     },
   ]);
 
@@ -94,7 +100,7 @@ export default function ContactsPage() {
   return (
     <AdminPageLayout title="Contacts">
       {/* 요약 그리드 */}
-      <AdminSummaryGrid items={summaryItems} />
+      <AdminSummaryGrid items={summaryItems} columns={3} />
 
       {/* 검색 바 */}
       <EmailSearchBar />
@@ -126,7 +132,7 @@ export default function ContactsPage() {
             </p>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 relative z-10">
             <Button
               variant="secondary"
               size="md"

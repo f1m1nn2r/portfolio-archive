@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ProjectModalProps } from "@/types/ui/project";
-import { useProjectForm } from "@/hooks/useProjectForm"; // 만든 훅 임포트
+import { useProjectForm } from "@/hooks/project/useProjectForm";
 
 export function ProjectModal({
   isOpen,

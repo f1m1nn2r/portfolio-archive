@@ -7,9 +7,9 @@ import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
 import { Badge } from "@/components/common/Badge";
 import { ExperienceModalProps } from "@/types/admin/experience";
-import { useExperienceForm } from "@/hooks/useExperienceForm";
+import { useExperienceForm } from "@/hooks/experience/useExperienceForm";
 import { FormSection, FormField } from "@/components/common/form";
-import { useExperience } from "@/hooks/useExperience";
+import { useExperience } from "@/hooks/experience/useExperience";
 import { showToast } from "@/utils/toast";
 
 export const ExperienceModal = ({

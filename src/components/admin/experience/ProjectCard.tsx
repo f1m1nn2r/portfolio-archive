@@ -4,9 +4,9 @@ import { Icon } from "@/components/common/Icon";
 import Link from "next/link";
 import { ProjectCardProps } from "@/types/ui/project";
 
-export function ProjectCard({ project, isAdmin }: ProjectCardProps) {
+export function ProjectCard({ project, isAdmin, onDelete }: ProjectCardProps) {
   // 스토어에서 함수 직접 가져오기
-  const { deleteProject, openEditModal } = useProjectStore();
+  const { openEditModal } = useProjectStore();
 
   return (
     <div className="border-t-5 border-black py-7.5 px-5 bg-bg-light h-full flex flex-col">
@@ -25,7 +25,7 @@ export function ProjectCard({ project, isAdmin }: ProjectCardProps) {
             <Button
               variant="danger"
               size="md"
-              onClick={() => deleteProject(project.id!)}
+              onClick={() => project.id && onDelete?.(project.id)}
             >
               <Icon type="trash" size={16} /> 삭제
             </Button>

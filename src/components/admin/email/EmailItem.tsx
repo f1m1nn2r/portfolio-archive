@@ -20,14 +20,20 @@ export function EmailItem({
     >
       <div className="flex items-start gap-2">
         <button
-          onClick={() => onToggleSelect(email.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleSelect(email.id);
+          }}
           className="cursor-pointer hover:opacity-70"
           aria-label={isSelected ? "선택 해제" : "선택"}
         >
           <Icon type={isSelected ? "checkboxChecked" : "checkbox"} size={24} />
         </button>
         <button
-          onClick={() => onToggleStar(email.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleStar(email.id);
+          }}
           className="cursor-pointer pt-0.5 hover:opacity-70"
           aria-label={email.isStarred ? "즐겨찾기 해제" : "즐겨찾기"}
         >
