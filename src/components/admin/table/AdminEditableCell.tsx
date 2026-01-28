@@ -31,7 +31,7 @@ export function AdminEditableCell({ value, onSave }: AdminEditableCellProps) {
     return (
       <input
         autoFocus
-        className="w-full border border-black rounded outline-none bg-white text-base"
+        className="w-full outline-none text-base"
         value={currentValue}
         onChange={(e) => setCurrentValue(e.target.value)}
         onBlur={handleBlur}
@@ -43,11 +43,11 @@ export function AdminEditableCell({ value, onSave }: AdminEditableCellProps) {
   return (
     <div
       className={`w-full min-h-[30px] flex items-center cursor-text hover:bg-gray-50 rounded transition-colors ${
-        !value ? "text-gray-300 italic" : "text-gray-700"
+        !value ? "text-gray-300" : "text-gray-700"
       }`}
       onClick={() => setIsEditing(true)}
     >
-      <span className="truncate text-base">{value || "입력..."}</span>
+      <span className="truncate text-base">{value}</span>
     </div>
   );
 }
