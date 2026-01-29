@@ -22,7 +22,7 @@ const EPIC_COLORS = [
 export function useEpics() {
   const { data: epics = [], mutate } = useSWR<Epic[]>("/api/epics", getEpics);
 
-  const addEpic = async (label: string = "새 에픽") => {
+  const addEpic = async (label: string = "새 에픽", password: string) => {
     const randomColor =
       EPIC_COLORS[Math.floor(Math.random() * EPIC_COLORS.length)];
 
@@ -32,19 +32,20 @@ export function useEpics() {
     };
 
     try {
-      await createEpicApi(newEpicData);
-
+      await createEpicApi(newEpicData, password);
       await mutate();
+      showToast.success("에픽이 추가되었습니다.");
     } catch (error) {
       console.error("에픽 추가 실패:", error);
       showToast.error("에픽을 추가하는 중 오류가 발생했습니다.");
     }
   };
 
-  const removeEpic = async (id: string) => {
+  const removeEpic = async (id: string, password: string) => {
     try {
-      await deleteEpicApi(id);
+      await deleteEpicApi(id, password);
       await mutate();
+      showToast.success("에픽이 삭제되었습니다.");
     } catch (error) {
       console.error("에픽 삭제 실패:", error);
       showToast.error("삭제에 실패했습니다.");
