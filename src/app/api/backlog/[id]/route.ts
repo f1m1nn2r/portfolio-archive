@@ -6,6 +6,13 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const headersList = request.headers;
+  const adminPassword = headersList.get("x-admin-password");
+
+  if (adminPassword !== process.env.ADMIN_PASSWORD) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const supabase = await createClient();
 
   const { id } = await params;

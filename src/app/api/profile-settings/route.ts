@@ -26,6 +26,15 @@ export async function GET() {
 
 export async function PATCH(request: Request) {
   try {
+    const adminPassword = request.headers.get("x-admin-password");
+
+    if (!adminPassword || adminPassword !== process.env.ADMIN_PASSWORD) {
+      return NextResponse.json(
+        { error: "인증되지 않은 사용자입니다. 비밀번호를 확인하세요." },
+        { status: 401 },
+      );
+    }
+
     const supabase = await createClient();
     const body = await request.json();
 
@@ -37,7 +46,7 @@ export async function PATCH(request: Request) {
 
     if (error) {
       console.error("업데이트 실패:", error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return handleApiError(error);
     }
 
     return NextResponse.json({
