@@ -8,6 +8,7 @@ export function BacklogEpicManager({
   epics,
   onRemove,
   onAdd,
+  isMaster,
 }: EpicManagerProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [newLabel, setNewLabel] = useState("");
@@ -19,7 +20,7 @@ export function BacklogEpicManager({
   }, [isAdding]);
 
   const handleAddEpic = () => {
-    if (newLabel.trim()) {
+    if (newLabel.trim() && onAdd) {
       onAdd(newLabel.trim());
       setNewLabel("");
       setIsAdding(false);
@@ -50,13 +51,15 @@ export function BacklogEpicManager({
             className="flex items-center gap-1.5 py-1.5 px-3 group"
           >
             {epic.label}
-            <button
-              onClick={() => onRemove(epic.id)}
-              className="opacity-50 hover:opacity-100 hover:text-red-500 transition-all"
-              aria-label={`${epic.label} 삭제`}
-            >
-              <Icon type="x" size={14} />
-            </button>
+            {isMaster && onRemove && (
+              <button
+                onClick={() => onRemove(epic.id)}
+                className="opacity-50 hover:opacity-100 hover:text-red-500 transition-all"
+                aria-label={`${epic.label} 삭제`}
+              >
+                <Icon type="x" size={14} />
+              </button>
+            )}
           </Badge>
         ))}
 
@@ -75,15 +78,17 @@ export function BacklogEpicManager({
             />
           </div>
         ) : (
-          <Button
-            variant="secondary"
-            size="md"
-            className="text-gray-999 text-sm h-[34px] border-dashed"
-            onClick={() => setIsAdding(true)}
-          >
-            <Icon type="plus" size={16} />
-            Add Epic
-          </Button>
+          isMaster && (
+            <Button
+              variant="secondary"
+              size="md"
+              className="text-gray-999 text-sm h-[34px] border-dashed"
+              onClick={() => setIsAdding(true)}
+            >
+              <Icon type="plus" size={16} />
+              Add Epic
+            </Button>
+          )
         )}
       </div>
     </section>

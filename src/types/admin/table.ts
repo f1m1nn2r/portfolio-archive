@@ -31,4 +31,5 @@ export interface AdminTableProps<T> {
 export interface AdminEditableCellProps {
   value: string | null | undefined;
   onSave: (newValue: string) => void;
+  isEditable?: boolean;
 }

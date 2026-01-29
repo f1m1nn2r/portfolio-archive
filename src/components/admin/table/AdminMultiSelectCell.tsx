@@ -3,17 +3,20 @@ import { Badge } from "@/components/common/Badge";
 import { Epic } from "@/types/admin/backlog";
 import { useOutsideClick } from "@/hooks/common/useOutsideClick";
 import { Icon } from "@/components/common/Icon";
+import { cn } from "@/lib/utils";
 
 interface Props {
   selectedIds: string[];
   allEpics: readonly Epic[];
   onToggle: (id: string) => void;
+  isEditable?: boolean;
 }
 
 export function AdminMultiSelectCell({
   selectedIds = [],
   allEpics,
   onToggle,
+  isEditable = true,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -24,13 +27,22 @@ export function AdminMultiSelectCell({
   // 현재 이 행에 선택된 에픽 객체들만 추출
   const selectedEpics = allEpics.filter((e) => selectedIds.includes(e.id));
 
+  const handleClick = () => {
+    if (isEditable) {
+      setIsOpen(!isOpen);
+    }
+  };
+
   return (
     <div className="relative w-full" ref={containerRef}>
       <div
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex flex-wrap gap-1 cursor-pointer transition-all items-center"
+        onClick={handleClick}
+        className={cn(
+          "flex flex-wrap gap-1 items-center",
+          isEditable && "cursor-pointer transition-all"
+        )}
       >
-        {selectedEpics.length > 0 ? (
+        {selectedEpics.length > (0) ? (
           selectedEpics.map((epic) => (
             <Badge
               key={epic.id}
@@ -45,7 +57,7 @@ export function AdminMultiSelectCell({
         )}
       </div>
 
-      {isOpen && (
+      {isOpen && isEditable && (
         <div className="absolute z-50 mt-1 w-[220px] bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden animate-in fade-in zoom-in duration-150">
           <div className="p-2 border-b border-gray-50 bg-gray-50/50">
             <span className="text-sm text-gray-555 uppercase tracking-wider">

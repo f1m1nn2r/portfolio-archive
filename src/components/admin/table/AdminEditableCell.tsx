@@ -1,7 +1,7 @@
 import { AdminEditableCellProps } from "@/types/admin";
 import { useState } from "react";
 
-export function AdminEditableCell({ value, onSave }: AdminEditableCellProps) {
+export function AdminEditableCell({ value, onSave, isEditable = true }: AdminEditableCellProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [currentValue, setCurrentValue] = useState(value || "");
 
@@ -26,6 +26,16 @@ export function AdminEditableCell({ value, onSave }: AdminEditableCellProps) {
       setCurrentValue(value || "");
     }
   };
+
+  if (!isEditable) {
+    return (
+      <div className={`w-full min-h-[30px] flex items-center ${
+        !value ? "text-gray-300" : "text-gray-700"
+      }`}>
+        <span className="truncate text-base">{value}</span>
+      </div>
+    );
+  }
 
   if (isEditing) {
     return (
