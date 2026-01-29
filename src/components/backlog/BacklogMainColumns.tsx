@@ -2,10 +2,12 @@ import { Backlog, Epic } from "@/types/admin/backlog";
 import { AdminTableColumn } from "@/types/admin/table";
 import { Badge } from "@/components/common/Badge";
 import { Icon } from "@/components/common/Icon";
+import { cn } from "@/lib/utils";
 
 export const BacklogMainColumns = (
   allEpics: readonly Epic[],
   currentPage: number,
+  isMaster?: boolean,
 ): AdminTableColumn<Backlog>[] => [
   {
     label: "NO",
@@ -19,13 +21,22 @@ export const BacklogMainColumns = (
   {
     label: "화면",
     width: "w-[150px]",
-    renderCell: (item) => <span className="font-medium">{item.screen}</span>,
+    renderCell: (item) => (
+      <span className={cn("font-medium", !isMaster && "pointer-events-none")}>
+        {item.screen}
+      </span>
+    ),
   },
   {
     label: "Epic",
     width: "w-[180px]",
     renderCell: (item) => (
-      <div className="flex flex-wrap gap-1">
+      <div
+        className={cn(
+          "flex flex-wrap gap-1",
+          !isMaster && "pointer-events-none",
+        )}
+      >
         {item.epic_ids?.map((id) => {
           const epic = allEpics.find((e) => e.id === id);
           return epic ? (
@@ -41,14 +52,24 @@ export const BacklogMainColumns = (
     label: "기능",
     width: "w-[250px]",
     renderCell: (item) => (
-      <span className="truncate block">{item.feature}</span>
+      <span
+        className={cn("truncate block", !isMaster && "pointer-events-none")}
+      >
+        {item.feature}
+      </span>
     ),
   },
   {
     label: "설명",
     width: "w-[350px]",
     renderCell: (item) => (
-      <span className="whitespace-normal break-all" title={item.description}>
+      <span
+        className={cn(
+          "whitespace-normal break-all",
+          !isMaster && "pointer-events-none",
+        )}
+        title={item.description}
+      >
         {item.description || "-"}
       </span>
     ),
@@ -58,7 +79,9 @@ export const BacklogMainColumns = (
     center: true,
     width: "w-[100px]",
     renderCell: (item) => (
-      <div className="flex justify-center">
+      <div
+        className={cn("flex justify-center", !isMaster && "pointer-events-none")}
+      >
         <Icon type={item.is_done ? "checkboxChecked" : "checkbox"} size={24} />
       </div>
     ),

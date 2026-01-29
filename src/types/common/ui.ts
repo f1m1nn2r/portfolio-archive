@@ -49,3 +49,10 @@ export interface PageLayoutProps {
   children: React.ReactNode;
   className?: string; // 추가적인 클래스가 필요할 경우 대비
 }
+
+// ------------------ 관리자 권한 확인
+export interface AdminAuthGuardProps {
+  isMaster: boolean;
+  password: string;
+  onPasswordChange: (value: string) => void;
+}

@@ -35,22 +35,35 @@ export function useProfileForm() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = async () => {
+  const handleSave = async (password: string) => {
     setIsLoading(true);
     try {
       const response = await fetch("/api/profile-settings", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-password": password,
+        },
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) throw new Error("저장 실패");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || "비밀번호가 틀렸거나 저장에 실패했습니다.",
+        );
+      }
 
       await mutate();
 
       showToast.success("프로필 정보가 수정되었습니다.");
-    } catch (error) {
-      showToast.error("저장에 실패했습니다.");
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "알 수 없는 오류가 발생했습니다.";
+
+      showToast.error(errorMessage);
       console.error("Save error:", error);
     } finally {
       setIsLoading(false);
