@@ -34,7 +34,7 @@ const DOCUMENT_LINKS = [
     icon: "📄",
     label: "개인 대시보드",
     href: "/admin/profile-settings",
-    external: true,
+    external: false,
   },
 ] as const;
 
