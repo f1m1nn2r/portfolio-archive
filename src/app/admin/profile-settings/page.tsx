@@ -7,7 +7,11 @@ import { Icon } from "@/components/common/Icon";
 import { LoadingState } from "@/components/common/LoadingState";
 import { useProfileForm } from "@/hooks/profile/useProfileForm";
 
+import { AdminAuthGuard } from "@/components/admin/common/AdminAuthGuard";
+import { useAdminMode } from "@/hooks/common/useAdminMode";
+
 export default function ProfileSettingsPage() {
+  const { isMaster, adminPassword, setAdminPassword } = useAdminMode();
   const { formData, isFetching, isLoading, handleInputChange, handleSave } =
     useProfileForm();
 
@@ -24,6 +28,12 @@ export default function ProfileSettingsPage() {
 
   return (
     <AdminPageLayout title="Profile Settings">
+      <AdminAuthGuard
+        isMaster={isMaster}
+        password={adminPassword}
+        onPasswordChange={setAdminPassword}
+      />
+
       <div className="flex flex-col gap-8">
         {/* 상단 짤 영역 */}
         <div className="w-full overflow-hidden">
@@ -53,6 +63,7 @@ export default function ProfileSettingsPage() {
                 onChange={(e) =>
                   handleInputChange("main_title", e.target.value)
                 }
+                disabled={!isMaster}
               />
             </div>
 
@@ -67,6 +78,7 @@ export default function ProfileSettingsPage() {
                 onChange={(e) =>
                   handleInputChange("main_description", e.target.value)
                 }
+                disabled={!isMaster}
               />
             </div>
           </div>
@@ -84,6 +96,7 @@ export default function ProfileSettingsPage() {
                 className={inputStyles}
                 value={formData.phone}
                 onChange={(e) => handleInputChange("phone", e.target.value)}
+                disabled={!isMaster}
               />
             </div>
             <div className="flex flex-col gap-4">
@@ -92,6 +105,7 @@ export default function ProfileSettingsPage() {
                 className={inputStyles}
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
+                disabled={!isMaster}
               />
             </div>
           </div>
@@ -112,6 +126,7 @@ export default function ProfileSettingsPage() {
                 onChange={(e) =>
                   handleInputChange("resume_url", e.target.value)
                 }
+                disabled={!isMaster}
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -121,6 +136,7 @@ export default function ProfileSettingsPage() {
                 placeholder="URL을 입력하세요."
                 value={formData.pdf_url}
                 onChange={(e) => handleInputChange("pdf_url", e.target.value)}
+                disabled={!isMaster}
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -131,6 +147,7 @@ export default function ProfileSettingsPage() {
                 onChange={(e) =>
                   handleInputChange("github_url", e.target.value)
                 }
+                disabled={!isMaster}
               />
             </div>
           </div>
@@ -139,15 +156,18 @@ export default function ProfileSettingsPage() {
 
       {/* 저장 버튼 */}
       <div className="flex justify-end mt-15">
-        <Button
-          variant="ghost"
-          size="md"
-          onClick={handleSave}
-          disabled={isLoading || isFetching}
-        >
-          <Icon type="save" />
-          {isLoading ? "저장 중..." : "저장하기"}
-        </Button>
+        {isMaster && (
+          <Button
+            variant="ghost"
+            size="md"
+            onClick={() => handleSave(adminPassword)}
+            disabled={isLoading || !adminPassword.trim()}
+            type="button"
+          >
+            <Icon type="save" />
+            {isLoading ? "저장 중..." : "저장하기"}
+          </Button>
+        )}
       </div>
     </AdminPageLayout>
   );
