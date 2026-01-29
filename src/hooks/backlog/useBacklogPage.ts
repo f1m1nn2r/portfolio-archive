@@ -5,12 +5,11 @@ import { useSummaryData } from "@/hooks/common/useSummaryData";
 import { BacklogColumns } from "@/components/admin/backlog/BacklogColumns";
 import { useEpics } from "@/hooks/backlog/useEpics";
 
-export function useBacklogPage() {
+export function useBacklogPage(adminPassword: string, isMaster?: boolean) {
   const [page, setPage] = useState(1);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const itemsPerPage = 20; // 페이지당 보여줄 개수
+  const itemsPerPage = 20;
 
-  // 1. 기본 데이터 훅 호출
   const {
     backlogData,
     loading,
@@ -18,20 +17,16 @@ export function useBacklogPage() {
     addBacklog,
     updateBacklogField,
     deleteBacklogs,
-  } = useBacklog();
+  } = useBacklog(adminPassword);
 
   const { epics, addEpic, removeEpic } = useEpics();
 
-  // 2. 선택 핸들러 로직
   const selection = useSelectionHandler({
     data: backlogData,
     getId: (item) => String(item.id),
-    onDelete: async (ids) => {
-      await deleteBacklogs(ids);
-    },
+    onDelete: deleteBacklogs,
   });
 
-  // 3. 요약 데이터 로직
   const summaryItems = useSummaryData([
     {
       icon: "barChartAlt2",
@@ -56,13 +51,11 @@ export function useBacklogPage() {
     },
   ]);
 
-  // 4. 테이블 컬럼 정의
   const columns = useMemo(
-    () => BacklogColumns(updateBacklogField, page, epics),
-    [updateBacklogField, epics, page],
+    () => BacklogColumns(updateBacklogField, page, epics, isMaster),
+    [updateBacklogField, page, epics, isMaster],
   );
 
-  // 5. 페이지네이션 계산 로직
   const totalPages = Math.ceil(backlogData.length / itemsPerPage) || 1;
 
   const currentData = useMemo(() => {
@@ -70,17 +63,18 @@ export function useBacklogPage() {
     return backlogData.slice(start, start + itemsPerPage);
   }, [backlogData, page]);
 
-  // 6. 핸들러 모음
   const handlers = {
     handlePageChange: setPage,
     openDeleteModal: () => setIsDeleteModalOpen(true),
     closeDeleteModal: () => setIsDeleteModalOpen(false),
+
     confirmDelete: useCallback(async () => {
       const success = await selection.deleteSelected();
       if (success === true) setIsDeleteModalOpen(false);
     }, [selection]),
-    addEpic: (label: string) => addEpic(label),
-    removeEpic: (id: string) => removeEpic(id),
+
+    addEpic: (label: string, password: string) => addEpic(label, password),
+    removeEpic: (id: string, password: string) => removeEpic(id, password),
   };
 
   return {
@@ -98,5 +92,6 @@ export function useBacklogPage() {
     epics,
     handlers,
     addBacklog,
+    updateBacklogField,
   };
 }

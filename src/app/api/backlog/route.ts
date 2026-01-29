@@ -32,6 +32,13 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const headersList = request.headers;
+  const adminPassword = headersList.get("x-admin-password");
+
+  if (adminPassword !== process.env.ADMIN_PASSWORD) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const supabase = await createClient();
   const body = await request.json();
 
@@ -62,6 +69,13 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const headersList = request.headers;
+  const adminPassword = headersList.get("x-admin-password");
+
+  if (adminPassword !== process.env.ADMIN_PASSWORD) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const supabase = await createClient();
   try {
     const { ids } = await request.json();

@@ -23,8 +23,9 @@ export interface Epic {
 
 export interface EpicManagerProps {
   epics: readonly Epic[];
-  onRemove: (id: string) => void;
-  onAdd: (label: string) => void;
+  onRemove?: (id: string) => void;
+  onAdd?: (label: string) => void;
+  isMaster: boolean;
 }
 
 export interface BacklogResponse {

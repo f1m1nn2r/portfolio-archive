@@ -8,11 +8,13 @@ import { Backlog, BacklogResponse } from "@/types/admin";
 import { useMemo, useState } from "react";
 import { getBacklogs } from "@/services";
 import { BacklogClientProps } from "@/types/ui/backlog";
+import { useAdminMode } from "@/hooks/common/useAdminMode";
 
 export default function BacklogClient({
   initialBacklogs,
   initialEpics,
 }: BacklogClientProps) {
+  const { isMaster } = useAdminMode();
   const { data: backlogResponse } = useSWR<BacklogResponse>(
     "/api/backlog",
     () => getBacklogs(),
@@ -45,8 +47,8 @@ export default function BacklogClient({
   }, [currentData, currentPage]);
 
   const columns = useMemo(
-    () => BacklogMainColumns(initialEpics, currentPage),
-    [initialEpics, currentPage],
+    () => BacklogMainColumns(initialEpics, currentPage, isMaster),
+    [initialEpics, currentPage, isMaster],
   );
 
   return (
@@ -57,7 +59,7 @@ export default function BacklogClient({
           data={pagedData}
           selectedIds={[]}
           getItemId={(item) => String(item.id)}
-          showAddColumn={false}
+          showAddColumn={isMaster}
           onToggleSelect={() => {}}
           onToggleSelectAll={() => {}}
         />
