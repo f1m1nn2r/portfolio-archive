@@ -26,6 +26,7 @@ export interface AdminTableProps<T> {
   showAddColumn?: boolean;
   getItemId: (item: T) => string | number;
   rowClassName?: (item: T, isSelected: boolean) => string;
+  getRowClassName?: (item: T) => string;
 }
 
 export interface AdminEditableCellProps {
