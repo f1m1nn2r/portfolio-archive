@@ -1,6 +1,8 @@
 import { DeleteModalProps } from "@/types/common/ui";
 import { Button } from "@/components/common/Button";
 import { Icon } from "./Icon";
+import { useRef } from "react";
+import { useOutsideClick } from "@/hooks/common/useOutsideClick";
 
 export default function DeleteModal({
   isOpen,
@@ -10,11 +12,22 @@ export default function DeleteModal({
   description = "삭제 후에는 다시 되돌릴 수 없습니다.",
   isLoading = false,
 }: DeleteModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useOutsideClick(modalRef, () => {
+    if (isOpen && !isLoading) {
+      onClose();
+    }
+  });
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
-      <div className="relative w-full max-w-[600px] rounded-2xl bg-white py-15 shadow-xl">
+      <div
+        className="relative w-full max-w-[600px] rounded-2xl bg-white py-15 shadow-xl"
+        ref={modalRef}
+      >
         {/* 닫기 버튼 */}
         <button
           onClick={onClose}

@@ -13,8 +13,11 @@ import { ExperienceFilters } from "@/components/admin/experience/ExperienceFilte
 import { ProjectCard } from "@/components/admin/experience/ProjectCard";
 import { useExperiencePage } from "@/hooks/experience/useExperiencePage";
 import DeleteModal from "@/components/common/DeleteModal";
+import { useAdminMode } from "@/hooks/common/useAdminMode";
+import { AdminAuthGuard } from "@/components/admin/common/AdminAuthGuard";
 
 export default function ExperiencePage() {
+  const { isMaster, session } = useAdminMode();
   const {
     experiences,
     projects,
@@ -35,8 +38,20 @@ export default function ExperiencePage() {
     );
   }
 
+  if (!session) {
+    return (
+      <AdminPageLayout title="Access Denied">
+        <div className="py-20 text-center">
+          <p className="text-lg">로그인이 필요한 페이지입니다.</p>
+        </div>
+      </AdminPageLayout>
+    );
+  }
+
   return (
     <AdminPageLayout title="Experience">
+      <AdminAuthGuard isMaster={isMaster} />
+
       <AdminSummaryGrid items={summaryItems} columns={3} />
       {/* 경력 관리 섹션 */}
       <section className="mt-10">
@@ -44,7 +59,12 @@ export default function ExperiencePage() {
           경력 관리
         </h3>
         <AdminActionBar>
-          <Button variant="secondary" onClick={handlers.openAddExp}>
+          <Button
+            variant="secondary"
+            onClick={handlers.openAddExp}
+            disabled={!isMaster}
+            className={!isMaster ? "opacity-50 cursor-not-allowed" : ""}
+          >
             <Icon type="plus" size={16} />새 경력 추가
           </Button>
         </AdminActionBar>
@@ -65,6 +85,7 @@ export default function ExperiencePage() {
                     handlers.openDeleteModal("experience", exp.id);
                   }
                 }}
+                isMaster={isMaster}
               />
             ))
           )}
@@ -83,7 +104,12 @@ export default function ExperiencePage() {
         />
 
         <AdminActionBar>
-          <Button variant="secondary" onClick={handlers.openAddProject}>
+          <Button
+            variant="secondary"
+            onClick={handlers.openAddProject}
+            disabled={!isMaster}
+            className={!isMaster ? "opacity-50 cursor-not-allowed" : ""}
+          >
             <Icon type="plus" size={16} />새 작업물 추가
           </Button>
         </AdminActionBar>
@@ -98,7 +124,7 @@ export default function ExperiencePage() {
               <ProjectCard
                 key={project.id}
                 project={project}
-                isAdmin={true}
+                isAdmin={isMaster}
                 onDelete={(id) => handlers.openDeleteModal("project", id)}
               />
             ))
@@ -128,6 +154,7 @@ export default function ExperiencePage() {
         onClose={deleteModal.onClose}
         onConfirm={deleteModal.onConfirm}
         title={deleteModal.type === "experience" ? "경력 삭제" : "작업물 삭제"}
+        description={`선택한 경력을 정말 삭제하시겠습니까?`}
       />
     </AdminPageLayout>
   );

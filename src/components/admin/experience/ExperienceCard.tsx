@@ -8,6 +8,7 @@ export function ExperienceCard({
   experience,
   onEdit,
   onDelete,
+  isMaster,
 }: ExperienceCardProps) {
   if (!experience.id) {
     return null;
@@ -63,22 +64,26 @@ export function ExperienceCard({
 
       {/* 버튼 영역 */}
       <div className="flex justify-end gap-2 mt-6">
-        <Button
-          variant="danger"
-          size="md"
-          onClick={() => onDelete(experience.id!)}
-        >
-          <Icon type="trash" size="20" />
-          삭제
-        </Button>
-        <Button
-          variant="secondary"
-          size="md"
-          onClick={() => onEdit(experience)}
-        >
-          <Icon type="editAlt" size="20" />
-          편집하기
-        </Button>
+        {isMaster && (
+          <Button
+            variant="danger"
+            size="md"
+            onClick={() => onDelete(experience.id!)}
+          >
+            <Icon type="trash" size="20" />
+            삭제
+          </Button>
+        )}
+        {isMaster && (
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => onEdit(experience)}
+          >
+            <Icon type="editAlt" size="20" />
+            편집하기
+          </Button>
+        )}
       </div>
     </div>
   );

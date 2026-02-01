@@ -21,4 +21,5 @@ export interface ExperienceCardProps {
   experience: Experience;
   onEdit: (exp: Experience) => void;
   onDelete: (id: number) => void;
+  isMaster?: boolean;
 }
