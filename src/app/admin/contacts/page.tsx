@@ -12,20 +12,29 @@ import { EmailItem } from "@/components/admin/email/EmailItem";
 import { EmailSearchBar } from "@/components/admin/email/EmailSearchBar";
 import { LoadingState } from "@/components/common/LoadingState";
 import { useContact } from "@/hooks/contact/useContact";
-import { useSummaryData } from "@/hooks/common/useSummaryData";
 import { useRouter } from "next/navigation";
+import { useAdminMode } from "@/hooks/common/useAdminMode";
+import { AdminAuthGuard } from "@/components/admin/common/AdminAuthGuard";
+import DeleteModal from "@/components/common/DeleteModal";
 
 export default function ContactsPage() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
-
   const router = useRouter();
+  const itemsPerPage = 5;
+  const { isMaster, session } = useAdminMode();
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // 1. 실제 DB 데이터 및 핸들러 가져오기
-  const { contacts, loading, deleteContacts, toggleStar, markAsRead } =
-    useContact();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  // 2. 다중 선택 핸들러 설정
+  const {
+    contacts,
+    currentData,
+    summaryItems,
+    totalPages,
+    loading,
+    ...handlers
+  } = useContact(currentPage, itemsPerPage);
+
   const {
     selectedIds,
     toggleSelect,
@@ -35,32 +44,20 @@ export default function ContactsPage() {
   } = useSelectionHandler({
     data: contacts,
     getId: (item) => item.id,
-    onDelete: deleteContacts,
+    onDelete: handlers.deleteContacts,
   });
 
-  // 3. 상단 요약 정보 계산
-  const summaryItems = useSummaryData([
-    {
-      icon: "mailSend",
-      bgColor: "bg-bg-purple",
-      label: "총 메시지",
-      getValue: () => `${contacts.length}개`,
-    },
-    {
-      icon: "envelopeOpen",
-      bgColor: "bg-bg-blue",
-      label: "읽지 않음",
-      getValue: () => `${contacts.filter((e) => !e.isRead).length}개`,
-    },
-    {
-      icon: "star",
-      bgColor: "bg-[#FCFDE1]",
-      label: "중요 메시지",
-      getValue: () => `${contacts.filter((e) => e.isStarred).length}개`,
-    },
-  ]);
+  const handleConfirmDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await handlers.deleteContacts(selectedIds);
+      clearSelection();
+      setIsDeleteModalOpen(false);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
-  // 4. 선택 메뉴 아이템 구성
   const filterMenuItems = useMemo(
     () => [
       { label: "전체 선택", onClick: () => toggleSelectAll() },
@@ -83,12 +80,6 @@ export default function ContactsPage() {
     [contacts, toggleSelectAll, clearSelection, toggleSelect],
   );
 
-  const totalPages = Math.ceil(contacts.length / itemsPerPage) || 1;
-  const currentData = contacts.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  );
-
   if (loading) {
     return (
       <AdminPageLayout title="Contacts">
@@ -97,17 +88,23 @@ export default function ContactsPage() {
     );
   }
 
+  if (!session) {
+    return (
+      <AdminPageLayout title="Access Denied">
+        <div className="py-20 text-center">
+          <p className="text-lg">로그인이 필요한 페이지입니다.</p>
+        </div>
+      </AdminPageLayout>
+    );
+  }
+
   return (
     <AdminPageLayout title="Contacts">
-      {/* 요약 그리드 */}
+      <AdminAuthGuard isMaster={isMaster} />
       <AdminSummaryGrid items={summaryItems} columns={3} />
-
-      {/* 검색 바 */}
       <EmailSearchBar />
 
-      {/* 리스트 영역 */}
       <div className="bg-white rounded-lg border border-gray-ddd overflow-hidden">
-        {/* 리스트 컨트롤러 */}
         <div className="flex items-center justify-between px-10 py-5 border-b border-gray-ddd bg-bg-light/30">
           <div className="flex items-center gap-4">
             <Dropdown
@@ -137,37 +134,36 @@ export default function ContactsPage() {
               variant="secondary"
               size="md"
               onClick={() => {
-                markAsRead(selectedIds);
+                handlers.markAsRead(selectedIds);
                 clearSelection();
               }}
-              disabled={selectionCount === 0}
+              disabled={!isMaster}
+              className={!isMaster ? "opacity-50 cursor-not-allowed" : ""}
             >
               <Icon type="envelopeOpen" size={20} /> 읽음 표시
             </Button>
-            <Button
-              variant="danger"
-              size="md"
-              onClick={() => {
-                if (
-                  confirm(
-                    `선택한 ${selectionCount}개의 메시지를 삭제하시겠습니까?`,
-                  )
-                ) {
-                  deleteContacts(selectedIds);
-                  clearSelection();
-                }
-              }}
-              disabled={selectionCount === 0}
-            >
-              <Icon type="trash" size={16} /> 삭제
-            </Button>
+            {isMaster && (
+              <Button
+                variant="danger"
+                size="md"
+                onClick={() => setIsDeleteModalOpen(true)}
+                disabled={selectionCount === 0}
+              >
+                <Icon type="trash" size={16} /> 삭제
+              </Button>
+            )}
           </div>
         </div>
 
-        {/* 메시지 아이템 리스트 */}
-        <div className="flex flex-col">
-          {currentData.length === 0 ? (
-            <div className="text-center py-20 text-gray-555">
+        <div className="flex flex-col ">
+          {!isMaster ? (
+            <div className="flex flex-col items-center justify-center flex-1 py-20 bg-gray-50/50">
+              <h3 className="mb-2 text-gray-888">
+                관리자만 확인할 수 있습니다.
+              </h3>
+            </div>
+          ) : currentData.length === 0 ? (
+            <div className="py-20 text-center text-gray-555">
               받은 메시지가 없습니다.
             </div>
           ) : (
@@ -175,14 +171,15 @@ export default function ContactsPage() {
               <div
                 key={email.id}
                 onClick={() => router.push(`/admin/contacts/${email.id}`)}
-                className="cursor-pointer border-b border-gray-ddd last:border-b-0"
+                className="cursor-pointer border-b border-gray-ddd last:border-b-0 hover:bg-gray-50 transition-colors"
               >
                 <EmailItem
-                  key={email.id}
                   email={email}
                   isSelected={selectedIds.includes(email.id)}
                   onToggleSelect={toggleSelect}
-                  onToggleStar={() => toggleStar(email.id, email.isStarred)}
+                  onToggleStar={() =>
+                    handlers.toggleStar(email.id, email.isStarred)
+                  }
                 />
               </div>
             ))
@@ -190,11 +187,19 @@ export default function ContactsPage() {
         </div>
       </div>
 
-      {/* 페이지네이션 */}
       <CommonPagination
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
+      />
+
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        isLoading={isDeleting}
+        title="메시지 삭제"
+        description={`선택한 ${selectionCount}개의 메시지를 정말 삭제하시겠습니까?`}
       />
     </AdminPageLayout>
   );

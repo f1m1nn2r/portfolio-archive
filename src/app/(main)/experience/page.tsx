@@ -1,4 +1,5 @@
-import { getExperiences, getProjects } from "@/services";
+import { getProjects } from "@/services/project/client";
+import { getExperiences } from "@/services/experience/client";
 import ExperienceClient from "./ExperienceClient";
 
 export default async function ExperiencePage() {

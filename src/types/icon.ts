@@ -14,6 +14,7 @@ export const ICON_MAP = {
   search: BiIcons.BiSearch,
   solidDownArrowAlt: BiIcons.BiSolidDownArrow,
   infoSquare: BiIcons.BiInfoSquare,
+  lockAlt: BiIcons.BiLockAlt,
   // ------------------ END 자주 사용되는 아이콘
 
   // ------------------ 관리자 페이지 좌측 메뉴 아이콘

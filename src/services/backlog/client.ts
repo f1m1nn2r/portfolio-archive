@@ -6,12 +6,11 @@ export const getBacklogs = async (): Promise<BacklogResponse> => {
   return res.json();
 };
 
-export const deleteBacklogsApi = async (ids: string[], password: string) => {
+export const deleteBacklogsApi = async (ids: string[]) => {
   const res = await fetch("/api/backlog", {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
-      "x-admin-password": password,
     },
     body: JSON.stringify({ ids }),
   });
@@ -20,13 +19,11 @@ export const deleteBacklogsApi = async (ids: string[], password: string) => {
 
 export const createBacklogApi = async (
   newEntry: Partial<Backlog>,
-  password: string,
 ): Promise<Backlog | null> => {
   const res = await fetch("/api/backlog", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-admin-password": password,
     },
     body: JSON.stringify(newEntry),
   });
@@ -39,13 +36,11 @@ export const createBacklogApi = async (
 export const updateBacklogApi = async (
   id: string,
   data: Partial<Backlog>,
-  password: string,
 ): Promise<Backlog | null> => {
   const res = await fetch(`/api/backlog/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
-      "x-admin-password": password,
     },
     body: JSON.stringify(data),
   });

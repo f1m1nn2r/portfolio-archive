@@ -6,33 +6,38 @@ import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
 import { LoadingState } from "@/components/common/LoadingState";
 import { useProfileForm } from "@/hooks/profile/useProfileForm";
-
 import { AdminAuthGuard } from "@/components/admin/common/AdminAuthGuard";
 import { useAdminMode } from "@/hooks/common/useAdminMode";
 
 export default function ProfileSettingsPage() {
-  const { isMaster, adminPassword, setAdminPassword } = useAdminMode();
+  const { isMaster, status, session } = useAdminMode();
   const { formData, isFetching, isLoading, handleInputChange, handleSave } =
     useProfileForm();
 
   const inputStyles =
     "w-full p-5 border border-gray-ddd rounded-lg text-base outline-none focus:border-gray-555 transition-colors";
 
-  if (isFetching) {
+  if (status === "loading" || isFetching) {
     return (
       <AdminPageLayout title="Profile Settings">
-        <LoadingState message="프로필 정보를 불러오는 중..." />
+        <LoadingState message="정보를 확인 중입니다..." />
+      </AdminPageLayout>
+    );
+  }
+
+  if (!session) {
+    return (
+      <AdminPageLayout title="Access Denied">
+        <div className="py-20 text-center">
+          <p className="text-lg">로그인이 필요한 페이지입니다.</p>
+        </div>
       </AdminPageLayout>
     );
   }
 
   return (
     <AdminPageLayout title="Profile Settings">
-      <AdminAuthGuard
-        isMaster={isMaster}
-        password={adminPassword}
-        onPasswordChange={setAdminPassword}
-      />
+      <AdminAuthGuard isMaster={isMaster} />
 
       <div className="flex flex-col gap-8">
         {/* 상단 짤 영역 */}
@@ -160,8 +165,8 @@ export default function ProfileSettingsPage() {
           <Button
             variant="ghost"
             size="md"
-            onClick={() => handleSave(adminPassword)}
-            disabled={isLoading || !adminPassword.trim()}
+            onClick={() => handleSave()}
+            disabled={isLoading}
             type="button"
           >
             <Icon type="save" />

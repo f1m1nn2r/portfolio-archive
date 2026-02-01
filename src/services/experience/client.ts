@@ -1,5 +1,5 @@
 import { Experience } from "@/types/api/experience";
-import { API_BASE_URL } from ".";
+import { API_BASE_URL } from "../index";
 
 export async function getExperiences(): Promise<Experience[]> {
   try {

@@ -5,8 +5,12 @@ import { useProjectStore } from "@/store/useProjectStore";
 import { calculateTotalExperience } from "@/utils/date";
 import { Experience } from "@/types/api/experience";
 import { AdminSummaryItem } from "@/types/admin/layout";
+import { useAdminMode } from "../common/useAdminMode";
+import { showToast } from "@/utils/toast";
 
 export function useExperiencePage() {
+  const { isMaster } = useAdminMode();
+
   // 필터 상태
   const [selectedCompany, setSelectedCompany] = useState("all");
   const [selectedYear, setSelectedYear] = useState("all");
@@ -76,11 +80,13 @@ export function useExperiencePage() {
   // 핸들러 모음
   const handlers = {
     openAddExp: () => {
+      if (!isMaster) return showToast.error("관리자 권한이 필요합니다.");
       setSelectedExperience(null);
       setExpModalMode("add");
       setIsExpModalOpen(true);
     },
     openEditExp: (exp: Experience) => {
+      if (!isMaster) return showToast.error("관리자 권한이 필요합니다.");
       setSelectedExperience(exp);
       setExpModalMode("edit");
       setIsExpModalOpen(true);
@@ -89,11 +95,13 @@ export function useExperiencePage() {
       setIsExpModalOpen(false);
       fetchExperiences();
     },
-    openAddProject: () =>
+    openAddProject: () => {
+      if (!isMaster) return showToast.error("관리자 권한이 필요합니다.");
       useProjectStore.setState({
         isEditModalOpen: true,
         selectedProject: null,
-      }),
+      });
+    },
     onProjectSaveSuccess: () => {
       closeEditModal();
       fetchProjects();
@@ -102,9 +110,14 @@ export function useExperiencePage() {
     setYear: setSelectedYear,
     closeExpModal: () => setIsExpModalOpen(false),
     openDeleteModal: (type: "experience" | "project", id: number) => {
+      if (!isMaster) {
+        showToast.error("관리자 권한이 필요합니다.");
+        return;
+      }
       setDeleteModal({ isOpen: true, type, id });
     },
     confirmDelete: async () => {
+      if (!isMaster) return;
       if (!deleteModal.id || !deleteModal.type) return;
 
       const success =

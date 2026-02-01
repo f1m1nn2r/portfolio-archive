@@ -10,14 +10,14 @@ interface SummaryConfig {
 }
 
 export function useSummaryData(configs: SummaryConfig[]): AdminSummaryItem[] {
-  return useMemo(
-    () =>
-      configs.map((config) => ({
-        title: config.label,
-        value: config.getValue(),
-        icon: config.icon,
-        bgColor: config.bgColor,
-      })),
-    [configs],
-  );
+  const currentValues = configs.map((config) => config.getValue());
+
+  return useMemo(() => {
+    return configs.map((config) => ({
+      title: config.label,
+      value: config.getValue(),
+      icon: config.icon,
+      bgColor: config.bgColor,
+    }));
+  }, [JSON.stringify(currentValues)]);
 }

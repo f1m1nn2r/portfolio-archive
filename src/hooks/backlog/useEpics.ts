@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { getEpics, createEpicApi, deleteEpicApi } from "@/services/epic";
+import { getEpics, createEpicApi, deleteEpicApi } from "@/services/epic/client";
 import { Epic } from "@/types/admin/backlog";
 import { showToast } from "@/utils/toast";
 
@@ -22,7 +22,7 @@ const EPIC_COLORS = [
 export function useEpics() {
   const { data: epics = [], mutate } = useSWR<Epic[]>("/api/epics", getEpics);
 
-  const addEpic = async (label: string = "새 에픽", password: string) => {
+  const addEpic = async (label: string = "새 에픽") => {
     const randomColor =
       EPIC_COLORS[Math.floor(Math.random() * EPIC_COLORS.length)];
 
@@ -32,7 +32,7 @@ export function useEpics() {
     };
 
     try {
-      await createEpicApi(newEpicData, password);
+      await createEpicApi(newEpicData);
       await mutate();
       showToast.success("에픽이 추가되었습니다.");
     } catch (error) {
@@ -41,9 +41,9 @@ export function useEpics() {
     }
   };
 
-  const removeEpic = async (id: string, password: string) => {
+  const removeEpic = async (id: string) => {
     try {
-      await deleteEpicApi(id, password);
+      await deleteEpicApi(id);
       await mutate();
       showToast.success("에픽이 삭제되었습니다.");
     } catch (error) {

@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ToasterProvider } from "@/components/common/ToastProvider";
+import AuthContext from "@/components/providers/AuthContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,8 +24,10 @@ export default function RootLayout({
       <body
         className={`${inter.variable} antialiased border-[20px] border-black`}
       >
-        {children}
-        <ToasterProvider />
+        <AuthContext>
+          {children}
+          <ToasterProvider />
+        </AuthContext>
       </body>
     </html>
   );
