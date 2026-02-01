@@ -6,7 +6,7 @@ import { BacklogMainColumns } from "@/components/backlog/BacklogMainColumns";
 import { CommonPagination } from "@/components/common/Pagination";
 import { Backlog, BacklogResponse } from "@/types/admin";
 import { useMemo, useState } from "react";
-import { getBacklogs } from "@/services";
+import { getBacklogs } from "@/services/backlog/client";
 import { BacklogClientProps } from "@/types/ui/backlog";
 import { useAdminMode } from "@/hooks/common/useAdminMode";
 

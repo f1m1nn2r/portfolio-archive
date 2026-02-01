@@ -3,6 +3,9 @@ import { handleApiError } from "@/lib/utils/error-handler";
 import { validateUpdateExperience } from "@/lib/validations/experience";
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/auth";
+import { Session } from "next-auth";
 
 export async function GET(
   request: Request,
@@ -37,11 +40,19 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const session = (await getServerSession(authOptions)) as Session | null;
+
+    if (!session || session.user.role !== "admin") {
+      return NextResponse.json(
+        { success: false, error: "권한이 없습니다." },
+        { status: 403 },
+      );
+    }
+
     const supabase = await createClient();
     const { id } = await params;
     const body = await request.json();
 
-    // 유효성 검증
     const validatedData = validateUpdateExperience(body);
 
     const { data, error } = await supabase
@@ -70,6 +81,18 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const session = (await getServerSession(authOptions)) as Session | null;
+
+    if (!session || session.user.role !== "admin") {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "권한이 없습니다. 관리자 로그인이 필요합니다.",
+        },
+        { status: 403 },
+      );
+    }
+
     const supabase = await createClient();
     const { id } = await params;
 

@@ -1,10 +1,15 @@
 import useSWR from "swr";
 import { useCallback } from "react";
 import { Experience } from "@/types/api/experience";
-import { getExperiences, deleteExperienceApi } from "@/services/experience";
+import {
+  getExperiences,
+  deleteExperienceApi,
+} from "@/services/experience/client";
 import { showToast } from "@/utils/toast";
+import { useAdminMode } from "@/hooks/common/useAdminMode";
 
 export function useExperience(fallbackData?: Experience[]) {
+  const { adminPassword } = useAdminMode();
   const {
     data: experiences,
     isLoading: loading,
@@ -23,7 +28,10 @@ export function useExperience(fallbackData?: Experience[]) {
 
     const res = await fetch(url, {
       method,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-admin-password": adminPassword,
+      },
       body: JSON.stringify(data),
     });
 
@@ -47,7 +55,7 @@ export function useExperience(fallbackData?: Experience[]) {
         return false;
       }
     },
-    [mutate],
+    [mutate, adminPassword],
   );
 
   return {

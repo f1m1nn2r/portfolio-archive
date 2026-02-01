@@ -1,23 +1,16 @@
 import { useState, useRef } from "react";
 import { Badge } from "@/components/common/Badge";
-import { Epic } from "@/types/admin/backlog";
 import { useOutsideClick } from "@/hooks/common/useOutsideClick";
 import { Icon } from "@/components/common/Icon";
 import { cn } from "@/lib/utils";
+import { BacklogEpicMultiSelectProps } from "@/types/ui/backlog";
 
-interface Props {
-  selectedIds: string[];
-  allEpics: readonly Epic[];
-  onToggle: (id: string) => void;
-  isEditable?: boolean;
-}
-
-export function AdminMultiSelectCell({
+export function BacklogEpicMultiSelectCell({
   selectedIds = [],
   allEpics,
   onToggle,
-  isEditable = true,
-}: Props) {
+  isMaster = true,
+}: BacklogEpicMultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -28,7 +21,7 @@ export function AdminMultiSelectCell({
   const selectedEpics = allEpics.filter((e) => selectedIds.includes(e.id));
 
   const handleClick = () => {
-    if (isEditable) {
+    if (isMaster) {
       setIsOpen(!isOpen);
     }
   };
@@ -39,10 +32,10 @@ export function AdminMultiSelectCell({
         onClick={handleClick}
         className={cn(
           "flex flex-wrap gap-1 items-center",
-          isEditable && "cursor-pointer transition-all"
+          isMaster && "cursor-pointer transition-all",
         )}
       >
-        {selectedEpics.length > (0) ? (
+        {selectedEpics.length > 0 ? (
           selectedEpics.map((epic) => (
             <Badge
               key={epic.id}
@@ -57,7 +50,7 @@ export function AdminMultiSelectCell({
         )}
       </div>
 
-      {isOpen && isEditable && (
+      {isOpen && isMaster && (
         <div className="absolute z-50 mt-1 w-[220px] bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden animate-in fade-in zoom-in duration-150">
           <div className="p-2 border-b border-gray-50 bg-gray-50/50">
             <span className="text-sm text-gray-555 uppercase tracking-wider">

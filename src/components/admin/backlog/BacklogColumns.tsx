@@ -2,7 +2,7 @@ import { Icon } from "@/components/common/Icon";
 import { Backlog, Epic } from "@/types/admin/backlog";
 import { AdminTableColumn } from "@/types/admin/table";
 import { AdminEditableCell } from "@/components/admin/table/AdminEditableCell";
-import { AdminMultiSelectCell } from "../table/AdminMultiSelectCell";
+import { BacklogEpicMultiSelectCell } from "./BacklogEpicMultiSelectCell";
 import { cn } from "@/lib/utils";
 
 export const BacklogColumns = (
@@ -56,7 +56,7 @@ export const BacklogColumns = (
     label: "Epic",
     width: "w-[200px]",
     renderCell: (item) => (
-      <AdminMultiSelectCell
+      <BacklogEpicMultiSelectCell
         selectedIds={item.epic_ids || []}
         allEpics={allEpics}
         onToggle={(epicId) => {
@@ -67,7 +67,7 @@ export const BacklogColumns = (
 
           updateField(item.id, "epic_ids", newIds);
         }}
-        isEditable={isMaster}
+        isMaster={isMaster}
       />
     ),
   },

@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { useCallback } from "react";
 import { Project, UseProjectsOptions } from "@/types/api/project";
-import { getProjects } from "@/services";
+import { getProjects } from "@/services/project/client";
 import { showToast } from "@/utils/toast";
 
 export function useProjects(options?: UseProjectsOptions) {

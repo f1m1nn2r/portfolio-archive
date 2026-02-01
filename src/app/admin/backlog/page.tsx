@@ -13,9 +13,10 @@ import { useBacklogPage } from "@/hooks/backlog/useBacklogPage";
 import { BacklogEpicManager } from "@/components/admin/backlog/BacklogEpicManager";
 import { useAdminMode } from "@/hooks/common/useAdminMode";
 import { AdminAuthGuard } from "@/components/admin/common/AdminAuthGuard";
+import { Dropdown } from "@/components/common/Dropdown";
 
 export default function BacklogPage() {
-  const { isMaster, adminPassword, setAdminPassword } = useAdminMode();
+  const { isMaster, status, session } = useAdminMode();
 
   const {
     backlogData,
@@ -29,23 +30,29 @@ export default function BacklogPage() {
     deleteModal,
     handlers,
     addBacklog,
-  } = useBacklogPage(adminPassword, isMaster);
+  } = useBacklogPage(isMaster);
 
-  if (loading) {
+  if (status === "loading") {
     return (
       <AdminPageLayout title="Backlog">
-        <LoadingState message="백로그를 불러오는 중..." />
+        <LoadingState message="정보를 확인 중입니다..." />
+      </AdminPageLayout>
+    );
+  }
+
+  if (!session) {
+    return (
+      <AdminPageLayout title="Access Denied">
+        <div className="py-20 text-center">
+          <p className="text-lg">로그인이 필요한 페이지입니다.</p>
+        </div>
       </AdminPageLayout>
     );
   }
 
   return (
     <AdminPageLayout title="Backlog">
-      <AdminAuthGuard
-        isMaster={isMaster}
-        password={adminPassword}
-        onPasswordChange={setAdminPassword}
-      />
+      <AdminAuthGuard isMaster={isMaster} />
 
       <AdminSummaryGrid items={summaryItems} columns={3} />
 
@@ -55,15 +62,34 @@ export default function BacklogPage() {
             <Button
               variant="secondary"
               icon="trash"
-              disabled={selection.selectionCount === 0 || !adminPassword}
+              disabled={selection.selectionCount === 0}
               onClick={handlers.openDeleteModal}
             >
               선택 삭제 ({selection.selectionCount})
             </Button>
           )}
-          <Button variant="secondary" icon="chevronDown">
-            필터
-          </Button>
+          <Dropdown
+            width="w-[160px]"
+            trigger={
+              <Button variant="secondary" icon="chevronDown">
+                필터: {handlers.currentFilterLabel}
+              </Button>
+            }
+            items={[
+              {
+                label: "초기화(최신순)",
+                onClick: () => handlers.handleFilterChange("latest"),
+              },
+              {
+                label: "미구현",
+                onClick: () => handlers.handleFilterChange("uncompleted"),
+              },
+              {
+                label: "화면별",
+                onClick: () => handlers.handleFilterChange("screen"),
+              },
+            ]}
+          />
         </div>
       </AdminActionBar>
 
@@ -76,6 +102,18 @@ export default function BacklogPage() {
         onToggleSelectAll={selection.toggleSelectAll}
         getItemId={(item) => String(item.id)}
         onAdd={isMaster ? addBacklog : undefined}
+        rowClassName={(item, isSelected) => {
+          const baseClass =
+            "text-base transition-colors border-b border-gray-ddd";
+          if (item.is_done) {
+            return `bg-bg-light text-gray-400 hover:bg-bg-light`;
+          }
+          if (isSelected) {
+            return `bg-blue-50/50 hover:bg-blue-50`;
+          }
+
+          return `${baseClass}`;
+        }}
       />
 
       <CommonPagination
@@ -86,12 +124,8 @@ export default function BacklogPage() {
 
       <BacklogEpicManager
         epics={epics}
-        onAdd={
-          isMaster ? (name) => handlers.addEpic(name, adminPassword) : undefined
-        }
-        onRemove={
-          isMaster ? (id) => handlers.removeEpic(id, adminPassword) : undefined
-        }
+        onAdd={isMaster ? (name) => handlers.addEpic(name) : undefined}
+        onRemove={isMaster ? (id) => handlers.removeEpic(id) : undefined}
         isMaster={isMaster}
       />
 

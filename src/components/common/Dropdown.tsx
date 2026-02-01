@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { DropdownProps } from "@/types/common/ui";
+import { useOutsideClick } from "@/hooks/common/useOutsideClick";
 
 export const Dropdown = ({
   trigger,
@@ -10,6 +11,7 @@ export const Dropdown = ({
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  useOutsideClick(dropdownRef, () => setIsOpen(false));
 
   // 메뉴 토글 함수
   const toggleDropdown = (e: React.MouseEvent) => {
@@ -18,23 +20,23 @@ export const Dropdown = ({
   };
 
   // 외부 영역 클릭 시 닫기 로직
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
+  // useEffect(() => {
+  //   const handleClickOutside = (event: MouseEvent) => {
+  //     if (
+  //       dropdownRef.current &&
+  //       !dropdownRef.current.contains(event.target as Node)
+  //     ) {
+  //       setIsOpen(false);
+  //     }
+  //   };
 
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen]);
+  //   if (isOpen) {
+  //     document.addEventListener("mousedown", handleClickOutside);
+  //   }
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, [isOpen]);
 
   return (
     <div className="relative inline-block" ref={dropdownRef}>

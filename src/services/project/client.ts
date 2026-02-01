@@ -1,5 +1,5 @@
 import { Project } from "@/types/api/project";
-import { API_BASE_URL } from ".";
+import { API_BASE_URL } from "@/services";
 
 export async function getProjects(filters?: {
   experienceId?: string;

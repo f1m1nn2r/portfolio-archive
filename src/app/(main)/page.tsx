@@ -1,5 +1,5 @@
-import { getExperiences } from "@/services";
-import { getProfileFromDb } from "@/services/profile.server";
+import { getExperiences } from "@/services/experience/client";
+import { getProfileFromDb } from "@/services/profile/server";
 import HomeClient from "./HomeClient";
 
 export default async function Home() {
