@@ -1,11 +1,11 @@
 import { PageLayout } from "@/components/common/PageLayout";
-import { getBacklogsFromDb } from "@/services/backlog.server";
-import { getEpicsFromDb } from "@/services/epic.server";
+import { getBacklogs } from "@/services/backlog/server";
+import { getEpicsFromDb } from "@/services/epic/server";
 import BacklogClient from "./BacklogClient";
 
 export default async function BacklogMainPage() {
   const [backlogs, epics] = await Promise.all([
-    getBacklogsFromDb(),
+    getBacklogs(),
     getEpicsFromDb(),
   ]);
 

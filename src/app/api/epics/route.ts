@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { TABLES } from "@/lib/constants/tables";
 import { handleApiError } from "@/lib/utils/error-handler";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/auth";
+import { Session } from "next-auth";
 
 export async function GET() {
   const supabase = await createClient();
@@ -17,52 +20,53 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const headersList = request.headers;
-  const adminPassword = headersList.get("x-admin-password");
+  try {
+    const session = (await getServerSession(authOptions)) as Session | null;
 
-  if (adminPassword !== process.env.ADMIN_PASSWORD) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+    if (!session || session.user.role !== "admin") {
+      return NextResponse.json({ error: "권한이 없습니다." }, { status: 403 });
+    }
 
-  const supabase = await createClient();
-  const body = await request.json();
+    const supabase = await createClient();
+    const body = await request.json();
 
-  const { data, error } = await supabase
-    .from(TABLES.EPICS)
-    .insert({
-      label: body.label,
-      color: body.color,
-    })
-    .select()
-    .single();
+    const { data, error } = await supabase
+      .from(TABLES.EPICS)
+      .insert({
+        label: body.label,
+        color: body.color,
+      })
+      .select()
+      .single();
 
-  if (error) {
+    if (error) return handleApiError(error);
+    return NextResponse.json(data);
+  } catch (error) {
     return handleApiError(error);
   }
-
-  return NextResponse.json(data);
 }
 
 export async function DELETE(request: Request) {
-  const headersList = request.headers;
-  const adminPassword = headersList.get("x-admin-password");
+  try {
+    const session = (await getServerSession(authOptions)) as Session | null;
 
-  if (adminPassword !== process.env.ADMIN_PASSWORD) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+    if (!session || session.user.role !== "admin") {
+      return NextResponse.json({ error: "권한이 없습니다." }, { status: 403 });
+    }
 
-  const supabase = await createClient();
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id");
+    const supabase = await createClient();
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
 
-  if (!id) {
-    return NextResponse.json({ error: "ID가 필요합니다." }, { status: 400 });
-  }
+    if (!id) {
+      return NextResponse.json({ error: "ID가 필요합니다." }, { status: 400 });
+    }
 
-  const { error } = await supabase.from(TABLES.EPICS).delete().eq("id", id);
+    const { error } = await supabase.from(TABLES.EPICS).delete().eq("id", id);
 
-  if (error) {
+    if (error) return handleApiError(error);
+    return NextResponse.json({ success: true });
+  } catch (error) {
     return handleApiError(error);
   }
-  return NextResponse.json({ success: true });
 }

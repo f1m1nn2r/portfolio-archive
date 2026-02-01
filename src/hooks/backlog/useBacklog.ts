@@ -5,11 +5,11 @@ import {
   deleteBacklogsApi,
   createBacklogApi,
   updateBacklogApi,
-} from "@/services/backlog";
+} from "@/services/backlog/client";
 import { showToast } from "@/utils/toast";
 import { Backlog, BacklogResponse } from "@/types/admin";
 
-export function useBacklog(password: string) {
+export function useBacklog() {
   const { data, isLoading, mutate } = useSWR<BacklogResponse>(
     "/api/backlog",
     getBacklogs,
@@ -47,7 +47,7 @@ export function useBacklog(password: string) {
     try {
       await mutate(
         async () => {
-          await createBacklogApi(newEntry, password);
+          await createBacklogApi(newEntry);
           return await getBacklogs();
         },
         {
@@ -65,7 +65,7 @@ export function useBacklog(password: string) {
       showToast.error(errorMessage);
       console.error("Save error:", error);
     }
-  }, [data, backlogData, mutate, password]);
+  }, [data, backlogData, mutate]);
 
   // 2. 필드 업데이트
   const updateBacklogField = useCallback(
@@ -88,7 +88,7 @@ export function useBacklog(password: string) {
       try {
         await mutate(
           async () => {
-            await updateBacklogApi(id, { [field]: value }, password);
+            await updateBacklogApi(id, { [field]: value });
             return getBacklogs();
           },
           {
@@ -102,13 +102,13 @@ export function useBacklog(password: string) {
         console.log(error);
       }
     },
-    [data, backlogData, mutate, password],
+    [data, backlogData, mutate],
   );
 
   // 3. 삭제
   const deleteBacklogs = useCallback(
     async (ids: string[]) => {
-      if (!data) return; // return void instead of false
+      if (!data) return;
 
       const optimisticItems = backlogData.filter(
         (item) => !ids.map(String).includes(String(item.id)),
@@ -121,7 +121,7 @@ export function useBacklog(password: string) {
       try {
         await mutate(
           async () => {
-            await deleteBacklogsApi(ids, password);
+            await deleteBacklogsApi(ids);
             return await getBacklogs();
           },
           {
@@ -132,14 +132,12 @@ export function useBacklog(password: string) {
         );
 
         showToast.success("삭제되었습니다.");
-        // No explicit return true
       } catch (error) {
         showToast.error("삭제 실패하였습니다.");
         console.error(error);
-        // No explicit return false
       }
     },
-    [data, backlogData, mutate, password],
+    [data, backlogData, mutate],
   );
 
   return {

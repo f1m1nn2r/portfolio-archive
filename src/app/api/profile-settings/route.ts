@@ -3,11 +3,13 @@ import { NextResponse } from "next/server";
 import { TABLES } from "@/lib/constants/tables";
 import { handleApiError } from "@/lib/utils/error-handler";
 import { DEFAULT_PROFILE, ProfileSettings } from "@/types/api/profile";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/auth";
+import { Session } from "next-auth";
 
 export async function GET() {
   try {
     const supabase = await createClient();
-
     const { data, error } = await supabase
       .from(TABLES.PROFILE_SETTINGS)
       .select("*")
@@ -17,7 +19,6 @@ export async function GET() {
       console.error("조회 실패:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
-
     return NextResponse.json<ProfileSettings>(data || DEFAULT_PROFILE);
   } catch (err) {
     return handleApiError(err);
@@ -26,12 +27,14 @@ export async function GET() {
 
 export async function PATCH(request: Request) {
   try {
-    const adminPassword = request.headers.get("x-admin-password");
+    // 서버 세션 확인
+    const session = (await getServerSession(authOptions)) as Session | null;
 
-    if (!adminPassword || adminPassword !== process.env.ADMIN_PASSWORD) {
+    // 권한 검사: 세션이 없거나, role이 admin이 아니면 입구컷
+    if (!session || session.user.role !== "admin") {
       return NextResponse.json(
-        { error: "인증되지 않은 사용자입니다. 비밀번호를 확인하세요." },
-        { status: 401 },
+        { error: "권한이 없습니다. 관리자 계정으로 로그인해 주세요." },
+        { status: 403 },
       );
     }
 
