@@ -29,3 +29,15 @@ export interface SummaryCardProps {
   icon: IconType;
   bgColor: string;
 }
+
+export interface AdminFilterItem {
+  label: string;
+  onClick: () => void;
+}
+
+export interface AdminSearchBarProps {
+  placeholder: string;
+  searchValue: string;
+  onSearchChange: (value: string) => void;
+  filterItems?: AdminFilterItem[]; // 드롭다운에 들어갈 메뉴들
+}

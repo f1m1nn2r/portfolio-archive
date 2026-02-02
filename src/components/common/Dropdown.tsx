@@ -19,25 +19,6 @@ export const Dropdown = ({
     setIsOpen((prev) => !prev);
   };
 
-  // 외부 영역 클릭 시 닫기 로직
-  // useEffect(() => {
-  //   const handleClickOutside = (event: MouseEvent) => {
-  //     if (
-  //       dropdownRef.current &&
-  //       !dropdownRef.current.contains(event.target as Node)
-  //     ) {
-  //       setIsOpen(false);
-  //     }
-  //   };
-
-  //   if (isOpen) {
-  //     document.addEventListener("mousedown", handleClickOutside);
-  //   }
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, [isOpen]);
-
   return (
     <div className="relative inline-block" ref={dropdownRef}>
       {/* 트리거 영역: 클릭 이벤트 연결 */}
@@ -49,7 +30,7 @@ export const Dropdown = ({
       {isOpen && (
         <div
           className={`
-            absolute top-full left-0 mt-2
+            absolute top-full right-0 mt-2
             ${width} bg-white border border-gray-ddd rounded-md shadow-lg z-20 py-2
           `}
         >
