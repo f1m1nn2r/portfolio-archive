@@ -21,7 +21,14 @@ export function useBacklog() {
     [data],
   );
 
-  // 1. 행 추가
+  // 공통 mutate 옵션 설정
+  const mutateOptions = (optimisticData: BacklogResponse) => ({
+    optimisticData,
+    rollbackOnError: true,
+    revalidate: true,
+  });
+
+  // 행 추가
   const addBacklog = useCallback(async () => {
     if (!data) return;
 
@@ -40,34 +47,21 @@ export function useBacklog() {
       ...data,
       items: [
         ...backlogData,
-        { ...newEntry, id: "temp-" + Date.now() } as Backlog,
+        { ...newEntry, id: `temp-${Date.now()}` } as Backlog,
       ],
     };
 
     try {
-      await mutate(
-        async () => {
-          await createBacklogApi(newEntry);
-          return await getBacklogs();
-        },
-        {
-          optimisticData,
-          rollbackOnError: true,
-          revalidate: true,
-        },
-      );
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "알 수 없는 오류가 발생했습니다.";
-
-      showToast.error(errorMessage);
-      console.error("Save error:", error);
+      await mutate(async () => {
+        await createBacklogApi(newEntry);
+        return getBacklogs();
+      }, mutateOptions(optimisticData));
+    } catch (error) {
+      showToast.error("추가 중 오류가 발생했습니다.");
     }
   }, [data, backlogData, mutate]);
 
-  // 2. 필드 업데이트
+  // 필드 업데이트
   const updateBacklogField = useCallback(
     async <K extends keyof Backlog>(
       id: string,
@@ -76,65 +70,43 @@ export function useBacklog() {
     ) => {
       if (!data) return;
 
-      const optimisticItems = backlogData.map((item) =>
-        item.id === id ? { ...item, [field]: value } : item,
-      );
-
       const optimisticData: BacklogResponse = {
         ...data,
-        items: optimisticItems,
+        items: backlogData.map((item) =>
+          item.id === id ? { ...item, [field]: value } : item,
+        ),
       };
 
       try {
-        await mutate(
-          async () => {
-            await updateBacklogApi(id, { [field]: value });
-            return getBacklogs();
-          },
-          {
-            optimisticData,
-            rollbackOnError: true,
-            revalidate: true,
-          },
-        );
+        await mutate(async () => {
+          await updateBacklogApi(id, { [field]: value });
+          return getBacklogs();
+        }, mutateOptions(optimisticData));
       } catch (error) {
-        showToast.error("수정 실패하였습니다.");
-        console.log(error);
+        showToast.error("수정에 실패하였습니다.");
       }
     },
     [data, backlogData, mutate],
   );
 
-  // 3. 삭제
+  // 삭제
   const deleteBacklogs = useCallback(
     async (ids: string[]) => {
       if (!data) return;
 
-      const optimisticItems = backlogData.filter(
-        (item) => !ids.map(String).includes(String(item.id)),
-      );
       const optimisticData: BacklogResponse = {
         ...data,
-        items: optimisticItems,
+        items: backlogData.filter((item) => !ids.includes(String(item.id))),
       };
 
       try {
-        await mutate(
-          async () => {
-            await deleteBacklogsApi(ids);
-            return await getBacklogs();
-          },
-          {
-            optimisticData,
-            rollbackOnError: true,
-            revalidate: true,
-          },
-        );
-
+        await mutate(async () => {
+          await deleteBacklogsApi(ids);
+          return getBacklogs();
+        }, mutateOptions(optimisticData));
         showToast.success("삭제되었습니다.");
       } catch (error) {
-        showToast.error("삭제 실패하였습니다.");
-        console.error(error);
+        showToast.error("삭제에 실패하였습니다.");
       }
     },
     [data, backlogData, mutate],

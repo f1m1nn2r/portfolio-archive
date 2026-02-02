@@ -62,51 +62,58 @@ export function AdminTable<T>({
           </TableHeader>
 
           <TableBody>
-            {data.map((item, rowIndex) => {
-              const itemId = getItemId(item);
-              const isSelected = selectedIds.includes(itemId);
-
-              return (
-                <TableRow
-                  key={String(itemId)}
-                  className={
-                    rowClassName
-                      ? rowClassName(item, isSelected)
-                      : `text-base hover:bg-gray-50 transition-colors ${
-                          isSelected ? "bg-gray-50" : ""
-                        }`
-                  }
+            {data.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-40 text-center text-gray-555 text-base"
                 >
-                  {columns.map((col, colIndex) => (
-                    <TableCell
-                      key={colIndex}
-                      className={`
-                      border-r border-gray-ddd last:border-r-0
-                      ${col.center ? "text-center" : ""}
-                      ${col.width || ""}
-                      py-3.5
-                    `}
-                    >
-                      {col.renderCell ? (
-                        col.renderCell(item, rowIndex)
-                      ) : col.label === "checkbox" ? (
-                        <div
-                          className="flex justify-center cursor-pointer"
-                          onClick={() => onToggleSelect?.(itemId)}
-                        >
-                          <Icon
-                            type={isSelected ? "checkboxChecked" : "checkbox"}
-                            size={24}
-                          />
-                        </div>
-                      ) : (
-                        col.key && String(item[col.key])
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              );
-            })}
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <Icon type="bookContent" size={40} />
+                    <p>데이터가 없습니다.</p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
+              data.map((item, rowIndex) => {
+                const itemId = getItemId(item);
+                const isSelected = selectedIds.includes(itemId);
+
+                return (
+                  <TableRow
+                    key={String(itemId)}
+                    className={
+                      rowClassName
+                        ? rowClassName(item, isSelected)
+                        : `text-base hover:bg-gray-50 transition-colors ${isSelected ? "bg-gray-50" : ""}`
+                    }
+                  >
+                    {columns.map((col, colIndex) => (
+                      <TableCell
+                        key={colIndex}
+                        className={`border-r border-gray-ddd last:border-r-0 ${col.center ? "text-center" : ""} ${col.width || ""} py-3.5`}
+                      >
+                        {col.renderCell ? (
+                          col.renderCell(item, rowIndex)
+                        ) : col.label === "checkbox" ? (
+                          <div
+                            className="flex justify-center cursor-pointer"
+                            onClick={() => onToggleSelect?.(itemId)}
+                          >
+                            <Icon
+                              type={isSelected ? "checkboxChecked" : "checkbox"}
+                              size={24}
+                            />
+                          </div>
+                        ) : (
+                          col.key && String((item as any)[col.key])
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })
+            )}
           </TableBody>
         </Table>
 

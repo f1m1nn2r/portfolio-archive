@@ -16,12 +16,16 @@ import { useRouter } from "next/navigation";
 import { useAdminMode } from "@/hooks/common/useAdminMode";
 import { AdminAuthGuard } from "@/components/admin/common/AdminAuthGuard";
 import DeleteModal from "@/components/common/DeleteModal";
+import { AdminSearchBar } from "@/components/admin/common/AdminSearchBar";
+import { AdminActionBar } from "@/components/admin/layout/AdminActionBar";
 
 export default function ContactsPage() {
   const router = useRouter();
   const itemsPerPage = 5;
   const { isMaster, session } = useAdminMode();
   const [currentPage, setCurrentPage] = useState(1);
+
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -46,6 +50,20 @@ export default function ContactsPage() {
     getId: (item) => item.id,
     onDelete: handlers.deleteContacts,
   });
+
+  const filteredContacts = currentData.filter(
+    (email) =>
+      email.senderEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      email.senderName.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
+  const contactFilters = [
+    { label: "최신순", onClick: () => console.log("최신순") },
+    {
+      label: "안 읽은 메시지",
+      onClick: () => console.log("안 읽은 메시지 필터"),
+    },
+  ];
 
   const handleConfirmDelete = async () => {
     setIsDeleting(true);
@@ -80,29 +98,18 @@ export default function ContactsPage() {
     [contacts, toggleSelectAll, clearSelection, toggleSelect],
   );
 
-  if (loading) {
-    return (
-      <AdminPageLayout title="Contacts">
-        <LoadingState message="메시지를 불러오는 중..." />
-      </AdminPageLayout>
-    );
-  }
-
-  if (!session) {
-    return (
-      <AdminPageLayout title="Access Denied">
-        <div className="py-20 text-center">
-          <p className="text-lg">로그인이 필요한 페이지입니다.</p>
-        </div>
-      </AdminPageLayout>
-    );
-  }
-
   return (
     <AdminPageLayout title="Contacts">
-      <AdminAuthGuard isMaster={isMaster} />
       <AdminSummaryGrid items={summaryItems} columns={3} />
-      <EmailSearchBar />
+
+      <AdminActionBar>
+        <AdminSearchBar
+          placeholder="이메일 또는 이름 검색"
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+          filterItems={contactFilters}
+        />
+      </AdminActionBar>
 
       <div className="bg-white rounded-lg border border-gray-ddd overflow-hidden">
         <div className="flex items-center justify-between px-10 py-5 border-b border-gray-ddd bg-bg-light/30">

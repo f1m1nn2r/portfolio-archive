@@ -28,6 +28,15 @@ export const BacklogMainColumns = (
     ),
   },
   {
+    label: "세부 페이지",
+    width: "w-[120px]",
+    renderCell: (item) => (
+      <span className={cn(!isMaster && "pointer-events-none")}>
+        {item.sub_page || "-"}
+      </span>
+    ),
+  },
+  {
     label: "Epic",
     width: "w-[180px]",
     renderCell: (item) => (
@@ -80,7 +89,10 @@ export const BacklogMainColumns = (
     width: "w-[100px]",
     renderCell: (item) => (
       <div
-        className={cn("flex justify-center", !isMaster && "pointer-events-none")}
+        className={cn(
+          "flex justify-center",
+          !isMaster && "pointer-events-none",
+        )}
       >
         <Icon type={item.is_done ? "checkboxChecked" : "checkbox"} size={24} />
       </div>

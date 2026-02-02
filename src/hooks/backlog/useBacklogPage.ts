@@ -4,13 +4,11 @@ import { useSelectionHandler } from "@/hooks/common/useSelectionHandler";
 import { useSummaryData } from "@/hooks/common/useSummaryData";
 import { BacklogColumns } from "@/components/admin/backlog/BacklogColumns";
 import { useEpics } from "@/hooks/backlog/useEpics";
+import { useBacklogFilter } from "@/hooks/backlog/useBacklogFilter";
+import { Backlog } from "@/types/admin";
 
 export function useBacklogPage(isMaster?: boolean) {
-  const [page, setPage] = useState(1);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [filterType, setFilterType] = useState("latest");
-  const itemsPerPage = 20;
-
+  // 데이터 및 기본 상태 관리 훅
   const {
     backlogData,
     loading,
@@ -21,47 +19,12 @@ export function useBacklogPage(isMaster?: boolean) {
   } = useBacklog();
 
   const { epics, addEpic, removeEpic } = useEpics();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const filteredAndSortedData = useMemo(() => {
-    const result = [...backlogData];
+  // 필터 및 페이지네이션 로직 위임
+  const filter = useBacklogFilter(backlogData, 20);
 
-    // 기본적으로는 항상 '최신순' 정렬을 유지 (순서가 섞이지 않게)
-    result.sort(
-      (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-    );
-
-    switch (filterType) {
-      case "uncompleted": // 미구현 항목을 최상단으로 끌어올림
-        result.sort((a, b) => {
-          if (a.is_done === b.is_done) return 0; // 구현 상태가 같으면 위에서 정한 최신순 유지
-          return a.is_done ? 1 : -1; // 미구현(false)이 앞으로(-1), 완료(true)가 뒤로(1)
-        });
-        break;
-
-      case "screen": // 화면별(Epic 혹은 screen 컬럼) 정렬
-        result.sort((a, b) => (a.screen || "").localeCompare(b.screen || ""));
-        break;
-
-      default:
-        // 기본값은 위에서 이미 최신순으로 정렬했으므로 추가 로직 필요 없음
-        break;
-    }
-    return result;
-  }, [backlogData, filterType]);
-
-  const selection = useSelectionHandler({
-    data: filteredAndSortedData,
-    getId: (item) => String(item.id),
-    onDelete: deleteBacklogs,
-  });
-
-  const filterLabelMap: Record<string, string> = {
-    latest: "기본(최신순)",
-    uncompleted: "미구현 우선",
-    screen: "화면별",
-  };
-
+  // 요약 데이터 계산
   const summaryItems = useSummaryData([
     {
       icon: "barChartAlt2",
@@ -86,26 +49,24 @@ export function useBacklogPage(isMaster?: boolean) {
     },
   ]);
 
+  // 테이블 컬럼 정의
   const columns = useMemo(
-    () => BacklogColumns(updateBacklogField, page, epics, isMaster),
-    [updateBacklogField, page, epics, isMaster],
+    () => BacklogColumns(updateBacklogField, filter.page, epics, isMaster),
+    [updateBacklogField, filter.page, epics, isMaster],
   );
 
-  const totalPages =
-    Math.ceil(filteredAndSortedData.length / itemsPerPage) || 1;
+  // 선택 핸들러
+  const selection = useSelectionHandler({
+    data: filter.filteredData,
+    getId: (item: Backlog) => String(item.id),
+    onDelete: deleteBacklogs,
+  });
 
-  const currentData = useMemo(() => {
-    const start = (page - 1) * itemsPerPage;
-    return filteredAndSortedData.slice(start, start + itemsPerPage);
-  }, [filteredAndSortedData, page]);
-
+  // UI 핸들러 모음
   const handlers = {
-    handlePageChange: setPage,
-    handleFilterChange: (type: string) => {
-      setFilterType(type);
-      setPage(1);
-    },
-    currentFilterLabel: filterLabelMap[filterType],
+    handlePageChange: filter.setPage,
+    handleFilterChange: filter.handleFilterChange,
+    currentFilterLabel: filter.currentFilterLabel,
 
     openDeleteModal: () => setIsDeleteModalOpen(true),
     closeDeleteModal: () => setIsDeleteModalOpen(false),
@@ -115,16 +76,16 @@ export function useBacklogPage(isMaster?: boolean) {
       if (success === true) setIsDeleteModalOpen(false);
     }, [selection]),
 
-    addEpic: (label: string) => addEpic(label),
-    removeEpic: (id: string) => removeEpic(id),
+    addEpic,
+    removeEpic,
   };
 
   return {
-    backlogData: currentData,
-    totalCount: filteredAndSortedData.length,
+    backlogData: filter.filteredData,
+    totalCount: filter.totalCount,
     loading,
-    page,
-    totalPages,
+    page: filter.page,
+    totalPages: filter.totalPages,
     columns,
     summaryItems,
     selection,

@@ -13,7 +13,6 @@ export async function getBacklogs(): Promise<Backlog[]> {
 
     if (error) throw error;
 
-    console.log("실제 가져온 개수:", data?.length);
     return (data as Backlog[]) || [];
   } catch (err) {
     console.error("조회 에러:", err);
