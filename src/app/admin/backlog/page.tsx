@@ -2,60 +2,33 @@
 
 import DeleteModal from "@/components/common/DeleteModal";
 import { AdminPageLayout } from "@/components/admin/layout/AdminPageLayout";
-import { AdminSummaryGrid } from "@/components/admin/layout/AdminSummaryGrid";
 import { AdminActionBar } from "@/components/admin/layout/AdminActionBar";
 import { AdminTable } from "@/components/admin/table/AdminTable";
 import { CommonPagination } from "@/components/common/Pagination";
-import { LoadingState } from "@/components/common/LoadingState";
 import { Button } from "@/components/common/Button";
 import { Backlog } from "@/types/admin";
 import { useBacklogPage } from "@/hooks/backlog/useBacklogPage";
 import { BacklogEpicManager } from "@/components/admin/backlog/BacklogEpicManager";
 import { useAdminMode } from "@/hooks/common/useAdminMode";
-import { AdminAuthGuard } from "@/components/admin/common/AdminAuthGuard";
 import { Dropdown } from "@/components/common/Dropdown";
 
 export default function BacklogPage() {
-  const { isMaster, status, session } = useAdminMode();
+  const { isMaster } = useAdminMode();
 
   const {
     backlogData,
-    loading,
     page,
     totalPages,
     columns,
     epics,
-    summaryItems,
     selection,
     deleteModal,
     handlers,
     addBacklog,
   } = useBacklogPage(isMaster);
 
-  if (status === "loading") {
-    return (
-      <AdminPageLayout title="Backlog">
-        <LoadingState message="정보를 확인 중입니다..." />
-      </AdminPageLayout>
-    );
-  }
-
-  if (!session) {
-    return (
-      <AdminPageLayout title="Access Denied">
-        <div className="py-20 text-center">
-          <p className="text-lg">로그인이 필요한 페이지입니다.</p>
-        </div>
-      </AdminPageLayout>
-    );
-  }
-
   return (
     <AdminPageLayout title="Backlog">
-      <AdminAuthGuard isMaster={isMaster} />
-
-      <AdminSummaryGrid items={summaryItems} columns={3} />
-
       <AdminActionBar>
         <div className="flex gap-2 ml-auto">
           {isMaster && (

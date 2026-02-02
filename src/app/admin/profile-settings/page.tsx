@@ -10,35 +10,15 @@ import { AdminAuthGuard } from "@/components/admin/common/AdminAuthGuard";
 import { useAdminMode } from "@/hooks/common/useAdminMode";
 
 export default function ProfileSettingsPage() {
-  const { isMaster, status, session } = useAdminMode();
-  const { formData, isFetching, isLoading, handleInputChange, handleSave } =
+  const { isMaster } = useAdminMode();
+  const { formData, isLoading, handleInputChange, handleSave } =
     useProfileForm();
 
   const inputStyles =
     "w-full p-5 border border-gray-ddd rounded-lg text-base outline-none focus:border-gray-555 transition-colors";
 
-  if (status === "loading" || isFetching) {
-    return (
-      <AdminPageLayout title="Profile Settings">
-        <LoadingState message="정보를 확인 중입니다..." />
-      </AdminPageLayout>
-    );
-  }
-
-  if (!session) {
-    return (
-      <AdminPageLayout title="Access Denied">
-        <div className="py-20 text-center">
-          <p className="text-lg">로그인이 필요한 페이지입니다.</p>
-        </div>
-      </AdminPageLayout>
-    );
-  }
-
   return (
     <AdminPageLayout title="Profile Settings">
-      <AdminAuthGuard isMaster={isMaster} />
-
       <div className="flex flex-col gap-8">
         {/* 상단 짤 영역 */}
         <div className="w-full overflow-hidden">

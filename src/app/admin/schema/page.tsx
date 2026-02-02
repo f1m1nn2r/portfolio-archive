@@ -33,15 +33,6 @@ const TABLE_NAMES: Record<string, string> = {
 export default function DBSchemaPage() {
   const [loading, setLoading] = useState(true);
 
-  // 초기 로딩 처리
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   const allSchemaData = useMemo(
     () => Object.values(SCHEMA_DATA).flat() as SchemaItem[],
     [],
@@ -96,14 +87,6 @@ export default function DBSchemaPage() {
     const tableIds = tableData.map((item) => item.id);
     deleteItems(tableIds);
   };
-
-  if (loading) {
-    return (
-      <AdminPageLayout title="DB Schema">
-        <LoadingState message="스키마 정보를 불러오는 중..." />
-      </AdminPageLayout>
-    );
-  }
 
   return (
     <AdminPageLayout title="DB Schema">
