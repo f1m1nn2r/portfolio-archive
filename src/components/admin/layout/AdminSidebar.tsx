@@ -17,13 +17,13 @@ const menuItems: MenuItem[] = [
   { name: "Contacts", icon: "envelope", href: "/admin/contacts" },
   { name: "DB Schema", icon: "data", href: "/admin/schema" },
   { name: "Writing", icon: "editAlt", href: "/admin/writing" },
+  { name: "Categories", icon: "category", href: "/admin/categories" },
+  { name: "Posts", icon: "listUl", href: "/admin/posts" },
 ];
 
 export function AdminSidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  const isMaster = searchParams.get("mode") === "master";
 
   return (
     <aside className="w-64 flex flex-col sticky top-5">
@@ -55,14 +55,10 @@ export function AdminSidebar() {
           {menuItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
 
-            const hrefWithMode = isMaster
-              ? `${item.href}?mode=master`
-              : item.href;
-
             return (
               <li key={item.name}>
                 <Link
-                  href={hrefWithMode}
+                  href={item.href}
                   className={`flex items-center gap-3 p-2.5 rounded-lg transition-colors group ${
                     isActive
                       ? "bg-white border border-gray-ddd text-black font-medium"
