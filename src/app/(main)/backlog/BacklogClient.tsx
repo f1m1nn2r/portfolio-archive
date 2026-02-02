@@ -59,7 +59,7 @@ export default function BacklogClient({
           data={pagedData}
           selectedIds={[]}
           getItemId={(item) => String(item.id)}
-          showAddColumn={isMaster}
+          showAddColumn={false}
           onToggleSelect={() => {}}
           onToggleSelectAll={() => {}}
         />

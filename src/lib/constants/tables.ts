@@ -7,4 +7,6 @@ export const TABLES = {
   CONTACTS: "contacts",
   EPICS: "epics",
   USERS: "users",
+  POSTS: "posts",
+  CATEGORIES: "categories",
 } as const;

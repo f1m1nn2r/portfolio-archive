@@ -17,11 +17,10 @@ import { useAdminMode } from "@/hooks/common/useAdminMode";
 import { AdminAuthGuard } from "@/components/admin/common/AdminAuthGuard";
 
 export default function ExperiencePage() {
-  const { isMaster, session } = useAdminMode();
+  const { isMaster } = useAdminMode();
   const {
     experiences,
     projects,
-    loading,
     availableYears,
     summaryItems,
     expModal,
@@ -30,28 +29,8 @@ export default function ExperiencePage() {
     handlers,
   } = useExperiencePage();
 
-  if (loading) {
-    return (
-      <AdminPageLayout title="Experience">
-        <LoadingState message="경력을 불러오는 중..." />
-      </AdminPageLayout>
-    );
-  }
-
-  if (!session) {
-    return (
-      <AdminPageLayout title="Access Denied">
-        <div className="py-20 text-center">
-          <p className="text-lg">로그인이 필요한 페이지입니다.</p>
-        </div>
-      </AdminPageLayout>
-    );
-  }
-
   return (
     <AdminPageLayout title="Experience">
-      <AdminAuthGuard isMaster={isMaster} />
-
       <AdminSummaryGrid items={summaryItems} columns={3} />
       {/* 경력 관리 섹션 */}
       <section className="mt-10">

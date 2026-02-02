@@ -15,6 +15,7 @@ export const ICON_MAP = {
   solidDownArrowAlt: BiIcons.BiSolidDownArrow,
   infoSquare: BiIcons.BiInfoSquare,
   lockAlt: BiIcons.BiLockAlt,
+  loader: BiIcons.BiLoader,
   // ------------------ END 자주 사용되는 아이콘
 
   // ------------------ 관리자 페이지 좌측 메뉴 아이콘
@@ -48,6 +49,14 @@ export const ICON_MAP = {
   table: BiIcons.BiTable,
   columns: BiIcons.BiColumns,
   // ------------------ END 관리자 페이지 - 스키마 페이지 내 아이콘
+
+  // ------------------ 관리자 페이지 - 글쓰기 페이지 관련 아이콘
+  category: BiIcons.BiCategory,
+  categoryAlt: BiIcons.BiCategoryAlt,
+  fileBlank: BiIcons.BiFileBlank,
+  bookContent: BiIcons.BiBookContent,
+  timeFive: BiIcons.BiTimeFive,
+  // ------------------ END 관리자 페이지 - 글쓰기 페이지 관련 아이콘
 
   // ------------------ 관리자 페이지 - 삭제 아이콘
   trashAlt: BiIcons.BiTrashAlt,
