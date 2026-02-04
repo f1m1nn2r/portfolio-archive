@@ -1,4 +1,4 @@
-import { handleApiError } from "@/lib/utils/error-handler";
+import { handleApiError } from "@/lib/error-handler";
 import {
   createExperience,
   getExperiencesFromDb,

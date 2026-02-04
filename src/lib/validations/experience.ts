@@ -1,10 +1,13 @@
 import { z } from "zod";
+import { MESSAGES } from "@/lib/constants/messages";
 
 // 스키마 정의
 const ExperienceSchema = z.object({
-  company: z.string().min(1, "회사명은 필수입니다."),
-  team: z.string().min(1, "팀명은 필수입니다."),
-  start_date: z.string().min(1, "시작일은 필수입니다."),
+  company: z.string().min(1, MESSAGES.PROJECT.VALIDATION.COMPANY_REQUIRED),
+  team: z.string().min(1, MESSAGES.PROJECT.VALIDATION.TEAM_REQUIRED),
+  start_date: z
+    .string()
+    .min(1, MESSAGES.PROJECT.VALIDATION.START_DATE_REQUIRED),
   end_date: z.string().nullable().default(null),
   description: z.array(z.string()).default([]),
   skills: z.array(z.string()).default([]),

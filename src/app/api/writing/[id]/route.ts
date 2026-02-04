@@ -4,7 +4,7 @@ import {
   deleteWriting,
 } from "@/services/writing/server";
 import { NextResponse } from "next/server";
-import { handleApiError } from "@/lib/utils/error-handler";
+import { handleApiError } from "@/lib/error-handler";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/auth";
 import { Session } from "next-auth";

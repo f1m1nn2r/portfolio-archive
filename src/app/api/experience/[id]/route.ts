@@ -1,7 +1,7 @@
 import { TABLES } from "@/lib/constants/tables";
-import { handleApiError } from "@/lib/utils/error-handler";
+import { handleApiError } from "@/lib/error-handler";
 import { validateUpdateExperience } from "@/lib/validations/experience";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/auth";
