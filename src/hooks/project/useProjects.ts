@@ -2,7 +2,7 @@ import useSWR from "swr";
 import { useCallback } from "react";
 import { Project, UseProjectsOptions } from "@/types/api/project";
 import { getProjects } from "@/services/project/client";
-import { showToast } from "@/utils/toast";
+import { showToast } from "@/lib/toast";
 
 export function useProjects(options?: UseProjectsOptions) {
   const swrKey = [
@@ -16,35 +16,65 @@ export function useProjects(options?: UseProjectsOptions) {
     isLoading: loading,
     mutate,
   } = useSWR<Project[]>(swrKey, () => getProjects(options), {
-    // options로 들어온 fallbackData를 SWR 설정에 주입
     fallbackData: options?.fallbackData,
   });
 
-  const { data: allProjects } = useSWR<Project[]>(
+  const { data: allProjects, mutate: mutateAll } = useSWR<Project[]>(
     ["/api/projects", "all", "all"],
     () => getProjects({ experienceId: "all", year: "all" }),
     {
-      // 전체 데이터 캐시에도 초기값이 있다면 넣어줌
       fallbackData: options?.fallbackData,
     },
+  );
+
+  const saveProject = useCallback(
+    async (mode: "add" | "edit", data: Project) => {
+      const url =
+        mode === "edit" ? `/api/projects/${data.id}` : "/api/projects";
+      const method = mode === "edit" ? "PATCH" : "POST";
+
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+
+        if (!res.ok) {
+          const errorResult = await res.json();
+          throw new Error(errorResult.error || "저장에 실패했습니다.");
+        }
+
+        showToast.save(mode);
+        await mutate();
+        await mutateAll();
+        return true;
+      } catch (error) {
+        console.error("Project save error:", error);
+        showToast.error((error as Error).message);
+        return false;
+      }
+    },
+    [mutate, mutateAll],
   );
 
   const deleteProject = useCallback(
     async (id: number) => {
       try {
         const res = await fetch(`/api/projects/${id}`, { method: "DELETE" });
-        if (res.ok) {
-          showToast.success("프로젝트가 삭제되었습니다.");
-          mutate();
-          return true;
-        }
+        if (!res.ok) throw new Error("삭제에 실패했습니다.");
+
+        showToast.delete();
+        await mutate();
+        await mutateAll();
+        return true;
       } catch (error) {
-        showToast.error("삭제에 실패했습니다.");
+        showToast.error((error as Error).message);
         console.error(error);
+        return false;
       }
-      return false;
     },
-    [mutate],
+    [mutate, mutateAll],
   );
 
   return {
@@ -52,6 +82,7 @@ export function useProjects(options?: UseProjectsOptions) {
     allProjects: allProjects || [],
     loading,
     fetchProjects: mutate,
+    saveProject,
     deleteProject,
   };
 }

@@ -1,5 +1,5 @@
 import { Experience } from "@/types/api/experience";
-import { formatPeriod } from "@/utils/date";
+import { formatPeriod } from "@/lib/date";
 
 export function ExperienceCard({ experience }: { experience: Experience }) {
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { DropdownProps } from "@/types/common/ui";
 import { useOutsideClick } from "@/hooks/common/useOutsideClick";
 

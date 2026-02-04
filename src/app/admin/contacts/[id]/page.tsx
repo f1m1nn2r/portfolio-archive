@@ -6,7 +6,9 @@ import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
 import { LoadingState } from "@/components/common/LoadingState";
 import { useContact } from "@/hooks/contact/useContact";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import DeleteModal from "@/components/common/DeleteModal";
+import { MESSAGES } from "@/lib/constants/messages";
 
 export default function ContactsDetailPage() {
   const { id } = useParams();
@@ -14,6 +16,8 @@ export default function ContactsDetailPage() {
   const { contacts, loading, deleteContacts, toggleStar, markAsRead } =
     useContact();
   const isProcessing = useRef(false);
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // 현재 ID에 맞는 이메일 찾기
   const email = contacts.find((item) => item.id === id);
@@ -29,13 +33,25 @@ export default function ContactsDetailPage() {
     markAsRead([email.id]);
   }, [email, markAsRead]);
 
-  if (loading) return <LoadingState message="메시지를 불러오는 중..." />;
+  const handleConfirmDelete = async () => {
+    if (!email) return;
+    await deleteContacts([email.id]);
+    setIsDeleteModalOpen(false);
+    router.push("/admin/contacts");
+  };
+
+  if (loading)
+    return <LoadingState message={MESSAGES.CONTACTS.DETAIL.LOADING} />;
   if (!email)
-    return <div className="p-10 text-center">메시지를 찾을 수 없습니다.</div>;
+    return (
+      <div className="p-10 text-center">
+        {MESSAGES.CONTACTS.DETAIL.NOT_FOUND}
+      </div>
+    );
 
   return (
     <AdminPageLayout title="Message Detail">
-      {/* 1. 상단 액션 바 */}
+      {/* 상단 액션 바 */}
       <div className="flex justify-between items-center mb-6">
         <Button variant="secondary" size="md" onClick={() => router.back()}>
           <Icon type="chevronLeft" size={20} className="mr-1" /> 목록으로
@@ -56,19 +72,14 @@ export default function ContactsDetailPage() {
           <Button
             variant="danger"
             size="md"
-            onClick={() => {
-              if (confirm("정말 삭제하시겠습니까?")) {
-                deleteContacts([email.id]);
-                router.push("/admin/contacts");
-              }
-            }}
+            onClick={() => setIsDeleteModalOpen(true)}
           >
             <Icon type="trash" size={20} />
           </Button>
         </div>
       </div>
 
-      {/* 2. 메일 본문 카드 */}
+      {/* 메일 본문 카드 */}
       <div className="bg-white rounded-lg border border-gray-ddd overflow-hidden">
         {/* 헤더 섹션 */}
         <div className="p-8 border-b border-gray-eee bg-bg-light/10">
@@ -109,6 +120,14 @@ export default function ContactsDetailPage() {
           </a>
         </div>
       </div>
+
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title={MESSAGES.CONTACTS.DELETE.TITLE}
+        description={MESSAGES.CONTACTS.DELETE.DESCRIPTION}
+      />
     </AdminPageLayout>
   );
 }

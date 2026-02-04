@@ -1,6 +1,4 @@
-interface LoadingStateProps {
-  message?: string;
-}
+import { LoadingStateProps } from "@/types/common/ui";
 
 export function LoadingState({
   message = "데이터를 불러오는 중...",

@@ -11,12 +11,14 @@ import { useBacklogPage } from "@/hooks/backlog/useBacklogPage";
 import { BacklogEpicManager } from "@/components/admin/backlog/BacklogEpicManager";
 import { useAdminMode } from "@/hooks/common/useAdminMode";
 import { Dropdown } from "@/components/common/Dropdown";
+import { AdminSummaryGrid } from "@/components/admin/layout/AdminSummaryGrid";
 
 export default function BacklogPage() {
   const { isMaster } = useAdminMode();
 
   const {
     backlogData,
+    summaryItems,
     page,
     totalPages,
     columns,
@@ -29,6 +31,8 @@ export default function BacklogPage() {
 
   return (
     <AdminPageLayout title="Backlog">
+      <AdminSummaryGrid items={summaryItems} columns={3} />
+
       <AdminActionBar>
         <div className="flex gap-2 ml-auto">
           {isMaster && (
@@ -48,20 +52,10 @@ export default function BacklogPage() {
                 필터: {handlers.currentFilterLabel}
               </Button>
             }
-            items={[
-              {
-                label: "초기화(최신순)",
-                onClick: () => handlers.handleFilterChange("latest"),
-              },
-              {
-                label: "미구현",
-                onClick: () => handlers.handleFilterChange("uncompleted"),
-              },
-              {
-                label: "화면별",
-                onClick: () => handlers.handleFilterChange("screen"),
-              },
-            ]}
+            items={handlers.filterOptions.map((option) => ({
+              label: option.label,
+              onClick: () => handlers.handleFilterChange(option.key),
+            }))}
           />
         </div>
       </AdminActionBar>

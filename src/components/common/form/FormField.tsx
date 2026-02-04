@@ -1,8 +1,4 @@
-interface FormFieldProps {
-  label: string;
-  required?: boolean;
-  children: React.ReactNode;
-}
+import { FormFieldProps } from "@/types/common/ui";
 
 export function FormField({ label, required, children }: FormFieldProps) {
   return (

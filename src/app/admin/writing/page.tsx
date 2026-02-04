@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useMemo } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { AdminPageLayout } from "@/components/admin/layout/AdminPageLayout";
 import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
@@ -12,8 +12,8 @@ import { PostCategorySelect } from "@/components/admin/post/PostCategorySelect";
 import { PostEditor } from "@/components/admin/post/PostEditor";
 
 export default function WritingPage() {
-  const params = useParams();
-  const postId = params?.id as string;
+  const searchParams = useSearchParams();
+  const postId = searchParams.get("id") as string;
 
   const { categories, loading: categoryLoading } = useCategories();
 

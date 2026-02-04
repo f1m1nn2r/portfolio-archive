@@ -1,15 +1,18 @@
+"use client";
+
 import { DeleteModalProps } from "@/types/common/ui";
 import { Button } from "@/components/common/Button";
 import { Icon } from "./Icon";
 import { useRef } from "react";
 import { useOutsideClick } from "@/hooks/common/useOutsideClick";
+import { MESSAGES } from "@/lib/constants/messages";
 
 export default function DeleteModal({
   isOpen,
   onClose,
   onConfirm,
-  title = "정말 삭제하시겠어요?",
-  description = "삭제 후에는 다시 되돌릴 수 없습니다.",
+  title = MESSAGES.COMMON.DELETE_TITLE,
+  description = MESSAGES.COMMON.DELETE_DESC,
   isLoading = false,
 }: DeleteModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);

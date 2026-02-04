@@ -2,17 +2,11 @@
 
 import useSWR from "swr";
 import Image from "next/image";
-import { ExperienceCard } from "@/components/experience/ExperienceCard";
+import { ExperienceCard } from "@/components/domains/experience/ExperienceCard";
 import { PageLayout } from "@/components/common/PageLayout";
 import { useExperience } from "@/hooks/experience/useExperience";
-import { ProfileSettings } from "@/types/api/profile";
-import { Experience } from "@/types/api/experience";
 import { getProfileSettings } from "@/services/profile/client";
-
-interface HomeClientProps {
-  initialProfile: ProfileSettings;
-  initialExperiences: Experience[];
-}
+import { HomeClientProps } from "@/types/ui/main";
 
 export default function HomeClient({
   initialProfile,
