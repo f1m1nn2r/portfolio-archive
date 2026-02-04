@@ -1,5 +1,5 @@
 import { DEFAULT_PROFILE, ProfileSettings } from "@/types/api/profile";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { TABLES } from "@/lib/constants/tables";
 
 export async function getProfileFromDb(): Promise<ProfileSettings> {

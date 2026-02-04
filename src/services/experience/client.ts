@@ -28,6 +28,26 @@ export async function getExperiences(): Promise<Experience[]> {
   }
 }
 
+export async function createExperienceApi(data: any) {
+  const res = await fetch("/api/experience", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("경력 생성 실패");
+  return res.json();
+}
+
+export async function updateExperienceApi(id: number, data: any) {
+  const res = await fetch(`/api/experience/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("경력 업데이트 실패");
+  return res.json();
+}
+
 export async function deleteExperienceApi(id: number): Promise<void> {
   const res = await fetch(`${API_BASE_URL}/api/experience/${id}`, {
     method: "DELETE",

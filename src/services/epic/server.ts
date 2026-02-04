@@ -1,5 +1,5 @@
 import { Epic } from "@/types/admin";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 
 export async function getEpicsFromDb(): Promise<Epic[]> {
   const supabase = await createClient();

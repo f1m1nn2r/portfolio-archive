@@ -6,7 +6,7 @@ import {
   updateReadStatus,
   updateStarStatus,
 } from "@/services/contact/client";
-import { showToast } from "@/utils/toast";
+import { showToast } from "@/lib/toast";
 import { useSummaryData } from "../common/useSummaryData";
 
 export function useContact(currentPage?: number, itemsPerPage?: number) {

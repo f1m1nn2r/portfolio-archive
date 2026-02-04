@@ -1,14 +1,19 @@
-import useSWR from "swr";
+import { useAppSWR } from "@/hooks/common/useAppSWR";
 import { getPostsApi } from "@/services/post/client";
-import { useState, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { FormattedPost } from "@/types/admin";
+import { PostsResponse } from "@/types/api/post";
+import { MESSAGES } from "@/lib/constants/messages";
+import { showToast } from "@/lib/toast";
 
 export const usePosts = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   // SWR 호출
-  const { data, error, isLoading, mutate } = useSWR(
-    "/api/writing",
-    getPostsApi,
-  );
+  const { data, isLoading, error, mutate, deleteManyItems } =
+    useAppSWR<PostsResponse>("/api/writing", getPostsApi);
 
   // 가공된 데이터 생성
   const formattedPosts = useMemo<FormattedPost[]>(() => {
@@ -28,14 +33,63 @@ export const usePosts = () => {
     });
   }, [data?.posts]);
 
+  // 검색 필터링 로직 (가공된 데이터를 기준으로 필터링)
+  const filteredPosts = useMemo(() => {
+    return formattedPosts.filter((post) =>
+      post.title.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+  }, [formattedPosts, searchQuery]);
+
+  // 삭제 로직
+  const handleConfirmDelete = async () => {
+    const success = await deleteManyItems(selectedIds);
+    if (success) {
+      setSelectedIds([]);
+      setIsDeleteModalOpen(false);
+    }
+  };
+
+  const openDeleteModal = useCallback(() => {
+    if (selectedIds.length === 0) {
+      showToast.error(MESSAGES.VALIDATION.SELECT_REQUIRED);
+      return;
+    }
+    setIsDeleteModalOpen(true);
+  }, [selectedIds]);
+
+  // 선택 로직
+  const handleToggleSelect = (id: string | number) => {
+    const targetId = String(id);
+    setSelectedIds((prev) =>
+      prev.includes(targetId)
+        ? prev.filter((i) => i !== targetId)
+        : [...prev, targetId],
+    );
+  };
+
+  const handleToggleSelectAll = () => {
+    const allIds = filteredPosts.map((p) => String(p.id));
+    setSelectedIds((prev) => (prev.length === allIds.length ? [] : allIds));
+  };
+
   return {
-    posts: formattedPosts,
+    posts: filteredPosts,
     summary: {
       total: data?.totalCount || 0,
       recent: data?.recentCount || 0,
     },
     loading: isLoading,
     error,
-    mutate, // 데이터 새로고침이 필요할 때 사용 (삭제 후 등)
+    searchQuery,
+    selectedIds,
+    isDeleteModalOpen,
+
+    setSearchQuery,
+    setIsDeleteModalOpen,
+    handleToggleSelect,
+    handleToggleSelectAll,
+    handleConfirmDelete,
+    openDeleteModal,
+    mutate,
   };
 };

@@ -1,7 +1,7 @@
 import { TABLES } from "@/lib/constants/tables";
 import { Category } from "@/types/admin";
 import { CategoryResponse } from "@/types/api/category";
-import { createAdminClient } from "@/utils/supabase/admin";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function getCategoriesWithStats(): Promise<CategoryResponse> {
   try {
