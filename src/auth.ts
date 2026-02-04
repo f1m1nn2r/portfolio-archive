@@ -8,7 +8,7 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import type { NextAuthOptions, User, Session } from "next-auth";
-import { createAdminClient } from "./utils/supabase/admin";
+import { createAdminClient } from "./lib/supabase/admin";
 import { TABLES } from "./lib/constants/tables";
 import { JWT } from "next-auth/jwt";
 
