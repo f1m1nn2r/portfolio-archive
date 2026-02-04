@@ -1,6 +1,6 @@
 import { TABLES } from "@/lib/constants/tables";
-import { handleApiError } from "@/lib/utils/error-handler";
-import { createClient } from "@/utils/supabase/server";
+import { handleApiError } from "@/lib/error-handler";
+import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 export async function GET(

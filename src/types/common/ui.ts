@@ -17,9 +17,16 @@ export interface BadgeProps {
 
 // ------------------ 페이지네이션
 export interface PaginationProps {
+  // UI 컴포넌트를 위한
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+}
+
+export interface UsePaginationOptions {
+  // usePagination 훅을 위한
+  itemsPerPage?: number;
+  initialPage?: number;
 }
 
 // ------------------ 드롭다운 메뉴
@@ -55,4 +62,22 @@ export interface AdminAuthGuardProps {
   isMaster: boolean;
   password: string;
   onPasswordChange: (value: string) => void;
+}
+
+// ------------------ 로딩
+export interface LoadingStateProps {
+  message?: string;
+}
+
+// ------------------ 폼 관련
+export interface FormFieldProps {
+  label: string;
+  required?: boolean;
+  children: React.ReactNode;
+}
+
+export interface FormSectionProps {
+  title: string;
+  children: React.ReactNode;
+  isFirst?: boolean;
 }

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Experience } from "@/types/api/experience";
 import { ExperienceFormData } from "@/types/admin";
-import { showToast } from "@/utils/toast";
+import { showToast } from "@/lib/toast";
+import { MESSAGES } from "@/lib/constants/messages";
 
 export function useExperienceForm(initialData?: Experience | null) {
   // 1. 초기 상태 설정 (useEffect 대신 useState 초기값 함수 사용)
@@ -74,7 +75,7 @@ export function useExperienceForm(initialData?: Experience | null) {
 
   const validate = () => {
     if (!formData.company || !formData.team || !formData.start_date) {
-      showToast.error("필수 항목을 입력해주세요.");
+      showToast.error(MESSAGES.VALIDATION.ALL_FIELDS);
       return false;
     }
     return true;

@@ -1,5 +1,7 @@
 "use client";
 
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
 import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
 import { FormSection, FormField } from "@/components/common/form";
@@ -19,62 +21,37 @@ export function ProjectModal({
   mode,
   initialData,
   experiences,
-  onSaveSuccess,
+  onSave,
 }: ProjectModalProps) {
-  // 커스텀 훅 사용
-  const { formData, handleChange, validate, saving, setSaving } =
-    useProjectForm(initialData);
+  const {
+    formData,
+    startDate,
+    endDate,
+    handleDateChange,
+    handleChange,
+    validate,
+    saving,
+    setSaving,
+  } = useProjectForm(initialData);
 
   const inputStyles =
     "w-full p-5 border border-gray-ddd rounded-lg text-base outline-none focus:border-gray-555 transition-colors";
 
-  // 저장 로직 (훅의 validate와 handleChange 활용)
   const handleSave = async () => {
     if (!validate()) return;
 
-    try {
-      setSaving(true);
-      const url =
-        mode === "edit" ? `/api/projects/${initialData?.id}` : "/api/projects";
-      const method = mode === "edit" ? "PATCH" : "POST";
+    setSaving(true);
+    const payload = {
+      ...formData,
+      year: startDate ? startDate.getFullYear() : 0,
+    };
+    delete (payload as any).period;
 
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+    const success = await onSave(payload);
+    setSaving(false);
 
-      const result = await res.json();
-
-      if (res.ok || result.success) {
-        alert(mode === "edit" ? "수정되었습니다." : "추가되었습니다.");
-        onSaveSuccess();
-      } else {
-        throw new Error(result.error || "저장 실패");
-      }
-    } catch (error) {
-      console.error("저장 실패:", error);
-      alert("저장에 실패했습니다.");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  // 삭제 로직 (기본 구조 유지)
-  const handleDelete = async () => {
-    if (!initialData?.id || !confirm("정말 삭제하시겠습니까?")) return;
-
-    try {
-      const res = await fetch(`/api/projects/${initialData.id}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        alert("삭제되었습니다.");
-        onSaveSuccess();
-      }
-    } catch (error) {
-      console.error("삭제 실패:", error);
-      alert("삭제에 실패했습니다.");
+    if (success) {
+      onClose();
     }
   };
 
@@ -129,12 +106,35 @@ export function ProjectModal({
                 />
               </FormField>
               <FormField label="작업 기간" required>
-                <input
-                  placeholder="2024.01-2024.12"
-                  className={inputStyles}
-                  value={formData.period}
-                  onChange={(e) => handleChange("period", e.target.value)}
-                />
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <DatePicker
+                      selected={startDate}
+                      onChange={(date: Date | null) =>
+                        handleDateChange("start", date)
+                      }
+                      dateFormat="yyyy.MM.dd"
+                      placeholderText="시작일"
+                      className={inputStyles}
+                    />
+                  </div>
+                  <span className="text-gray-400">~</span>
+                  <div className="relative flex-1">
+                    <DatePicker
+                      selected={endDate}
+                      onChange={(date: Date | null) =>
+                        handleDateChange("end", date)
+                      }
+                      dateFormat="yyyy.MM.dd"
+                      selectsEnd
+                      startDate={startDate}
+                      endDate={endDate}
+                      minDate={startDate || undefined}
+                      placeholderText="종료일(진행 중일 경우 비워두기)"
+                      className={inputStyles}
+                    />
+                  </div>
+                </div>
               </FormField>
             </div>
 
@@ -178,11 +178,6 @@ export function ProjectModal({
 
         {/* 풋터 */}
         <div className="px-10 py-6 border-t border-gray-light bg-bg-light/50 flex justify-end gap-2">
-          {mode === "edit" && (
-            <Button variant="danger" size="md" onClick={handleDelete}>
-              <Icon type="trash" size={16} /> 삭제
-            </Button>
-          )}
           <Button variant="secondary" size="md" onClick={onClose}>
             <Icon type="x" size={16} /> 취소
           </Button>

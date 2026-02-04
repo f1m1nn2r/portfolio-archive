@@ -5,7 +5,7 @@ import { PageLayout } from "@/components/common/PageLayout";
 import { Icon } from "@/components/common/Icon";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { showToast } from "@/utils/toast";
+import { showToast } from "@/lib/toast";
 
 export default function LoginPage() {
   const router = useRouter();

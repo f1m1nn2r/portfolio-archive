@@ -1,7 +1,8 @@
 import useSWR from "swr";
 import { getEpics, createEpicApi, deleteEpicApi } from "@/services/epic/client";
 import { Epic } from "@/types/admin/backlog";
-import { showToast } from "@/utils/toast";
+import { showToast } from "@/lib/toast";
+import { MESSAGES } from "@/lib/constants/messages";
 
 const EPIC_COLORS = [
   "#DBF0D6",
@@ -22,7 +23,7 @@ const EPIC_COLORS = [
 export function useEpics() {
   const { data: epics = [], mutate } = useSWR<Epic[]>("/api/epics", getEpics);
 
-  const addEpic = async (label: string = "새 에픽") => {
+  const addEpic = async (label: string = MESSAGES.EPIC.DEFAULT_LABEL) => {
     const randomColor =
       EPIC_COLORS[Math.floor(Math.random() * EPIC_COLORS.length)];
 
@@ -34,10 +35,10 @@ export function useEpics() {
     try {
       await createEpicApi(newEpicData);
       await mutate();
-      showToast.success("에픽이 추가되었습니다.");
+      showToast.success(MESSAGES.EPIC.ADD_SUCCESS);
     } catch (error) {
-      console.error("에픽 추가 실패:", error);
-      showToast.error("에픽을 추가하는 중 오류가 발생했습니다.");
+      console.error("[useEpics] 에픽 추가 실패:", error);
+      showToast.error(MESSAGES.ERROR.ADD_FAILED);
     }
   };
 
@@ -45,10 +46,10 @@ export function useEpics() {
     try {
       await deleteEpicApi(id);
       await mutate();
-      showToast.success("에픽이 삭제되었습니다.");
+      showToast.success(MESSAGES.COMMON.DELETE_SUCCESS);
     } catch (error) {
-      console.error("에픽 삭제 실패:", error);
-      showToast.error("삭제에 실패했습니다.");
+      console.error("[useEpics] 에픽 삭제 실패:", error);
+      showToast.error(MESSAGES.ERROR.DELETE_FAILED);
     }
   };
 

@@ -1,8 +1,9 @@
+import Link from "next/link";
 import { useProjectStore } from "@/store/useProjectStore";
 import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
-import Link from "next/link";
 import { ProjectCardProps } from "@/types/ui/project";
+import { formatPeriod } from "@/lib/date";
 
 export function ProjectCard({ project, isAdmin, onDelete }: ProjectCardProps) {
   // 스토어에서 함수 직접 가져오기
@@ -12,7 +13,9 @@ export function ProjectCard({ project, isAdmin, onDelete }: ProjectCardProps) {
     <div className="border-t-5 border-black py-7.5 px-5 bg-bg-light h-full flex flex-col">
       <div className="pb-6 mb-6 border-b-1 border-black">
         <h3 className="text-2xl font-bold">{project.title}</h3>
-        <p className="text-lg font-medium">{project.period}</p>
+        <p className="text-lg font-medium">
+          {formatPeriod(project.start_date, project.end_date)}
+        </p>
       </div>
 
       <div className="space-y-2 mb-8 flex-1 text-base whitespace-pre-line">

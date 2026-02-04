@@ -2,7 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ToasterProvider } from "@/components/common/ToastProvider";
-import AuthContext from "@/components/providers/AuthContext";
+import AuthContext from "@/providers/AuthContext";
 
 const inter = Inter({
   subsets: ["latin"],

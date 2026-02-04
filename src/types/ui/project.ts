@@ -7,7 +7,7 @@ export interface ProjectModalProps {
   mode: "add" | "edit";
   initialData?: Project | null;
   experiences: Experience[]; // 경력 목록
-  onSaveSuccess: () => void;
+  onSave: (data: ProjectFormData) => Promise<boolean>;
 }
 export interface ProjectCardProps {
   project: Project;
@@ -23,4 +23,17 @@ export interface ProjectFormData {
   category: string;
   year: number;
   project_url: string;
+  start_date: string;
+  end_date: string;
+}
+
+export interface ProjectManagementSectionProps {
+  projects: Project[];
+  experiences: Experience[];
+  years: number[];
+  onAdd: () => void;
+  onDelete: (type: "experience" | "project", id: number) => void;
+  onFilterCompany: (company: string) => void;
+  onFilterYear: (year: string) => void;
+  isMaster: boolean;
 }

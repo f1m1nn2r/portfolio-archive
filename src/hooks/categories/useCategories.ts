@@ -10,7 +10,7 @@ import {
   deleteCategoryApi,
 } from "@/services/category/client";
 import { useAdminMode } from "../common/useAdminMode";
-import { showToast } from "@/utils/toast";
+import { showToast } from "@/lib/toast";
 
 export const useCategories = () => {
   const [categories, setCategories] = useState<Category[]>([]);

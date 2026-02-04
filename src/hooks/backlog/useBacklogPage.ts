@@ -67,6 +67,7 @@ export function useBacklogPage(isMaster?: boolean) {
     handlePageChange: filter.setPage,
     handleFilterChange: filter.handleFilterChange,
     currentFilterLabel: filter.currentFilterLabel,
+    filterOptions: filter.filterOptions,
 
     openDeleteModal: () => setIsDeleteModalOpen(true),
     closeDeleteModal: () => setIsDeleteModalOpen(false),

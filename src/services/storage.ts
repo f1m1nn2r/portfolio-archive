@@ -1,5 +1,5 @@
 // Supabase Storage에 이미지를 업로드하고 URL을 반환하는 함수
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 
 export const uploadImageApi = async (file: File) => {
   const supabase = createClient();

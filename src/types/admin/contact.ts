@@ -7,3 +7,8 @@ export interface ContactMessage {
   isStarred: boolean; // 별표(중요) 표시
   receivedAt: string; // 수신 일시
 }
+
+export interface UseContactFilterProps<T> {
+  data: T[];
+  searchKeys: (keyof T)[]; // 검색 대상이 될 키 배열 (예: ['senderEmail', 'senderName'])
+}

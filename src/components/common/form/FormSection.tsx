@@ -1,8 +1,4 @@
-interface FormSectionProps {
-  title: string;
-  children: React.ReactNode;
-  isFirst?: boolean;
-}
+import { FormSectionProps } from "@/types/common/ui";
 
 export function FormSection({
   title,

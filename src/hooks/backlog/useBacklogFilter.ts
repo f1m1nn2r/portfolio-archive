@@ -1,18 +1,28 @@
 import { useState, useMemo } from "react";
+import { usePagination } from "@/hooks/common/usePagination";
 import { Backlog } from "@/types/admin";
+import { MESSAGES } from "@/lib/constants/messages";
 
 const FILTER_LABEL_MAP: Record<string, string> = {
-  latest: "기본(최신순)",
-  uncompleted: "미구현 우선",
-  screen: "화면별",
+  latest: MESSAGES.BACKLOG.FILTERS.LATEST,
+  uncompleted: MESSAGES.BACKLOG.FILTERS.UNCOMPLETED,
+  screen: MESSAGES.BACKLOG.FILTERS.SCREEN,
 };
 
 export function useBacklogFilter(
   backlogData: Backlog[],
   itemsPerPage: number = 20,
 ) {
-  const [page, setPage] = useState(1);
   const [filterType, setFilterType] = useState("latest");
+
+  const filterOptions = useMemo(
+    () => [
+      { key: "latest", label: MESSAGES.BACKLOG.FILTERS.LATEST },
+      { key: "uncompleted", label: MESSAGES.BACKLOG.FILTERS.UNCOMPLETED },
+      { key: "screen", label: MESSAGES.BACKLOG.FILTERS.SCREEN },
+    ],
+    [],
+  );
 
   // 전체 데이터 정렬 및 필터링
   const filteredAndSortedData = useMemo(() => {
@@ -33,29 +43,25 @@ export function useBacklogFilter(
     return result;
   }, [backlogData, filterType]);
 
-  // 페이지네이션 계산
-  const totalPages =
-    Math.ceil(filteredAndSortedData.length / itemsPerPage) || 1;
-
-  const currentData = useMemo(() => {
-    const start = (page - 1) * itemsPerPage;
-    return filteredAndSortedData.slice(start, start + itemsPerPage);
-  }, [filteredAndSortedData, page, itemsPerPage]);
+  // 페이지네이션 로직 위임
+  const { currentPage, setCurrentPage, totalPages, currentData, totalItems } =
+    usePagination(filteredAndSortedData, { itemsPerPage });
 
   // 핸들러
   const handleFilterChange = (type: string) => {
     setFilterType(type);
-    setPage(1);
+    setCurrentPage(1);
   };
 
   return {
-    page,
-    setPage,
+    page: currentPage,
+    setPage: setCurrentPage,
+    totalPages,
+    totalCount: totalItems,
+    filteredData: currentData,
     filterType,
     currentFilterLabel: FILTER_LABEL_MAP[filterType],
     handleFilterChange,
-    filteredData: currentData,
-    totalCount: filteredAndSortedData.length,
-    totalPages,
+    filterOptions,
   };
 }
