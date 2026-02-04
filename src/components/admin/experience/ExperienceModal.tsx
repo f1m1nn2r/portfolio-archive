@@ -10,7 +10,8 @@ import { ExperienceModalProps } from "@/types/admin/experience";
 import { useExperienceForm } from "@/hooks/experience/useExperienceForm";
 import { FormSection, FormField } from "@/components/common/form";
 import { useExperience } from "@/hooks/experience/useExperience";
-import { showToast } from "@/utils/toast";
+import { showToast } from "@/lib/toast";
+import { MESSAGES } from "@/lib/constants/messages";
 
 export const ExperienceModal = ({
   isOpen,
@@ -66,15 +67,17 @@ export const ExperienceModal = ({
 
       if (success) {
         showToast.success(
-          mode === "edit" ? "수정되었습니다." : "추가되었습니다.",
+          mode === "edit"
+            ? MESSAGES.COMMON.EDIT_SUCCESS
+            : MESSAGES.COMMON.ADD_SUCCESS,
         );
         onSaveSuccess();
       } else {
         throw new Error("저장 실패");
       }
     } catch (error) {
-      showToast.error("저장에 실패했습니다.");
       console.error("저장 실패:", error);
+      showToast.error(MESSAGES.ERROR.SAVE_FAILED);
     } finally {
       setSaving(false);
     }

@@ -4,6 +4,7 @@ import React, { Suspense } from "react";
 import { AdminSidebar } from "@/components/admin/layout/AdminSidebar";
 import { useAdminMode } from "@/hooks/common/useAdminMode";
 import { LoadingState } from "@/components/common/LoadingState";
+import { AdminProvider } from "@/providers/AdminProvider";
 
 export default function AdminLayout({
   children,
@@ -36,16 +37,18 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-bg-light p-5 gap-2.5 items-start">
-      <Suspense fallback={<div>Loading navigation...</div>}>
-        <AdminSidebar />
-      </Suspense>
-
-      <main className="flex-1 overflow-y-auto">
-        <Suspense fallback={<div>Loading admin content...</div>}>
-          {children}
+    <AdminProvider isMaster={isMaster}>
+      <div className="flex min-h-screen bg-bg-light p-5 gap-2.5 items-start">
+        <Suspense fallback={<div>Loading navigation...</div>}>
+          <AdminSidebar />
         </Suspense>
-      </main>
-    </div>
+
+        <main className="flex-1 overflow-y-auto">
+          <Suspense fallback={<div>Loading admin content...</div>}>
+            {children}
+          </Suspense>
+        </main>
+      </div>
+    </AdminProvider>
   );
 }
