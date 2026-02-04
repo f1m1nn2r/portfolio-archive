@@ -6,7 +6,7 @@ import {
   updateWritingApi,
 } from "@/services/writing/client";
 import { useRouter } from "next/navigation";
-import { showToast } from "@/utils/toast";
+import { showToast } from "@/lib/toast";
 import { useAdminMode } from "@/hooks/common/useAdminMode";
 
 export const useWritingForm = (

@@ -1,6 +1,7 @@
 import { ContactEmailTemplate } from "@/components/admin/email/ContactEmailTemplate";
 import { TABLES } from "@/lib/constants/tables";
-import { createAdminClient } from "@/utils/supabase/admin";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { contactSchema } from "@/lib/validations/contact";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
@@ -12,6 +13,16 @@ export async function POST(request: Request) {
     const supabase = createAdminClient();
     const body = await request.json();
 
+    const validation = contactSchema.safeParse(body);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        { success: false, error: validation.error.flatten().fieldErrors },
+        { status: 400 },
+      );
+    }
+
+    // 검증된 데이터 사용
     const { senderEmail, senderName, message } = body;
 
     // Supabase DB에 저장 (관리자 페이지용)

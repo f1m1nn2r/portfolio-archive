@@ -2,9 +2,9 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import { ProjectCard } from "@/components/admin/experience/ProjectCard";
+import { ProjectCard } from "@/components/admin/project/ProjectCard";
 import { ExperienceFilters } from "@/components/admin/experience/ExperienceFilters";
-import { ExperienceCard } from "@/components/experience/ExperienceCard";
+import { ExperienceCard } from "@/components/domains/experience/ExperienceCard";
 import { PageLayout } from "@/components/common/PageLayout";
 import { useExperience } from "@/hooks/experience/useExperience";
 import { useProjects } from "@/hooks/project/useProjects";

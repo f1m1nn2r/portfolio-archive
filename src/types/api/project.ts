@@ -10,6 +10,8 @@ export interface Project {
   project_url?: string;
   created_at?: string;
   updated_at?: string;
+  start_date: string;
+  end_date: string;
 }
 
 export interface UseProjectsOptions {

@@ -1,7 +1,7 @@
 import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
 import { Badge } from "@/components/common/Badge";
-import { formatPeriod, calculateDuration } from "@/utils/date";
+import { formatPeriod, calculateDuration } from "@/lib/date";
 import { ExperienceCardProps } from "@/types/admin/experience";
 
 export function ExperienceCard({

@@ -1,67 +1,54 @@
-import useSWR from "swr";
-import { useCallback } from "react";
+import { useAppSWR } from "@/hooks/common/useAppSWR";
 import { Experience } from "@/types/api/experience";
-import {
-  getExperiences,
-  deleteExperienceApi,
-} from "@/services/experience/client";
-import { showToast } from "@/utils/toast";
-import { useAdminMode } from "@/hooks/common/useAdminMode";
+import { getExperiences } from "@/services/experience/client";
+import { useCallback } from "react";
 
 export function useExperience(fallbackData?: Experience[]) {
-  const { adminPassword } = useAdminMode();
+  // 공통 훅 사용 (경력 데이터는 보통 배열 형태이므로 T를 Experience[]로 설정)
   const {
     data: experiences,
     isLoading: loading,
     mutate,
-  } = useSWR<Experience[]>("/api/experience", getExperiences, {
-    fallbackData,
-  });
+    createItem,
+    updateItem,
+    deleteItem,
+  } = useAppSWR<Experience[], Partial<Experience>, Partial<Experience>>(
+    "/api/experience",
+    getExperiences,
+    { fallbackData },
+  );
 
-  const saveExperience = async (
-    mode: "add" | "edit",
-    id: number | undefined,
-    data: any,
-  ) => {
-    const url = mode === "edit" ? `/api/experience/${id}` : "/api/experience";
-    const method = mode === "edit" ? "PATCH" : "POST";
-
-    const res = await fetch(url, {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-        "x-admin-password": adminPassword,
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (res.ok) {
-      await mutate();
-      return true;
-    }
-    return false;
-  };
-
-  const deleteExperience = useCallback(
-    async (id: number) => {
-      try {
-        await deleteExperienceApi(id);
-        showToast.delete();
-        mutate();
-        return true;
-      } catch (error) {
-        showToast.error("삭제에 실패했습니다.");
-        console.error("삭제 실패:", error);
-        return false;
+  // 저장 로직 (추가/수정 통합)
+  const saveExperience = useCallback(
+    async (
+      mode: "add" | "edit",
+      id: number | undefined,
+      data: Partial<Experience>,
+    ) => {
+      if (mode === "edit") {
+        if (!id) return false;
+        const result = await updateItem(id, data);
+        return !!result;
+      } else {
+        const result = await createItem(data);
+        return !!result;
       }
     },
-    [mutate, adminPassword],
+    [updateItem, createItem],
+  );
+
+  // 삭제 로직
+  const deleteExperience = useCallback(
+    async (id: number) => {
+      return await deleteItem(id);
+    },
+    [deleteItem],
   );
 
   return {
-    experiences: experiences || fallbackData || [],
+    experiences: experiences || [],
     loading,
-    fetchExperiences: mutate,
+    fetchExperiences: mutate, // 기존 이름 유지
     saveExperience,
     deleteExperience,
   };

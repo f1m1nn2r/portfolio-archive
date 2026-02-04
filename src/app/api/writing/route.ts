@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/auth";
 import { createWriting, getWriting } from "@/services/writing/server";
-import { handleApiError } from "@/lib/utils/error-handler";
+import { handleApiError } from "@/lib/error-handler";
 import { Session } from "next-auth";
 
 export async function GET() {

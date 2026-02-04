@@ -12,3 +12,11 @@ export interface ExperienceClientProps {
   initialExperiences: Experience[];
   initialProjects: Project[];
 }
+
+export interface ExperienceManagementSectionProps {
+  experiences: Experience[];
+  onAdd: () => void;
+  onEdit: (exp: Experience) => void;
+  onDelete: (type: "experience" | "project", id: number) => void;
+  isMaster: boolean;
+}

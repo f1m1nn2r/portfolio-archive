@@ -30,7 +30,7 @@ export function PostCategorySelect({
           }}
         >
           <SelectTrigger className="w-full px-6 py-5.5 border border-black rounded-none">
-            <SelectValue placeholder="선택하세요" />
+            <SelectValue placeholder="1차 카테고리 선택" />
             <Icon type="solidDownArrowAlt" size={12} className="text-black" />
           </SelectTrigger>
           <SelectContent>
@@ -56,10 +56,10 @@ export function PostCategorySelect({
             <SelectValue
               placeholder={
                 !category1
-                  ? "1차 먼저 선택"
+                  ? "1차 카테고리 먼저 선택해주세요."
                   : subCategories.length === 0
-                    ? "하위 없음"
-                    : "선택하세요"
+                    ? "2차 카테고리 없음"
+                    : "2차 카테고리 선택"
               }
             />
             <Icon type="solidDownArrowAlt" size={12} className="text-black" />

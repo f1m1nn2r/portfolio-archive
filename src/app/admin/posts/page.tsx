@@ -12,15 +12,16 @@ import { LoadingState } from "@/components/common/LoadingState";
 import { usePosts } from "@/hooks/posts/usePosts";
 import { useSummaryData } from "@/hooks/common/useSummaryData";
 import { AdminSearchBar } from "@/components/admin/common/AdminSearchBar";
-import { PostColumns } from "@/components/post/PostColumns";
-import { usePostManagement } from "@/hooks/posts/usePostManagement";
+import { PostColumns } from "@/components/admin/post/PostColumns";
+import { MESSAGES } from "@/lib/constants/messages";
 
 export default function PostsPage() {
   const router = useRouter();
 
-  const { posts, summary, mutate, loading } = usePosts();
-
   const {
+    posts,
+    summary,
+    loading,
     searchQuery,
     setSearchQuery,
     selectedIds,
@@ -30,8 +31,7 @@ export default function PostsPage() {
     setIsDeleteModalOpen,
     handleConfirmDelete,
     openDeleteModal,
-    filteredPosts,
-  } = usePostManagement(posts, mutate);
+  } = usePosts();
 
   const summaryItems = useSummaryData([
     {
@@ -91,7 +91,7 @@ export default function PostsPage() {
 
       <AdminTable
         columns={columns}
-        data={filteredPosts}
+        data={posts}
         getItemId={(item: any) => String(item.id)}
         selectedIds={selectedIds}
         onToggleSelect={handleToggleSelect}
@@ -106,12 +106,13 @@ export default function PostsPage() {
           onPageChange={() => {}}
         />
       </div>
+
       <DeleteModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        title="게시글 삭제"
-        description={`정말 선택한 ${selectedIds.length}개의 게시글을 삭제하시겠습니까?`}
+        title={MESSAGES.POSTS.DELETE.TITLE}
+        description={MESSAGES.POSTS.DELETE.DESCRIPTION(selectedIds.length)}
       />
     </AdminPageLayout>
   );

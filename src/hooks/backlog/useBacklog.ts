@@ -1,19 +1,15 @@
-import useSWR from "swr";
-import { useCallback, useMemo } from "react";
-import {
-  getBacklogs,
-  deleteBacklogsApi,
-  createBacklogApi,
-  updateBacklogApi,
-} from "@/services/backlog/client";
-import { showToast } from "@/utils/toast";
+import { useAppSWR } from "../common/useAppSWR";
+import { getBacklogs } from "@/services/backlog/client";
 import { Backlog, BacklogResponse } from "@/types/admin";
+import { useMemo, useCallback } from "react";
+import { SWR_MUTATE_OPTIONS } from "@/lib/constants/swr";
 
 export function useBacklog() {
-  const { data, isLoading, mutate } = useSWR<BacklogResponse>(
-    "/api/backlog",
-    getBacklogs,
-  );
+  const { data, isLoading, mutate, createItem, updateItem, deleteManyItems } =
+    useAppSWR<BacklogResponse, Partial<Backlog>, Partial<Backlog>>(
+      "/api/backlog",
+      getBacklogs,
+    );
 
   const backlogData = useMemo(() => data?.items || [], [data]);
   const stats = useMemo(
@@ -21,17 +17,9 @@ export function useBacklog() {
     [data],
   );
 
-  // 공통 mutate 옵션 설정
-  const mutateOptions = (optimisticData: BacklogResponse) => ({
-    optimisticData,
-    rollbackOnError: true,
-    revalidate: true,
-  });
-
   // 행 추가
   const addBacklog = useCallback(async () => {
     if (!data) return;
-
     const newEntry: Partial<Backlog> = {
       screen: "",
       sub_page: "",
@@ -42,26 +30,10 @@ export function useBacklog() {
       priority: "medium",
       order: backlogData.length,
     };
+    await createItem(newEntry);
+  }, [data, backlogData.length, createItem]);
 
-    const optimisticData: BacklogResponse = {
-      ...data,
-      items: [
-        ...backlogData,
-        { ...newEntry, id: `temp-${Date.now()}` } as Backlog,
-      ],
-    };
-
-    try {
-      await mutate(async () => {
-        await createBacklogApi(newEntry);
-        return getBacklogs();
-      }, mutateOptions(optimisticData));
-    } catch (error) {
-      showToast.error("추가 중 오류가 발생했습니다.");
-    }
-  }, [data, backlogData, mutate]);
-
-  // 필드 업데이트
+  // 필드 업데이트 (낙관적 업데이트 적용)
   const updateBacklogField = useCallback(
     async <K extends keyof Backlog>(
       id: string,
@@ -77,19 +49,15 @@ export function useBacklog() {
         ),
       };
 
-      try {
-        await mutate(async () => {
-          await updateBacklogApi(id, { [field]: value });
-          return getBacklogs();
-        }, mutateOptions(optimisticData));
-      } catch (error) {
-        showToast.error("수정에 실패하였습니다.");
-      }
+      await mutate(async () => {
+        await updateItem(id, { [field]: value }, { showToast: false });
+        return optimisticData;
+      }, SWR_MUTATE_OPTIONS(optimisticData));
     },
-    [data, backlogData, mutate],
+    [data, backlogData, mutate, updateItem],
   );
 
-  // 삭제
+  // 다중 삭제 (낙관적 업데이트 적용)
   const deleteBacklogs = useCallback(
     async (ids: string[]) => {
       if (!data) return;
@@ -99,17 +67,12 @@ export function useBacklog() {
         items: backlogData.filter((item) => !ids.includes(String(item.id))),
       };
 
-      try {
-        await mutate(async () => {
-          await deleteBacklogsApi(ids);
-          return getBacklogs();
-        }, mutateOptions(optimisticData));
-        showToast.success("삭제되었습니다.");
-      } catch (error) {
-        showToast.error("삭제에 실패하였습니다.");
-      }
+      await mutate(async () => {
+        await deleteManyItems(ids);
+        return optimisticData;
+      }, SWR_MUTATE_OPTIONS(optimisticData));
     },
-    [data, backlogData, mutate],
+    [data, backlogData, mutate, deleteManyItems],
   );
 
   return {

@@ -1,7 +1,7 @@
 import { TABLES } from "@/lib/constants/tables";
 import { validateCreateExperience } from "@/lib/validations/experience";
 import { Experience } from "@/types/api/experience";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 
 export async function getExperiencesFromDb(): Promise<Experience[]> {
   const supabase = await createClient();

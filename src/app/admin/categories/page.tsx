@@ -7,7 +7,7 @@ import { Icon } from "@/components/common/Icon";
 import { useCategories } from "@/hooks/categories/useCategories";
 import { CategoryGroup } from "@/components/admin/categories/CategoryGroup";
 import { LoadingState } from "@/components/common/LoadingState";
-import { showToast } from "@/utils/toast";
+import { showToast } from "@/lib/toast";
 import DeleteModal from "@/components/common/DeleteModal";
 
 export default function CategoriesPage() {

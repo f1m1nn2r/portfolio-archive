@@ -1,13 +1,17 @@
 import useSWR from "swr";
 import { useState, useEffect } from "react";
 import { ProfileFormData } from "@/types/admin";
-import { showToast } from "@/utils/toast";
+import { showToast } from "@/lib/toast";
 import {
   getProfileSettings,
   updateProfileSettings,
 } from "@/services/profile/client";
+import { MESSAGES } from "@/lib/constants/messages";
+import { useAdmin } from "@/providers/AdminProvider";
 
 export function useProfileForm() {
+  const { isMaster } = useAdmin();
+
   const {
     data: initialData,
     isLoading: isFetching,
@@ -42,15 +46,16 @@ export function useProfileForm() {
       await updateProfileSettings(formData);
 
       await mutate();
-      showToast.success("프로필 정보가 수정되었습니다.");
+      showToast.success(MESSAGES.PROFILE.UPDATE_SUCCESS);
     } catch (error: any) {
-      showToast.error(error.message || "알 수 없는 오류가 발생했습니다.");
+      showToast.error(error.message || MESSAGES.ERROR.DEFAULT);
     } finally {
       setIsLoading(false);
     }
   };
 
   return {
+    isMaster,
     formData,
     isFetching,
     isLoading,
