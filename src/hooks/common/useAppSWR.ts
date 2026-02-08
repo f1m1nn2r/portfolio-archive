@@ -1,6 +1,8 @@
 import useSWR, { SWRConfiguration } from "swr";
 import { useCallback } from "react";
 import { showToast } from "@/lib/toast";
+import { MESSAGES } from "@/lib/constants/messages";
+import { promises } from "dns";
 
 export function useAppSWR<T, C = Partial<T>, U = Partial<T>>(
   key: string | null,
@@ -22,7 +24,7 @@ export function useAppSWR<T, C = Partial<T>, U = Partial<T>>(
         });
         if (!res.ok) {
           const errorResult = await res.json();
-          throw new Error(errorResult.error || "항목 생성에 실패했습니다.");
+          throw new Error(errorResult.error || MESSAGES.ERROR.CREATED_FAILED);
         }
         const newItem = await res.json();
         mutate();
@@ -53,7 +55,7 @@ export function useAppSWR<T, C = Partial<T>, U = Partial<T>>(
 
         if (!res.ok) {
           const errorResult = await res.json();
-          throw new Error(errorResult.error || "항목 수정에 실패했습니다.");
+          throw new Error(errorResult.error || MESSAGES.ERROR.UPDATE_FAILED);
         }
 
         const updatedItem = await res.json();
@@ -74,6 +76,17 @@ export function useAppSWR<T, C = Partial<T>, U = Partial<T>>(
     [key, mutate, config],
   );
 
+  const saveItem = useCallback(
+    async (
+      id: number | string | undefined,
+      payload: C | U,
+    ): Promise<T | null> => {
+      if (id) return updateItem(id, payload as U);
+      return createItem(payload as C);
+    },
+    [createItem, updateItem],
+  );
+
   const deleteItem = useCallback(
     async (id: number | string): Promise<boolean> => {
       if (!key) return false;
@@ -81,7 +94,7 @@ export function useAppSWR<T, C = Partial<T>, U = Partial<T>>(
         const res = await fetch(`${key}/${id}`, { method: "DELETE" });
         if (!res.ok) {
           const errorResult = await res.json();
-          throw new Error(errorResult.error || "항목 삭제에 실패했습니다.");
+          throw new Error(errorResult.error || MESSAGES.ERROR.DELETE_FAILED);
         }
         mutate();
         showToast.delete();
@@ -105,7 +118,7 @@ export function useAppSWR<T, C = Partial<T>, U = Partial<T>>(
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ids }), // 바디에 ID 리스트를 담아 전송
         });
-        if (!res.ok) throw new Error("선택 항목 삭제에 실패했습니다.");
+        if (!res.ok) throw new Error(MESSAGES.ERROR.DELETE_FAILED);
 
         mutate();
         showToast.delete();
@@ -126,6 +139,7 @@ export function useAppSWR<T, C = Partial<T>, U = Partial<T>>(
     mutate,
     createItem,
     updateItem,
+    saveItem,
     deleteItem,
     deleteManyItems,
   };

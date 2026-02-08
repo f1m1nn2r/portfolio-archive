@@ -1,3 +1,5 @@
+import { BacklogResponse } from "@/types/api/backlog";
+
 export interface Backlog {
   id: string;
   no: number;
@@ -28,11 +30,7 @@ export interface EpicManagerProps {
   isMaster: boolean;
 }
 
-export interface BacklogResponse {
-  items: Backlog[];
-  stats: {
-    total: number;
-    completed: number;
-    completionRate: number;
-  };
+export interface UseBacklogProps {
+  initialData?: BacklogResponse;
+  onSuccess?: () => void;
 }

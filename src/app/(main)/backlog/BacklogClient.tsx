@@ -4,11 +4,12 @@ import useSWR from "swr";
 import { AdminTable } from "@/components/admin/table/AdminTable";
 import { BacklogMainColumns } from "@/components/backlog/BacklogMainColumns";
 import { CommonPagination } from "@/components/common/Pagination";
-import { Backlog, BacklogResponse } from "@/types/admin";
+import { Backlog } from "@/types/admin";
 import { useMemo, useState } from "react";
 import { getBacklogs } from "@/services/backlog/client";
 import { BacklogClientProps } from "@/types/ui/backlog";
 import { useAdminMode } from "@/hooks/common/useAdminMode";
+import { BacklogResponse } from "@/types/api/backlog";
 
 export default function BacklogClient({
   initialBacklogs,

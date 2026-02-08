@@ -3,9 +3,10 @@ import { Experience } from "@/types/api/experience";
 import { ExperienceFormData } from "@/types/admin";
 import { showToast } from "@/lib/toast";
 import { MESSAGES } from "@/lib/constants/messages";
+import { safeValidateCreateExperience } from "@/lib/validations/experience";
 
 export function useExperienceForm(initialData?: Experience | null) {
-  // 1. 초기 상태 설정 (useEffect 대신 useState 초기값 함수 사용)
+  // 서버에 보낼 최종 폼 데이터 상태
   const [formData, setFormData] = useState<ExperienceFormData>(() => ({
     company: initialData?.company || "",
     team: initialData?.team || "",
@@ -15,6 +16,7 @@ export function useExperienceForm(initialData?: Experience | null) {
     skills: initialData?.skills || [],
   }));
 
+  // DatePicker와 연동하기 위해 문자열이 아닌 'Date 객체'로 따로 관리
   const [startDate, setStartDate] = useState<Date | null>(
     initialData ? new Date(initialData.start_date) : null,
   );
@@ -22,22 +24,23 @@ export function useExperienceForm(initialData?: Experience | null) {
     initialData?.end_date ? new Date(initialData.end_date) : null,
   );
 
-  // 텍스트 영역용 로컬 상태
+  // 설명(Description)은 배열이지만, 입력창에서는 줄바꿈(\n) 텍스트로 보여주기 위해 별도 관리
   const [descriptionInput, setDescriptionInput] = useState(
     initialData?.description.join("\n") || "",
   );
+  // 기술 스택 입력창에 타이핑 중인 텍스트
   const [skillInput, setSkillInput] = useState("");
 
-  // 날짜 포맷팅 유틸
+  // Date 객체를 서버 전송용 문자열(YYYY-MM-DD)로 변환
   const formatDate = (date: Date | null): string | null => {
     if (!date) return null;
-    return date.toISOString().split("T")[0]; // YYYY-MM-DD
+    return date.toISOString().split("T")[0];
   };
 
-  // 재직 여부 계산
+  // 종료 날짜가 오늘보다 이전이면 '재직 완료'로 판단
   const isFinished = endDate ? endDate < new Date() : false;
 
-  // 폼 업데이트 핸들러 (descriptionInput 변경 시 동기화)
+  // 설명란 입력 시: 텍스트 상태 업데이트 + 배열로 변환하여 폼 데이터에 저장
   const syncDescription = (value: string) => {
     setDescriptionInput(value);
     setFormData((prev) => ({
@@ -46,17 +49,19 @@ export function useExperienceForm(initialData?: Experience | null) {
     }));
   };
 
-  // 날짜 변경 핸들러
+  // 시작 날짜 변경 시: Date 상태 업데이트 + 폼 데이터 문자열 동기화
   const handleStartDateChange = (date: Date | null) => {
     setStartDate(date);
     setFormData((prev) => ({ ...prev, start_date: formatDate(date) || "" }));
   };
 
+  // 종료 날짜 변경 시: Date 상태 업데이트 + 폼 데이터 문자열 동기화
   const handleEndDateChange = (date: Date | null) => {
     setEndDate(date);
     setFormData((prev) => ({ ...prev, end_date: formatDate(date) }));
   };
 
+  // 새로운 기술 추가 (중복 방지 및 공백 제거)
   const addSkill = (skill: string) => {
     if (skill.trim() && !formData.skills.includes(skill.trim())) {
       setFormData((prev) => ({
@@ -66,6 +71,17 @@ export function useExperienceForm(initialData?: Experience | null) {
     }
   };
 
+  const handleSkillKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (skillInput.trim()) {
+        addSkill(skillInput);
+        setSkillInput("");
+      }
+    }
+  };
+
+  // 선택한 기술 제거
   const removeSkill = (skillToRemove: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -73,11 +89,16 @@ export function useExperienceForm(initialData?: Experience | null) {
     }));
   };
 
+  // 유효성 검사
   const validate = () => {
-    if (!formData.company || !formData.team || !formData.start_date) {
-      showToast.error(MESSAGES.VALIDATION.ALL_FIELDS);
+    const result = safeValidateCreateExperience(formData);
+
+    if (!result.success) {
+      const firstError = result.error.issues[0]?.message;
+      showToast.error(firstError || MESSAGES.VALIDATION.ALL_FIELDS);
       return false;
     }
+
     return true;
   };
 
@@ -94,6 +115,7 @@ export function useExperienceForm(initialData?: Experience | null) {
     setSkillInput,
     isFinished,
     addSkill,
+    handleSkillKeyDown,
     removeSkill,
     validate,
   };

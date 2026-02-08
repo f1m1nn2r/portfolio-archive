@@ -59,3 +59,14 @@ export function calculateTotalExperience(
     return `${years}년 ${months}개월`;
   }
 }
+
+export const formatDate = (date: string | Date) => {
+  return new Date(date).toLocaleString("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+};

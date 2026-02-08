@@ -1,4 +1,5 @@
-import { Backlog, BacklogResponse } from "@/types/admin";
+import { Backlog } from "@/types/admin";
+import { BacklogResponse } from "@/types/api/backlog";
 
 export const getBacklogs = async (): Promise<BacklogResponse> => {
   const res = await fetch("/api/backlog");

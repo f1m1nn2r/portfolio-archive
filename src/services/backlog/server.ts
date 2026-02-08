@@ -1,6 +1,7 @@
 import { TABLES } from "@/lib/constants/tables";
-import { Backlog, BacklogResponse } from "@/types/admin";
+import { Backlog } from "@/types/admin";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { BacklogResponse } from "@/types/api/backlog";
 
 export async function getBacklogs(): Promise<Backlog[]> {
   try {

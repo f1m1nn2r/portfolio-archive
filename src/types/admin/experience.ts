@@ -23,3 +23,8 @@ export interface ExperienceCardProps {
   onDelete: (id: number) => void;
   isMaster?: boolean;
 }
+
+export interface UseExperienceProps {
+  initialData?: Experience[];
+  onSuccess?: () => void;
+}

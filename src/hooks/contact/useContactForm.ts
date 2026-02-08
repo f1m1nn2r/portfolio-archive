@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { showToast } from "@/lib/toast";
 import { contactSchema } from "@/lib/validations/contact";
+import { sendContactMessage } from "@/services/contact/client";
 
 export function useContactForm() {
   const [formData, setFormData] = useState({
@@ -41,17 +42,7 @@ export function useContactForm() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(validation.data),
-      });
-
-      if (!response.ok) {
-        // 서버에서 보낸 Zod 에러 메시지가 있다면 그걸 보여줌
-        const result = await response.json();
-        throw new Error(result.error || "발송 실패");
-      }
+      await sendContactMessage(validation.data);
 
       showToast.success("메시지가 성공적으로 전달되었습니다.");
       setFormData({ from: "", nameCompany: "", message: "" });
@@ -59,7 +50,6 @@ export function useContactForm() {
       const message =
         error instanceof Error ? error.message : "메시지 전송에 실패했습니다.";
       showToast.error(message);
-      console.error(error);
     } finally {
       setIsLoading(false);
     }

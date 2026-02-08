@@ -95,6 +95,7 @@ export const MESSAGES = {
     DEFAULT: "오류가 발생했습니다.",
     UNAUTHORIZED: "권한이 없습니다.",
     SAVE_FAILED: "저장에 실패하였습니다.",
+    CREATED_FAILED: "생성에 실패하였습니다.",
     ADD_FAILED: "추가 중 오류가 발생했습니다.",
     UPDATE_FAILED: "수정에 실패하였습니다.",
     DELETE_FAILED: "삭제에 실패하였습니다.",

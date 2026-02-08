@@ -11,3 +11,4 @@ export * from "./admin/schema";
 export * from "./admin/profile";
 export * from "./admin/post";
 export * from "./admin/category";
+export * from "./admin/contact";

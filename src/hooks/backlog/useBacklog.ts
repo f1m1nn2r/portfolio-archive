@@ -1,15 +1,28 @@
 import { useAppSWR } from "../common/useAppSWR";
 import { getBacklogs } from "@/services/backlog/client";
-import { Backlog, BacklogResponse } from "@/types/admin";
-import { useMemo, useCallback } from "react";
+import { Backlog, UseBacklogProps } from "@/types/admin";
+import { useMemo, useCallback, useState } from "react";
 import { SWR_MUTATE_OPTIONS } from "@/lib/constants/swr";
+import { BacklogResponse } from "@/types/api/backlog";
 
-export function useBacklog() {
-  const { data, isLoading, mutate, createItem, updateItem, deleteManyItems } =
-    useAppSWR<BacklogResponse, Partial<Backlog>, Partial<Backlog>>(
-      "/api/backlog",
-      getBacklogs,
-    );
+export function useBacklog({ initialData, onSuccess }: UseBacklogProps = {}) {
+  const [isActionLoading, setIsActionLoading] = useState(false);
+
+  const {
+    data,
+    isLoading: isFetchLoading,
+    mutate,
+    createItem,
+    updateItem,
+    deleteManyItems,
+  } = useAppSWR<BacklogResponse, Partial<Backlog>, Partial<Backlog>>(
+    "/api/backlog",
+    getBacklogs,
+    {
+      fallbackData: initialData,
+      onSuccess: () => onSuccess?.(),
+    },
+  );
 
   const backlogData = useMemo(() => data?.items || [], [data]);
   const stats = useMemo(
@@ -17,23 +30,27 @@ export function useBacklog() {
     [data],
   );
 
-  // 행 추가
   const addBacklog = useCallback(async () => {
     if (!data) return;
-    const newEntry: Partial<Backlog> = {
-      screen: "",
-      sub_page: "",
-      feature: "",
-      description: "",
-      is_done: false,
-      is_designed: false,
-      priority: "medium",
-      order: backlogData.length,
-    };
-    await createItem(newEntry);
+    try {
+      setIsActionLoading(true);
+      const newEntry: Partial<Backlog> = {
+        screen: "",
+        sub_page: "",
+        feature: "",
+        description: "",
+        is_done: false,
+        is_designed: false,
+        priority: "medium",
+        order: backlogData.length,
+      };
+
+      await createItem(newEntry);
+    } finally {
+      setIsActionLoading(false);
+    }
   }, [data, backlogData.length, createItem]);
 
-  // 필드 업데이트 (낙관적 업데이트 적용)
   const updateBacklogField = useCallback(
     async <K extends keyof Backlog>(
       id: string,
@@ -57,27 +74,31 @@ export function useBacklog() {
     [data, backlogData, mutate, updateItem],
   );
 
-  // 다중 삭제 (낙관적 업데이트 적용)
   const deleteBacklogs = useCallback(
     async (ids: string[]) => {
-      if (!data) return;
+      if (!data || ids.length === 0) return;
 
       const optimisticData: BacklogResponse = {
         ...data,
         items: backlogData.filter((item) => !ids.includes(String(item.id))),
       };
 
-      await mutate(async () => {
-        await deleteManyItems(ids);
-        return optimisticData;
-      }, SWR_MUTATE_OPTIONS(optimisticData));
+      try {
+        setIsActionLoading(true);
+        await mutate(async () => {
+          await deleteManyItems(ids);
+          return optimisticData;
+        }, SWR_MUTATE_OPTIONS(optimisticData));
+      } finally {
+        setIsActionLoading(false);
+      }
     },
     [data, backlogData, mutate, deleteManyItems],
   );
 
   return {
     backlogData,
-    loading: isLoading,
+    loading: isFetchLoading || isActionLoading,
     stats,
     addBacklog,
     updateBacklogField,
