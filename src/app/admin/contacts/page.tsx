@@ -1,10 +1,9 @@
 "use client";
 
 import DeleteModal from "@/components/common/DeleteModal";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useContact } from "@/hooks/contact/useContact";
-import { useAdminMode } from "@/hooks/common/useAdminMode";
 import { useSelectionHandler } from "@/hooks/common/useSelectionHandler";
 import { useContactFilter } from "@/hooks/contact/useContactFilter";
 import { MESSAGES } from "@/lib/constants/messages";
@@ -15,21 +14,20 @@ import { AdminSearchBar } from "@/components/admin/common/AdminSearchBar";
 import { ContactListHeader } from "@/components/admin/contact/ContactListHeader";
 import { EmailItem } from "@/components/admin/email/EmailItem";
 import { CommonPagination } from "@/components/common/Pagination";
+import { useAdmin } from "@/providers/AdminProvider";
 
 export default function ContactsPage() {
   const router = useRouter();
-  const itemsPerPage = 5;
-  const { isMaster } = useAdminMode();
-  const [currentPage, setCurrentPage] = useState(1);
+  const { isMaster } = useAdmin();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
 
-  const { contacts, currentData, summaryItems, totalPages, ...handlers } =
-    useContact(currentPage, itemsPerPage);
+  const { deleteContacts, isDeleting, contacts, summaryItems, ...handlers } =
+    useContact();
 
-  const { searchQuery, setSearchQuery, filteredData } = useContactFilter({
-    data: currentData,
-    searchKeys: ["senderEmail", "senderName"],
+  const selection = useSelectionHandler({
+    data: contacts,
+    getId: (item) => item.id,
+    onDelete: deleteContacts,
   });
 
   const {
@@ -38,44 +36,29 @@ export default function ContactsPage() {
     toggleSelectAll,
     clearSelection,
     selectionCount,
-  } = useSelectionHandler({
+  } = selection;
+
+  const {
+    searchQuery,
+    setSearchQuery,
+    filterMenuItems,
+    currentData,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+  } = useContactFilter({
     data: contacts,
-    getId: (item) => item.id,
-    onDelete: handlers.deleteContacts,
+    searchKeys: ["sender", "name_company"],
+    selectionHandlers: { toggleSelect, toggleSelectAll, clearSelection },
+    itemsPerPage: 5,
   });
 
   const handleConfirmDelete = async () => {
-    setIsDeleting(true);
-    try {
-      await handlers.deleteContacts(selectedIds);
+    await deleteContacts(selectedIds, () => {
       clearSelection();
       setIsDeleteModalOpen(false);
-    } finally {
-      setIsDeleting(false);
-    }
+    });
   };
-
-  const filterMenuItems = useMemo(
-    () => [
-      { label: "전체 선택", onClick: () => toggleSelectAll() },
-      { label: "선택 해제", onClick: () => clearSelection() },
-      {
-        label: "읽은 메일 선택",
-        onClick: () => {
-          clearSelection();
-          contacts.filter((e) => e.isRead).forEach((e) => toggleSelect(e.id));
-        },
-      },
-      {
-        label: "읽지 않은 메일 선택",
-        onClick: () => {
-          clearSelection();
-          contacts.filter((e) => !e.isRead).forEach((e) => toggleSelect(e.id));
-        },
-      },
-    ],
-    [contacts, toggleSelectAll, clearSelection, toggleSelect],
-  );
 
   return (
     <AdminPageLayout title="Contacts">
@@ -113,12 +96,12 @@ export default function ContactsPage() {
                 {MESSAGES.CONTACT.ONLY_ADMIN}
               </h3>
             </div>
-          ) : filteredData.length === 0 ? (
+          ) : currentData.length === 0 ? (
             <div className="py-20 text-center text-gray-555">
               {MESSAGES.CONTACT.EMPTY}
             </div>
           ) : (
-            filteredData.map((email) => (
+            currentData.map((email) => (
               <div
                 key={email.id}
                 onClick={() => router.push(`/admin/contacts/${email.id}`)}
@@ -129,7 +112,7 @@ export default function ContactsPage() {
                   isSelected={selectedIds.includes(email.id)}
                   onToggleSelect={toggleSelect}
                   onToggleStar={() =>
-                    handlers.toggleStar(email.id, email.isStarred)
+                    handlers.toggleStar(email.id, email.is_starred)
                   }
                 />
               </div>

@@ -1,22 +1,28 @@
-import useSWR from "swr";
-import { useMemo } from "react";
-import {
-  getContacts,
-  deleteContactsApi,
-  updateReadStatus,
-  updateStarStatus,
-} from "@/services/contact/client";
+import { useAppSWR } from "@/hooks/common/useAppSWR";
+import { getContacts } from "@/services/contact/client";
+import { ContactMessage, UseContactProps } from "@/types/admin";
+import { useSummaryData } from "@/hooks/common/useSummaryData";
 import { showToast } from "@/lib/toast";
-import { useSummaryData } from "../common/useSummaryData";
+import { useState } from "react";
 
-export function useContact(currentPage?: number, itemsPerPage?: number) {
+export function useContact({ initialData, onSuccess }: UseContactProps = {}) {
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const {
     data: contacts = [],
     isLoading,
     mutate,
-  } = useSWR("contacts-list", () => getContacts());
+    deleteManyItems,
+    updateItem,
+  } = useAppSWR<ContactMessage[], string[], Partial<ContactMessage>>(
+    "/api/contact",
+    getContacts,
+    {
+      fallbackData: initialData,
+      onSuccess: () => onSuccess?.(),
+    },
+  );
 
-  // 1. 상단 요약 데이터 계산
   const summaryItems = useSummaryData([
     {
       icon: "mailSend",
@@ -28,63 +34,54 @@ export function useContact(currentPage?: number, itemsPerPage?: number) {
       icon: "envelopeOpen",
       bgColor: "bg-bg-blue",
       label: "읽지 않음",
-      getValue: () => `${contacts.filter((e) => !e.isRead).length}개`,
+      getValue: () => `${contacts.filter((e) => !e.is_read).length}개`,
     },
     {
       icon: "star",
       bgColor: "bg-[#FCFDE1]",
       label: "중요 메시지",
-      getValue: () => `${contacts.filter((e) => e.isStarred).length}개`,
+      getValue: () => `${contacts.filter((e) => e.is_starred).length}개`,
     },
   ]);
 
-  // 2. 페이지네이션 데이터 가공
-  const totalPages = itemsPerPage
-    ? Math.ceil(contacts.length / itemsPerPage) || 1
-    : 1;
+  const deleteContacts = async (ids: string[], onComplete?: () => void) => {
+    if (ids.length === 0) return;
 
-  const currentData = useMemo(() => {
-    if (!currentPage || !itemsPerPage) return contacts;
-    const start = (currentPage - 1) * itemsPerPage;
-    return contacts.slice(start, start + itemsPerPage);
-  }, [contacts, currentPage, itemsPerPage]);
+    setIsDeleting(true);
+    const success = await deleteManyItems(ids);
 
-  // 핸들러들
-  const deleteContacts = async (ids: string[]) => {
-    try {
-      await deleteContactsApi(ids);
-      showToast.delete();
-      mutate();
-    } catch (error) {
-      showToast.error("삭제 실패");
+    if (success) {
+      onComplete?.();
     }
+    setIsDeleting(false);
   };
 
   const toggleStar = async (id: string, currentStatus: boolean) => {
-    try {
-      await updateStarStatus(id, !currentStatus);
-      mutate();
-    } catch (error) {
-      showToast.error("상태 변경 실패");
-    }
+    await updateItem(id, { is_starred: !currentStatus }, { showToast: false });
   };
 
-  const markAsRead = async (ids: string[], showToastMessage = true) => {
+  const markAsRead = async (ids: string[]) => {
     try {
-      await updateReadStatus(ids, true);
-      if (showToastMessage) showToast.success("읽음 처리되었습니다.");
-      mutate();
+      const res = await fetch("/api/contact", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids, is_read: true }),
+      });
+
+      if (res.ok) {
+        mutate();
+        showToast.success(`${ids.length}개의 메시지를 읽음 처리했습니다.`);
+      }
     } catch (error) {
-      showToast.error("처리 실패");
+      showToast.error("처리 중 오류가 발생했습니다.");
     }
   };
 
   return {
-    contacts, // 전체 데이터
-    currentData, // 현재 페이지 데이터
-    summaryItems, // 요약 정보
-    totalPages, // 전체 페이지 수
+    contacts,
+    summaryItems,
     loading: isLoading,
+    isDeleting,
     deleteContacts,
     toggleStar,
     markAsRead,

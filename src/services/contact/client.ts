@@ -15,15 +15,7 @@ export const getContacts = async (): Promise<ContactMessage[]> => {
     throw error;
   }
 
-  return (data || []).map((item) => ({
-    id: item.id,
-    senderName: item.name_company, // DB: name_company -> UI: senderName
-    senderEmail: item.sender, // DB: sender -> UI: senderEmail
-    message: item.content, // DB: content -> UI: message
-    isRead: item.is_read, // DB: is_read -> UI: isRead
-    isStarred: item.is_starred, // DB: is_starred -> UI: isStarred
-    receivedAt: item.created_at, // DB: created_at -> UI: receivedAt
-  }));
+  return (data || []) as ContactMessage[];
 };
 
 export const updateReadStatus = async (ids: string[], isRead: boolean) => {
@@ -48,4 +40,20 @@ export const deleteContactsApi = async (ids: string[]) => {
   const { error } = await supabase.from(TABLES.CONTACTS).delete().in("id", ids);
 
   if (error) throw error;
+};
+
+// 사용자용: 문의 메시지 발송 API 호출
+export const sendContactMessage = async (formData: any) => {
+  const response = await fetch("/api/contact", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData),
+  });
+
+  if (!response.ok) {
+    const result = await response.json();
+    throw new Error(result.error || "발송 실패");
+  }
+
+  return response.json();
 };
