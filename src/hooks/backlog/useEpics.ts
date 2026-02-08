@@ -1,7 +1,6 @@
-import useSWR from "swr";
-import { getEpics, createEpicApi, deleteEpicApi } from "@/services/epic/client";
+import { useAppSWR } from "../common/useAppSWR";
+import { getEpics } from "@/services/epic/client";
 import { Epic } from "@/types/admin/backlog";
-import { showToast } from "@/lib/toast";
 import { MESSAGES } from "@/lib/constants/messages";
 
 const EPIC_COLORS = [
@@ -21,7 +20,12 @@ const EPIC_COLORS = [
 ];
 
 export function useEpics() {
-  const { data: epics = [], mutate } = useSWR<Epic[]>("/api/epics", getEpics);
+  const {
+    data: epics,
+    isLoading,
+    createItem,
+    deleteItem,
+  } = useAppSWR<Epic[], Partial<Epic>, Partial<Epic>>("/api/epics", getEpics);
 
   const addEpic = async (label: string = MESSAGES.EPIC.DEFAULT_LABEL) => {
     const randomColor =
@@ -32,29 +36,16 @@ export function useEpics() {
       color: randomColor,
     };
 
-    try {
-      await createEpicApi(newEpicData);
-      await mutate();
-      showToast.success(MESSAGES.EPIC.ADD_SUCCESS);
-    } catch (error) {
-      console.error("[useEpics] 에픽 추가 실패:", error);
-      showToast.error(MESSAGES.ERROR.ADD_FAILED);
-    }
+    return await createItem(newEpicData);
   };
 
   const removeEpic = async (id: string) => {
-    try {
-      await deleteEpicApi(id);
-      await mutate();
-      showToast.success(MESSAGES.COMMON.DELETE_SUCCESS);
-    } catch (error) {
-      console.error("[useEpics] 에픽 삭제 실패:", error);
-      showToast.error(MESSAGES.ERROR.DELETE_FAILED);
-    }
+    return await deleteItem(id);
   };
 
   return {
-    epics: epics as readonly Epic[],
+    epics: (epics || []) as readonly Epic[],
+    loading: isLoading,
     addEpic,
     removeEpic,
   };
