@@ -50,7 +50,7 @@ export function ExperienceManagementSection() {
       </section>
 
       <ExperienceModal
-        key={expModal.selected?.id || "new-exp"}
+        key={`${expModal.isOpen}-${expModal.selected?.id || "new"}`}
         isOpen={expModal.isOpen}
         onClose={expModal.close}
         mode={expModal.mode}

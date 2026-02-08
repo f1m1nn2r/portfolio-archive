@@ -1,54 +1,72 @@
 import { useAppSWR } from "@/hooks/common/useAppSWR";
 import { Experience } from "@/types/api/experience";
 import { getExperiences } from "@/services/experience/client";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
+import { showToast } from "@/lib/toast";
+import { MESSAGES } from "@/lib/constants/messages";
+import { UseExperienceProps } from "@/types/admin";
 
-export function useExperience(fallbackData?: Experience[]) {
-  // 공통 훅 사용 (경력 데이터는 보통 배열 형태이므로 T를 Experience[]로 설정)
+export function useExperience({
+  initialData,
+  onSuccess,
+}: UseExperienceProps = {}) {
   const {
     data: experiences,
-    isLoading: loading,
+    isLoading: isFetchLoading,
     mutate,
-    createItem,
-    updateItem,
-    deleteItem,
+    saveItem: baseSaveItem,
+    deleteItem: baseDeleteItem,
   } = useAppSWR<Experience[], Partial<Experience>, Partial<Experience>>(
     "/api/experience",
     getExperiences,
-    { fallbackData },
+    { fallbackData: initialData },
   );
 
-  // 저장 로직 (추가/수정 통합)
+  const [isActionLoading, setIsActionLoading] = useState(false);
+
   const saveExperience = useCallback(
-    async (
-      mode: "add" | "edit",
-      id: number | undefined,
-      data: Partial<Experience>,
-    ) => {
-      if (mode === "edit") {
-        if (!id) return false;
-        const result = await updateItem(id, data);
-        return !!result;
-      } else {
-        const result = await createItem(data);
-        return !!result;
+    async (mode: "add" | "edit", id: number | undefined, data: any) => {
+      try {
+        setIsActionLoading(true);
+        const result = await baseSaveItem(
+          mode === "edit" ? id : undefined,
+          data,
+        );
+
+        if (result) {
+          showToast.success(
+            mode === "edit"
+              ? MESSAGES.COMMON.EDIT_SUCCESS
+              : MESSAGES.COMMON.ADD_SUCCESS,
+          );
+          onSuccess?.();
+          return true;
+        }
+      } catch (e) {
+        showToast.error(MESSAGES.ERROR.SAVE_FAILED);
+      } finally {
+        setIsActionLoading(false);
       }
+      return false;
     },
-    [updateItem, createItem],
+    [baseSaveItem, onSuccess],
   );
 
-  // 삭제 로직
   const deleteExperience = useCallback(
     async (id: number) => {
-      return await deleteItem(id);
+      const success = await baseDeleteItem(id);
+      if (success) {
+        onSuccess?.();
+      }
+      return success;
     },
-    [deleteItem],
+    [baseDeleteItem, onSuccess],
   );
 
   return {
     experiences: experiences || [],
-    loading,
-    fetchExperiences: mutate, // 기존 이름 유지
+    loading: isFetchLoading || isActionLoading,
+    fetchExperiences: mutate,
     saveExperience,
     deleteExperience,
   };

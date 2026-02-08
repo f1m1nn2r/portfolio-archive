@@ -6,6 +6,7 @@ import { MESSAGES } from "@/lib/constants/messages";
 import { showToast } from "@/lib/toast";
 import { useExperience } from "./useExperience";
 import { useAdminMode } from "../common/useAdminMode";
+import { useModal } from "@/hooks/common/useModal";
 
 export function useExperienceManagement() {
   const { isMaster } = useAdminMode();
@@ -13,17 +14,9 @@ export function useExperienceManagement() {
     useExperience();
 
   // 모달 및 선택 상태
-  const [isExpModalOpen, setIsExpModalOpen] = useState(false);
+  const expModal = useModal<Experience>();
+  const deleteModal = useModal<number>();
   const [expModalMode, setExpModalMode] = useState<"add" | "edit">("add");
-  const [selectedExperience, setSelectedExperience] =
-    useState<Experience | null>(null);
-  const [deleteModal, setDeleteModal] = useState<{
-    isOpen: boolean;
-    id: number | null;
-  }>({
-    isOpen: false,
-    id: null,
-  });
 
   // 요약 정보 가공
   const summaryItems: AdminSummaryItem[] = useMemo(
@@ -47,25 +40,23 @@ export function useExperienceManagement() {
   // 핸들러 로직
   const openAddExp = useCallback(() => {
     if (!isMaster) return showToast.error(MESSAGES.AUTH.REQUIRED_ADMIN);
-    setSelectedExperience(null);
     setExpModalMode("add");
-    setIsExpModalOpen(true);
-  }, [isMaster]);
+    expModal.open();
+  }, [isMaster, expModal]);
 
   const openEditExp = useCallback(
     (exp: Experience) => {
       if (!isMaster) return showToast.error(MESSAGES.AUTH.REQUIRED_ADMIN);
-      setSelectedExperience(exp);
       setExpModalMode("edit");
-      setIsExpModalOpen(true);
+      expModal.open(exp);
     },
-    [isMaster],
+    [isMaster, expModal],
   );
 
   const confirmDelete = async () => {
-    if (!isMaster || !deleteModal.id) return;
-    const success = await deleteExperience(deleteModal.id);
-    if (success) setDeleteModal({ isOpen: false, id: null });
+    if (!isMaster || !deleteModal.data) return;
+    const success = await deleteExperience(deleteModal.data);
+    if (success) deleteModal.close();
   };
 
   return {
@@ -77,14 +68,14 @@ export function useExperienceManagement() {
 
     // 수정/추가 모달 관련
     expModal: {
-      isOpen: isExpModalOpen,
+      isOpen: expModal.isOpen,
       mode: expModalMode,
-      selected: selectedExperience,
+      selected: expModal.data,
       openAdd: openAddExp,
       openEdit: openEditExp,
-      close: () => setIsExpModalOpen(false),
+      close: expModal.close,
       onSaveSuccess: () => {
-        setIsExpModalOpen(false);
+        expModal.close();
         fetchExperiences();
       },
     },
@@ -94,9 +85,9 @@ export function useExperienceManagement() {
       isOpen: deleteModal.isOpen,
       open: (id: number) => {
         if (!isMaster) return showToast.error(MESSAGES.AUTH.REQUIRED_ADMIN);
-        setDeleteModal({ isOpen: true, id });
+        deleteModal.open(id);
       },
-      close: () => setDeleteModal({ isOpen: false, id: null }),
+      close: deleteModal.close,
       confirm: confirmDelete,
     },
   };
