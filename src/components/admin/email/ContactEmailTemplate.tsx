@@ -1,14 +1,14 @@
 import * as React from "react";
 
 interface ContactEmailTemplateProps {
-  senderName: string;
-  senderEmail: string;
+  from: string;
+  nameCompany: string;
   message: string;
 }
 
 export const ContactEmailTemplate = ({
-  senderName,
-  senderEmail,
+  from,
+  nameCompany,
   message,
 }: ContactEmailTemplateProps) => (
   <div style={{ fontFamily: "sans-serif", lineHeight: "1.6", color: "#333" }}>
@@ -16,7 +16,7 @@ export const ContactEmailTemplate = ({
       포트폴리오 문의
     </h2>
     <p>
-      <strong>보낸 사람:</strong> {senderName} ({senderEmail})
+      <strong>보낸 사람:</strong> {from} ({nameCompany})
     </p>
     <div
       style={{

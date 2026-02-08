@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import Image from "next/image";
+import { useMemo, useState } from "react";
 import { ProjectCard } from "@/components/admin/project/ProjectCard";
 import { ExperienceFilters } from "@/components/admin/experience/ExperienceFilters";
 import { ExperienceCard } from "@/components/domains/experience/ExperienceCard";
@@ -17,7 +17,7 @@ export default function ExperienceClient({
   const [selectedCompany, setSelectedCompany] = useState<string>("all");
   const [selectedYear, setSelectedYear] = useState<string>("all");
 
-  const { experiences } = useExperience(initialExperiences);
+  const { experiences } = useExperience({ initialData: initialExperiences });
   const { projects, allProjects } = useProjects({
     experienceId: selectedCompany,
     year: selectedYear,

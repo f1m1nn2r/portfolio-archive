@@ -2,7 +2,6 @@
 
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-import { useState } from "react";
 import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
 import { Badge } from "@/components/common/Badge";
@@ -10,8 +9,8 @@ import { ExperienceModalProps } from "@/types/admin/experience";
 import { useExperienceForm } from "@/hooks/experience/useExperienceForm";
 import { FormSection, FormField } from "@/components/common/form";
 import { useExperience } from "@/hooks/experience/useExperience";
-import { showToast } from "@/lib/toast";
-import { MESSAGES } from "@/lib/constants/messages";
+import { useState } from "react";
+import DeleteModal from "@/components/common/DeleteModal";
 
 export const ExperienceModal = ({
   isOpen,
@@ -20,8 +19,7 @@ export const ExperienceModal = ({
   initialData,
   onSaveSuccess,
 }: ExperienceModalProps) => {
-  const [saving, setSaving] = useState(false);
-
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const {
     formData,
     setFormData,
@@ -34,61 +32,33 @@ export const ExperienceModal = ({
     skillInput,
     setSkillInput,
     isFinished,
-    addSkill,
+    handleSkillKeyDown,
     removeSkill,
     validate,
   } = useExperienceForm(initialData);
 
-  const { saveExperience, deleteExperience } = useExperience();
+  const { saveExperience, deleteExperience, loading } = useExperience({
+    onSuccess: onSaveSuccess,
+  });
 
-  // 스킬 추가 (Enter)
-  const handleSkillKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && skillInput.trim()) {
-      e.preventDefault();
-      addSkill(skillInput);
-      setSkillInput("");
-    }
+  const handleDeleteClick = () => {
+    setIsDeleteModalOpen(true);
   };
 
-  // 저장
-  const handleSave = async () => {
+  const onSave = async () => {
     if (!validate()) return;
 
-    try {
-      setSaving(true);
-
-      // 훅에 전달할 최신 데이터 구성
-      const dataToSend = {
-        ...formData,
-        is_finished: isFinished,
-      };
-
-      const success = await saveExperience(mode, initialData?.id, dataToSend);
-
-      if (success) {
-        showToast.success(
-          mode === "edit"
-            ? MESSAGES.COMMON.EDIT_SUCCESS
-            : MESSAGES.COMMON.ADD_SUCCESS,
-        );
-        onSaveSuccess();
-      } else {
-        throw new Error("저장 실패");
-      }
-    } catch (error) {
-      console.error("저장 실패:", error);
-      showToast.error(MESSAGES.ERROR.SAVE_FAILED);
-    } finally {
-      setSaving(false);
-    }
+    await saveExperience(mode, initialData?.id, {
+      ...formData,
+      is_finished: isFinished,
+    });
   };
 
-  // 삭제
-  const handleDelete = async () => {
-    if (!initialData?.id) return;
-
-    await deleteExperience(initialData.id);
-    onSaveSuccess();
+  const handleConfirmDelete = async () => {
+    if (initialData?.id) {
+      await deleteExperience(initialData.id);
+      setIsDeleteModalOpen(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -225,24 +195,25 @@ export const ExperienceModal = ({
         {/* 풋터 */}
         <div className="px-10 py-6 border-t border-gray-light bg-bg-light/50 flex justify-end gap-2">
           {mode === "edit" && (
-            <Button variant="danger" size="md" onClick={handleDelete}>
+            <Button variant="danger" size="md" onClick={handleDeleteClick}>
               <Icon type="trash" size={16} /> 삭제
             </Button>
           )}
           <Button variant="secondary" size="md" onClick={onClose}>
             <Icon type="x" size={16} /> 취소
           </Button>
-          <Button
-            variant="ghost"
-            size="md"
-            onClick={handleSave}
-            disabled={saving}
-          >
+          <Button variant="ghost" size="md" onClick={onSave} disabled={loading}>
             <Icon type="save" size={16} />
-            {saving ? "저장 중..." : "저장"}
+            {loading ? "저장 중..." : "저장"}
           </Button>
         </div>
       </div>
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        isLoading={loading}
+      />
     </div>
   );
 };

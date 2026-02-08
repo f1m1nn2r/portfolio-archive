@@ -18,7 +18,7 @@ export default function HomeClient({
     { fallbackData: initialProfile },
   );
 
-  const { experiences } = useExperience(initialExperiences);
+  const { experiences } = useExperience({ initialData: initialExperiences });
 
   return (
     <PageLayout className="min-h-screen bg-white pt-12.5 pb-25">

@@ -45,28 +45,3 @@ export async function POST(request: Request) {
     return handleApiError(error);
   }
 }
-
-export async function DELETE(request: Request) {
-  try {
-    const session = (await getServerSession(authOptions)) as Session | null;
-
-    if (!session || session.user.role !== "admin") {
-      return NextResponse.json({ error: "권한이 없습니다." }, { status: 403 });
-    }
-
-    const supabase = await createClient();
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-
-    if (!id) {
-      return NextResponse.json({ error: "ID가 필요합니다." }, { status: 400 });
-    }
-
-    const { error } = await supabase.from(TABLES.EPICS).delete().eq("id", id);
-
-    if (error) return handleApiError(error);
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
