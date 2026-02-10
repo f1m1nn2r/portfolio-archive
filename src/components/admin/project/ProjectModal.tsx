@@ -41,13 +41,20 @@ export function ProjectModal({
     if (!validate()) return;
 
     setSaving(true);
+
+    // 전송할 데이터 가공
     const payload = {
       ...formData,
       year: startDate ? startDate.getFullYear() : 0,
     };
     delete (payload as any).period;
 
-    const success = await onSave(payload);
+    // mode는 initialData.id가 있으면 "edit", 없으면 "add"로 판별
+    const mode = initialData?.id ? "edit" : "add";
+
+    // 부모로부터 받은 onSave(saveProject)를 호출
+    const success = await onSave(mode, initialData?.id, payload);
+
     setSaving(false);
 
     if (success) {
