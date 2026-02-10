@@ -7,4 +7,5 @@ export interface CategoryItemProps {
   onCancel: () => void;
   onOpenEdit: (cat: any) => void;
   onOpenDelete: (id: string) => void;
+  isMaster?: boolean;
 }

@@ -1,15 +1,15 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Experience } from "@/types/api/experience";
-import { AdminSummaryItem } from "@/types/admin/layout";
 import { calculateTotalExperience } from "@/lib/date";
 import { MESSAGES } from "@/lib/constants/messages";
 import { showToast } from "@/lib/toast";
 import { useExperience } from "./useExperience";
-import { useAdminMode } from "../common/useAdminMode";
 import { useModal } from "@/hooks/common/useModal";
+import { useSummaryData } from "@/hooks/common/useSummaryData";
+import { useAdmin } from "@/providers/AdminProvider";
 
 export function useExperienceManagement() {
-  const { isMaster } = useAdminMode();
+  const { isMaster } = useAdmin();
   const { experiences, fetchExperiences, deleteExperience, loading } =
     useExperience();
 
@@ -18,24 +18,28 @@ export function useExperienceManagement() {
   const deleteModal = useModal<number>();
   const [expModalMode, setExpModalMode] = useState<"add" | "edit">("add");
 
-  // 요약 정보 가공
-  const summaryItems: AdminSummaryItem[] = useMemo(
-    () => [
-      {
-        title: "총 경력",
-        value: calculateTotalExperience(experiences),
-        icon: "briefcase",
-        bgColor: "bg-bg-purple",
-      },
-      {
-        title: "등록된 회사 수",
-        value: `${experiences.length}개`,
-        icon: "building",
-        bgColor: "bg-bg-blue",
-      },
-    ],
+  const { workExps } = useMemo(
+    () => ({
+      workExps: experiences.filter((e) => e.type === "WORK"),
+    }),
     [experiences],
   );
+
+  // 요약 정보 가공
+  const summaryItems = useSummaryData([
+    {
+      label: "총 경력",
+      getValue: () => calculateTotalExperience(workExps),
+      icon: "briefcase",
+      bgColor: "bg-bg-purple",
+    },
+    {
+      label: "등록된 회사 수",
+      getValue: () => `${workExps.length}개`,
+      icon: "building",
+      bgColor: "bg-bg-blue",
+    },
+  ]);
 
   // 핸들러 로직
   const openAddExp = useCallback(() => {

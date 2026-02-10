@@ -1,5 +1,6 @@
 "use client";
 
+import DeleteModal from "@/components/common/DeleteModal";
 import { AdminPageLayout } from "@/components/admin/layout/AdminPageLayout";
 import { AdminSummaryGrid } from "@/components/admin/layout/AdminSummaryGrid";
 import { Button } from "@/components/common/Button";
@@ -8,7 +9,6 @@ import { useCategories } from "@/hooks/categories/useCategories";
 import { CategoryGroup } from "@/components/admin/categories/CategoryGroup";
 import { LoadingState } from "@/components/common/LoadingState";
 import { showToast } from "@/lib/toast";
-import DeleteModal from "@/components/common/DeleteModal";
 
 export default function CategoriesPage() {
   const {

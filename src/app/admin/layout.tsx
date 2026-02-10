@@ -38,7 +38,7 @@ export default function AdminLayout({
 
   return (
     <AdminProvider isMaster={isMaster}>
-      <div className="flex min-h-screen bg-bg-light p-5 gap-2.5 items-start">
+      <div className="flex min-h-screen bg-bg-light p-5 gap-5 items-start">
         <Suspense fallback={<div>Loading navigation...</div>}>
           <AdminSidebar />
         </Suspense>

@@ -2,9 +2,9 @@ import { useState, useMemo } from "react";
 import { useProjects } from "@/hooks/project/useProjects";
 import { useProjectStore } from "@/store/useProjectStore";
 import { AdminSummaryItem } from "@/types/admin/layout";
-import { useAdminMode } from "../common/useAdminMode";
+import { useAdminMode } from "@/hooks/common/useAdminMode";
 import { showToast } from "@/lib/toast";
-import { useExperience } from "../experience/useExperience";
+import { useExperience } from "@/hooks/experience/useExperience";
 import { MESSAGES } from "@/lib/constants/messages";
 import { Project } from "@/types/api/project";
 
@@ -68,9 +68,13 @@ export function useProjectManagement() {
         selectedProject: null,
       });
     },
-    saveProject: async (data: Project) => {
-      const mode = selectedProject ? "edit" : "add";
-      const success = await saveProject(mode, data);
+    saveProject: async (
+      mode: "add" | "edit",
+      id: number | undefined,
+      data: Project,
+    ) => {
+      const success = await saveProject(mode, id, data);
+
       if (success) {
         closeEditModal();
       }

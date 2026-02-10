@@ -6,6 +6,8 @@ export interface ExperienceFiltersProps {
   years: number[]; // 부모로부터 받은 계산된 연도 목록
   onCompanyChange: (value: string) => void;
   onYearChange: (value: string) => void;
+  selectedCompany?: string;
+  selectedYear?: string;
 }
 
 export interface ExperienceClientProps {

@@ -43,13 +43,26 @@ export async function POST(request: Request) {
     const supabase = await createClient();
     const body = await request.json();
 
+    const insertData = {
+      experience_id: body.experience_id,
+      title: body.title,
+      description: body.description,
+      start_date: body.start_date,
+      end_date: body.end_date || null,
+      category: body.category,
+      year: body.year,
+      image_url: body.image_url,
+      project_url: body.project_url,
+    };
+
     const { data, error } = await supabase
       .from(TABLES.PROJECTS)
-      .insert(body)
+      .insert(insertData)
       .select()
       .single();
 
     if (error) {
+      console.error("Supabase Insert Error:", error);
       return NextResponse.json(
         { success: false, error: error.message },
         { status: 500 },
@@ -58,6 +71,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, data }, { status: 201 });
   } catch (err) {
+    console.error("Internal Server Error:", err);
     return handleApiError(err);
   }
 }

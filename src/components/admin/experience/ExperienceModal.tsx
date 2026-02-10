@@ -61,6 +61,23 @@ export const ExperienceModal = ({
     }
   };
 
+  //
+
+  const isWork = formData.type === "WORK";
+  const typeLabels = {
+    company: isWork ? "회사명" : "기관/과정명",
+    team: isWork ? "직책/역할" : "역할",
+    period: isWork ? "근무 기간" : "교육/진행 기간",
+    startDate: isWork ? "근무 시작일 선택" : "시작일 선택",
+    endDate: isWork ? "근무 종료일 선택" : "종료일 선택",
+    companyPlaceholder: isWork
+      ? "주식회사 아이스크림 에듀"
+      : "KTC 교육 과정 / 개인 프로젝트",
+    teamPlaceholder: isWork
+      ? "전략기획팀/사원"
+      : "포트폴리오 제작 프로젝트 / 팀장",
+  };
+
   if (!isOpen) return null;
 
   const inputStyles =
@@ -82,14 +99,32 @@ export const ExperienceModal = ({
           </button>
         </div>
 
+        <div className="flex px-10 pt-6 gap-4">
+          {["WORK", "PROJECT"].map((t) => (
+            <button
+              key={t}
+              onClick={() =>
+                setFormData({ ...formData, type: t as "WORK" | "PROJECT" })
+              }
+              className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${
+                formData.type === t
+                  ? "bg-black text-white shadow-md"
+                  : "bg-gray-100 text-gray-400 hover:bg-gray-200"
+              }`}
+            >
+              {t === "WORK" ? "Company Work" : "Personal"}
+            </button>
+          ))}
+        </div>
+
         {/* 폼 영역 */}
         <div className="flex-1 overflow-y-auto p-10 space-y-12.5">
           <FormSection title="기본 정보" isFirst>
             <div className="grid grid-cols-2 gap-4">
-              <FormField label="회사명" required>
+              <FormField label={typeLabels.company} required>
                 <input
                   type="text"
-                  placeholder="주식회사 아이스크림 에듀"
+                  placeholder={typeLabels.companyPlaceholder}
                   className={inputStyles}
                   value={formData.company}
                   onChange={(e) =>
@@ -97,10 +132,10 @@ export const ExperienceModal = ({
                   }
                 />
               </FormField>
-              <FormField label="직책/역할" required>
+              <FormField label={typeLabels.team} required>
                 <input
                   type="text"
-                  placeholder="전략기획팀/사원"
+                  placeholder={typeLabels.teamPlaceholder}
                   className={inputStyles}
                   value={formData.team}
                   onChange={(e) =>
@@ -109,10 +144,12 @@ export const ExperienceModal = ({
                 />
               </FormField>
             </div>
-            <FormField label="업무 설명 (한 줄씩 입력)">
+            <FormField
+              label={isWork ? "업무 설명" : "프로젝트 설명 및 주요 기능"}
+            >
               <textarea
                 rows={5}
-                placeholder="업무 내용을 한 줄씩 입력해주세요."
+                placeholder="내용을 한 줄씩 입력해주세요."
                 className={`${inputStyles} resize-none`}
                 value={descriptionInput}
                 onChange={(e) => setDescriptionInput(e.target.value)}
@@ -120,7 +157,7 @@ export const ExperienceModal = ({
             </FormField>
           </FormSection>
 
-          <FormSection title="근무 기간">
+          <FormSection title={typeLabels.period}>
             <div className="grid grid-cols-2 gap-4">
               <FormField label="시작일" required>
                 <div className="relative">
@@ -129,7 +166,7 @@ export const ExperienceModal = ({
                     onChange={(date: Date | null) => setStartDate(date)}
                     dateFormat="yyyy년 MM월"
                     showMonthYearPicker
-                    placeholderText="근무 시작일 선택"
+                    placeholderText={typeLabels.startDate}
                     className={`${inputStyles} cursor-pointer`}
                   />
                   <Icon
@@ -146,7 +183,7 @@ export const ExperienceModal = ({
                     onChange={(date: Date | null) => setEndDate(date)}
                     dateFormat="yyyy년 MM월"
                     showMonthYearPicker
-                    placeholderText="근무 종료일 선택"
+                    placeholderText={typeLabels.endDate}
                     minDate={startDate || undefined}
                     className={`${inputStyles} cursor-pointer`}
                     isClearable

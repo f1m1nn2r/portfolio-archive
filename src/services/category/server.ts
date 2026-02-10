@@ -6,16 +6,24 @@ import { createAdminClient } from "@/lib/supabase/admin";
 export async function getCategoriesWithStats(): Promise<CategoryResponse> {
   try {
     const supabase = createAdminClient();
+
     const { data, error } = await supabase
       .from(TABLES.CATEGORIES)
-      .select("*")
+      .select(
+        `
+        *,
+        posts:posts(count)
+      `,
+      )
       .order("sort_order", { ascending: true });
 
     if (error) throw error;
 
-    const items = data as Category[];
+    const items = (data as any[]).map((item) => ({
+      ...item,
+      postCount: item.posts?.[0]?.count || 0,
+    }));
 
-    // 통계 계산
     const totalCount = items.length;
     const parentCount = items.filter((c) => c.depth === 0).length;
     const childCount = items.filter((c) => c.depth === 1).length;
