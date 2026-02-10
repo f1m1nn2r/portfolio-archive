@@ -12,7 +12,10 @@ export function CategoryItem({
   onCancel,
   onOpenEdit,
   onOpenDelete,
+  isMaster,
 }: CategoryItemProps) {
+  const disabledStyles = !isMaster ? "opacity-50 cursor-not-allowed" : "";
+
   return (
     <div className="flex items-center justify-between py-3 px-5 hover:bg-gray-50 transition-colors">
       {isEditing ? (
@@ -27,6 +30,7 @@ export function CategoryItem({
             variant="primary"
             size="sm"
             onClick={() => onUpdate(category.id)}
+            className={disabledStyles}
           >
             저장
           </Button>
@@ -37,7 +41,12 @@ export function CategoryItem({
       ) : (
         <div className="flex items-center gap-2 text-gray-600 pl-4">
           <Icon type="fileBlank" size={16} />
-          <span>{category.name}</span>
+          <span>
+            {category.name}
+            <span className="ml-1 text-base">
+              ({(category as any).postCount || 0})
+            </span>
+          </span>
         </div>
       )}
       <div className="flex gap-2">
@@ -45,6 +54,7 @@ export function CategoryItem({
           variant="secondary"
           size="sm"
           onClick={() => onOpenEdit(category)}
+          className={disabledStyles}
         >
           수정
         </Button>
@@ -52,6 +62,7 @@ export function CategoryItem({
           variant="danger"
           size="sm"
           onClick={() => onOpenDelete(category.id)}
+          className={disabledStyles}
         >
           삭제
         </Button>
