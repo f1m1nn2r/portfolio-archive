@@ -1,6 +1,7 @@
 import { TABLES } from "@/lib/constants/tables";
 import { Post } from "@/types/admin";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { formatDate } from "@/lib/date";
 
 export async function createWriting(body: Partial<Post>): Promise<Post> {
   const supabase = createAdminClient();
@@ -31,42 +32,67 @@ export async function createWriting(body: Partial<Post>): Promise<Post> {
   return data;
 }
 
-export async function getWriting(): Promise<{
-  posts: Post[];
+export async function getWriting(categoryId?: string | null): Promise<{
+  posts: any[]; // 가공된 데이터 타입에 맞게 수정 가능
   totalCount: number;
   recentCount: number;
 }> {
   const supabase = createAdminClient();
 
-  // 오늘 0시 기준 시간 설정
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // 게시글 목록 + 카테고리 계층 + 전체 개수 한 번에 가져오기
-  const { data, error, count } = await supabase
-    .from(TABLES.POSTS)
-    .select(
-      `
+  let query = supabase.from(TABLES.POSTS).select(
+    `
       *,
-      category:categories(
+      category:categories!inner(
+        id,
         name,
+        parent_id,
         parent:parent_id(name)
       )
     `,
-      { count: "exact" },
-    ) // 전체 개수(exact) 포함
-    .order("created_at", { ascending: false });
+    { count: "exact" },
+  );
+
+  // categoryId가 있을 경우 필터 추가
+  if (categoryId) {
+    query = query.or(`id.eq.${categoryId}, parent_id.eq.${categoryId}`, {
+      foreignTable: "categories",
+    });
+  }
+
+  const { data, error, count } = await query.order("created_at", {
+    ascending: false,
+  });
 
   if (error) throw error;
 
-  // 오늘 작성된 게시글 개수만 따로 쿼리
+  // 오늘 작성된 게시글 개수 (전체 기준 유지 혹은 필터 기준 선택 가능)
   const { count: recentCount } = await supabase
     .from(TABLES.POSTS)
-    .select("*", { count: "exact", head: true }) // head: true로 데이터 없이 숫자만 가져옴
+    .select("*", { count: "exact", head: true })
     .gte("created_at", today.toISOString());
 
+  // 서버 측 데이터 가공 (프론트 부담 덜어주기)
+  const formattedPosts = (data || []).map((post: any, index: number) => {
+    const categoryData = post.category;
+    return {
+      id: post.id,
+      no: index + 1,
+      title: post.title,
+      content: post.content,
+      categoryId: categoryData?.id,
+      parentCategoryId: categoryData?.parent_id,
+      category: categoryData?.parent
+        ? `${categoryData.parent.name} > ${categoryData.name}`
+        : categoryData?.name || "미지정",
+      date: formatDate(post.created_at),
+    };
+  });
+
   return {
-    posts: data || [],
+    posts: formattedPosts,
     totalCount: count || 0,
     recentCount: recentCount || 0,
   };
