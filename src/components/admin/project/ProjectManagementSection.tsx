@@ -1,3 +1,4 @@
+import DeleteModal from "@/components/common/DeleteModal";
 import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
 import { ProjectCard } from "@/components/admin/project/ProjectCard";
@@ -6,14 +7,13 @@ import { AdminActionBar } from "@/components/admin/layout/AdminActionBar";
 import { AdminSummaryGrid } from "@/components/admin/layout/AdminSummaryGrid";
 import { MESSAGES } from "@/lib/constants/messages";
 import { useProjectManagement } from "@/hooks/project/useProjectManagement";
-import { useAdminMode } from "@/hooks/common/useAdminMode";
 import { usePagination } from "@/hooks/common/usePagination";
 import { CommonPagination } from "@/components/common/Pagination";
 import { ProjectModal } from "@/components/admin/project/ProjectModal";
-import DeleteModal from "@/components/common/DeleteModal";
+import { useAdmin } from "@/providers/AdminProvider";
 
 export function ProjectManagementSection() {
-  const { isMaster } = useAdminMode();
+  const { isMaster } = useAdmin();
   const {
     projects,
     experiences,
@@ -56,9 +56,9 @@ export function ProjectManagementSection() {
           </Button>
         </AdminActionBar>
 
-        <div className="grid grid-cols-3 gap-7.5">
+        <div className="grid gap-7.5 grid-cols-[repeat(auto-fit,minmax(320px,1fr))]">
           {paginatedProjects.length === 0 ? (
-            <div className="col-span-3 text-center py-20 text-gray-555">
+            <div className="text-center py-20 text-gray-555">
               {MESSAGES.PROJECT.EMPTY}
             </div>
           ) : (

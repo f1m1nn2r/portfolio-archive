@@ -10,7 +10,7 @@ export function ProjectCard({ project, isAdmin, onDelete }: ProjectCardProps) {
   const { openEditModal } = useProjectStore();
 
   return (
-    <div className="border-t-5 border-black py-7.5 px-5 bg-bg-light h-full flex flex-col">
+    <div className="border-t-5 border-black py-7.5 px-5 bg-bg-light h-full flex flex-col w-full">
       <div className="pb-6 mb-6 border-b-1 border-black">
         <h3 className="text-2xl font-bold">{project.title}</h3>
         <p className="text-lg font-medium">

@@ -3,7 +3,7 @@ import { Post } from "@/types/admin";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatDate } from "@/lib/date";
 
-export async function createWriting(body: Partial<Post>): Promise<Post> {
+export async function createPost(body: Partial<Post>): Promise<Post> {
   const supabase = createAdminClient();
 
   const publishedAt =
@@ -32,7 +32,7 @@ export async function createWriting(body: Partial<Post>): Promise<Post> {
   return data;
 }
 
-export async function getWriting(categoryId?: string | null): Promise<{
+export async function getPosts(categoryId?: string | null): Promise<{
   posts: any[]; // 가공된 데이터 타입에 맞게 수정 가능
   totalCount: number;
   recentCount: number;
@@ -98,7 +98,7 @@ export async function getWriting(categoryId?: string | null): Promise<{
   };
 }
 
-export async function getWritingById(id: string): Promise<Post> {
+export async function getPostById(id: string): Promise<Post> {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from(TABLES.POSTS)
@@ -110,7 +110,7 @@ export async function getWritingById(id: string): Promise<Post> {
   return data;
 }
 
-export async function updateWriting(
+export async function updatePost(
   id: string,
   body: Partial<Post>,
 ): Promise<Post> {
@@ -129,7 +129,7 @@ export async function updateWriting(
   return data;
 }
 
-export async function deleteWriting(id: string): Promise<void> {
+export async function deletePost(id: string): Promise<void> {
   const supabase = createAdminClient();
   const { error } = await supabase.from(TABLES.POSTS).delete().eq("id", id);
 

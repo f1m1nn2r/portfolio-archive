@@ -1,48 +1,40 @@
 import { useAppSWR } from "@/hooks/common/useAppSWR";
 import { getPostsApi } from "@/services/post/client";
 import { useCallback, useMemo, useState } from "react";
-import { FormattedPost } from "@/types/admin";
 import { PostsResponse } from "@/types/api/post";
 import { MESSAGES } from "@/lib/constants/messages";
 import { showToast } from "@/lib/toast";
+import { useSearchParams } from "next/navigation";
+import { FormattedPost } from "@/types/admin";
 
 export const usePosts = () => {
+  const searchParams = useSearchParams();
+  const categoryFilterId = searchParams.get("categoryId");
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  // SWR 호출
+  const apiUrl = categoryFilterId
+    ? `/api/posts?categoryId=${categoryFilterId}`
+    : "/api/posts";
+
   const { data, isLoading, error, mutate, deleteManyItems } =
-    useAppSWR<PostsResponse>("/api/writing", getPostsApi);
+    useAppSWR<PostsResponse>(apiUrl, getPostsApi);
 
-  // 가공된 데이터 생성
-  const formattedPosts = useMemo<FormattedPost[]>(() => {
-    if (!data?.posts) return [];
-
-    return data.posts.map((post: any, index: number) => {
-      const categoryData = post.category;
-      return {
-        id: post.id,
-        no: index + 1,
-        title: post.title,
-        category: categoryData?.parent
-          ? `${categoryData.parent.name} > ${categoryData.name}`
-          : categoryData?.name || "미지정",
-        date: new Date(post.created_at).toLocaleDateString(),
-      };
-    });
+  const posts = useMemo<FormattedPost[]>(() => {
+    return (data?.posts || []) as FormattedPost[];
   }, [data?.posts]);
 
-  // 검색 필터링 로직 (가공된 데이터를 기준으로 필터링)
   const filteredPosts = useMemo(() => {
-    return formattedPosts.filter((post) =>
+    return posts.filter((post: any) =>
       post.title.toLowerCase().includes(searchQuery.toLowerCase()),
     );
-  }, [formattedPosts, searchQuery]);
+  }, [posts, searchQuery]);
 
-  // 삭제 로직
   const handleConfirmDelete = async () => {
-    const success = await deleteManyItems(selectedIds);
+    const success = await deleteManyItems(selectedIds, "/api/posts");
+
     if (success) {
       setSelectedIds([]);
       setIsDeleteModalOpen(false);
@@ -57,7 +49,6 @@ export const usePosts = () => {
     setIsDeleteModalOpen(true);
   }, [selectedIds]);
 
-  // 선택 로직
   const handleToggleSelect = (id: string | number) => {
     const targetId = String(id);
     setSelectedIds((prev) =>
@@ -80,6 +71,7 @@ export const usePosts = () => {
     },
     loading: isLoading,
     error,
+    setSelectedIds,
     searchQuery,
     selectedIds,
     isDeleteModalOpen,

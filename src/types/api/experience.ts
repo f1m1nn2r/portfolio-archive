@@ -14,4 +14,5 @@ export interface Experience {
   is_finished: boolean;
   created_at?: string;
   updated_at?: string;
+  type?: "WORK" | "PROJECT";
 }

@@ -5,4 +5,5 @@ export interface Category {
   depth: number;
   children?: Category[];
   sort_order: number;
+  postCount?: number;
 }

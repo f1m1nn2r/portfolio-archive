@@ -7,6 +7,7 @@ export interface ExperienceFormData {
   end_date: string | null;
   description: string[];
   skills: string[];
+  type?: "WORK" | "PROJECT";
 }
 
 export interface ExperienceModalProps {

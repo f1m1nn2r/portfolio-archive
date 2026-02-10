@@ -1,13 +1,13 @@
 import { useState, useEffect, useMemo } from "react";
 import { Category } from "@/types/admin";
-import {
-  createWritingApi,
-  getWritingByIdApi,
-  updateWritingApi,
-} from "@/services/writing/client";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/lib/toast";
 import { useAdminMode } from "@/hooks/common/useAdminMode";
+import {
+  createPostApi,
+  getPostByIdApi,
+  updatePostApi,
+} from "@/services/post/client";
 
 export const useWritingForm = (
   postId: string | undefined,
@@ -26,7 +26,7 @@ export const useWritingForm = (
     if (!postId || categories.length === 0) return;
 
     const fetchAndMapPost = async () => {
-      const post = await getWritingByIdApi(postId);
+      const post = await getPostByIdApi(postId);
       if (post) {
         setTitle(post.title);
         setContent(post.content);
@@ -69,8 +69,8 @@ export const useWritingForm = (
 
     try {
       const result = postId
-        ? await updateWritingApi(postId, payload)
-        : await createWritingApi(payload);
+        ? await updatePostApi(postId, payload)
+        : await createPostApi(payload);
 
       if (result) {
         showToast.save(postId ? "edit" : "add");

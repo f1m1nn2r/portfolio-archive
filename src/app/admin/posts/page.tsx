@@ -14,9 +14,13 @@ import { useSummaryData } from "@/hooks/common/useSummaryData";
 import { AdminSearchBar } from "@/components/admin/common/AdminSearchBar";
 import { PostColumns } from "@/components/admin/post/PostColumns";
 import { MESSAGES } from "@/lib/constants/messages";
+import { FormattedPost } from "@/types/admin";
+import { useAdmin } from "@/providers/AdminProvider";
 
 export default function PostsPage() {
+  const { isMaster } = useAdmin();
   const router = useRouter();
+  const disabledStyles = !isMaster ? "opacity-50 cursor-not-allowed" : "";
 
   const {
     posts,
@@ -48,7 +52,10 @@ export default function PostsPage() {
     },
   ]);
 
-  const columns = PostColumns((id) => router.push(`/admin/writing?id=${id}`));
+  const columns = PostColumns((id) => {
+    if (!isMaster) return;
+    router.push(`/admin/writing?id=${id}`);
+  });
 
   const postFilters = [
     { label: "카테고리별", onClick: () => console.log("카테고리별 정렬") },
@@ -77,22 +84,24 @@ export default function PostsPage() {
               filterItems={postFilters}
             />
 
-            <Button
-              variant="secondary"
-              icon="trash"
-              onClick={openDeleteModal}
-              disabled={selectedIds.length === 0}
-            >
-              선택 항목 삭제
-            </Button>
+            {isMaster && (
+              <Button
+                variant="secondary"
+                icon="trash"
+                onClick={openDeleteModal}
+                disabled={selectedIds.length === 0}
+              >
+                선택 항목 삭제
+              </Button>
+            )}
           </div>
         </div>
       </AdminActionBar>
 
-      <AdminTable
+      <AdminTable<FormattedPost>
         columns={columns}
         data={posts}
-        getItemId={(item: any) => String(item.id)}
+        getItemId={(item: FormattedPost) => String(item.id)}
         selectedIds={selectedIds}
         onToggleSelect={handleToggleSelect}
         onToggleSelectAll={handleToggleSelectAll}

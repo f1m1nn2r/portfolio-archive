@@ -5,21 +5,22 @@ export const PostColumns = (
 ): AdminTableColumn<FormattedPost>[] => [
   {
     label: "checkbox",
-    width: "w-[50px]",
+    width: "w-15",
     center: true,
   },
   {
     key: "no",
     label: "NO",
-    width: "w-[60px]",
+    width: "w-15",
     center: true,
   },
   {
     key: "title",
     label: "제목",
+    width: "w-[400px]",
     renderCell: (item: FormattedPost) => (
       <span
-        className="cursor-pointer hover:underline"
+        className="cursor-pointer hover:underline truncate block"
         onClick={() => onTitleClick(String(item.id))}
       >
         {item.title}
@@ -29,7 +30,7 @@ export const PostColumns = (
   {
     key: "category",
     label: "카테고리",
-    width: "",
+    width: "w-[350px]",
   },
   {
     key: "date",

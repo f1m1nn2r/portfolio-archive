@@ -14,6 +14,7 @@ export function useExperienceForm(initialData?: Experience | null) {
     end_date: initialData?.end_date || null,
     description: initialData?.description || [],
     skills: initialData?.skills || [],
+    type: initialData?.type || "WORK",
   }));
 
   // DatePicker와 연동하기 위해 문자열이 아닌 'Date 객체'로 따로 관리
