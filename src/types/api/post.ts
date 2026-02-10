@@ -1,7 +1,8 @@
-import { Post } from "@/types/admin";
+import { FormattedPost, Post } from "@/types/admin";
 
 export interface PostsResponse {
-  posts: Post[];
+  success: boolean;
+  posts: FormattedPost[];
   totalCount: number;
   recentCount: number;
 }

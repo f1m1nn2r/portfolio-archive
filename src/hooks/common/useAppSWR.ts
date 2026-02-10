@@ -2,7 +2,6 @@ import useSWR, { SWRConfiguration } from "swr";
 import { useCallback } from "react";
 import { showToast } from "@/lib/toast";
 import { MESSAGES } from "@/lib/constants/messages";
-import { promises } from "dns";
 
 export function useAppSWR<T, C = Partial<T>, U = Partial<T>>(
   key: string | null,
@@ -109,15 +108,18 @@ export function useAppSWR<T, C = Partial<T>, U = Partial<T>>(
   );
 
   const deleteManyItems = useCallback(
-    async (ids: (number | string)[]): Promise<boolean> => {
-      if (!key || ids.length === 0) return false;
+    async (ids: (number | string)[], customUrl?: string): Promise<boolean> => {
+      const targetUrl = customUrl || key;
+
+      if (!targetUrl || ids.length === 0) return false;
+
       try {
-        const res = await fetch(key, {
-          // 주소 뒤에 ID를 붙이지 않고 key(엔드포인트)로 바로 보냄
+        const res = await fetch(targetUrl, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ids }), // 바디에 ID 리스트를 담아 전송
+          body: JSON.stringify({ ids }),
         });
+
         if (!res.ok) throw new Error(MESSAGES.ERROR.DELETE_FAILED);
 
         mutate();

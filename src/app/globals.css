@@ -3,6 +3,32 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  /* 1. 애니메이션 정의 (Keyframes) */
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+}
+@utility animate-accordion-down {
+  animation: accordion-down 0.2s ease-out;
+}
+@utility animate-accordion-up {
+  animation: accordion-up 0.2s ease-out;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -158,4 +184,45 @@ body * {
 
 .lucide-chevron-down {
   display: none;
+}
+
+.custom-html-style ul {
+  list-style-type: disc !important;
+}
+
+.custom-html-style ol {
+  list-style-type: decimal !important;
+}
+
+.custom-html-style p,
+.custom-html-style li {
+  font-size: 16px !important;
+  line-height: 1.8 !important;
+}
+
+.custom-html-style :not(pre) > code {
+  background-color: #f3f4f6 !important;
+  color: #eb5757 !important;
+  padding: 0.2rem 0.4rem !important;
+  border-radius: 4px !important;
+  font-family: monospace !important;
+  font-size: 0.9em !important;
+}
+
+/* 2. 여러 줄 코드 박스 (Block) */
+.custom-html-style pre {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+  padding: 1.5rem !important;
+  border-radius: 8px !important;
+  margin: 1.5rem 0 !important;
+  overflow-x: auto !important;
+  line-height: 1.5 !important;
+}
+
+.custom-html-style pre code {
+  background: none !important;
+  color: inherit !important;
+  padding: 0 !important;
+  font-family: "Fira Code", monospace !important;
 }
