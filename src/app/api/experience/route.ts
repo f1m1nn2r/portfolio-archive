@@ -6,9 +6,13 @@ import {
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const experiences = await getExperiencesFromDb();
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get("type");
+
+    const experiences = await getExperiencesFromDb(type);
+
     return NextResponse.json({ success: true, data: experiences });
   } catch (err) {
     return handleApiError(err);

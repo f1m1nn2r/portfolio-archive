@@ -26,27 +26,17 @@ export function useExperience({
 
   const saveExperience = useCallback(
     async (mode: "add" | "edit", id: number | undefined, data: any) => {
-      try {
-        setIsActionLoading(true);
-        const result = await baseSaveItem(
-          mode === "edit" ? id : undefined,
-          data,
-        );
+      setIsActionLoading(true);
 
-        if (result) {
-          showToast.success(
-            mode === "edit"
-              ? MESSAGES.COMMON.EDIT_SUCCESS
-              : MESSAGES.COMMON.ADD_SUCCESS,
-          );
-          onSuccess?.();
-          return true;
-        }
-      } catch (e) {
-        showToast.error(MESSAGES.ERROR.SAVE_FAILED);
-      } finally {
-        setIsActionLoading(false);
+      const result = await baseSaveItem(mode === "edit" ? id : undefined, data);
+
+      setIsActionLoading(false);
+
+      if (result) {
+        onSuccess?.();
+        return true;
       }
+
       return false;
     },
     [baseSaveItem, onSuccess],
