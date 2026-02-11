@@ -7,15 +7,17 @@ import { AdminSummaryGrid } from "@/components/admin/layout/AdminSummaryGrid";
 import { AdminActionBar } from "@/components/admin/layout/AdminActionBar";
 import { AdminTable } from "@/components/admin/table/AdminTable";
 import { CommonPagination } from "@/components/common/Pagination";
-import { Button } from "@/components/common/Button";
 import { LoadingState } from "@/components/common/LoadingState";
 import { usePosts } from "@/hooks/posts/usePosts";
 import { useSummaryData } from "@/hooks/common/useSummaryData";
 import { AdminSearchBar } from "@/components/admin/common/AdminSearchBar";
 import { PostColumns } from "@/components/admin/post/PostColumns";
 import { MESSAGES } from "@/lib/constants/messages";
+import { useAdmin } from "@/providers/AdminProvider";
+import { DeleteButton } from "@/components/common/DeleteButton";
 
 export default function PostsPage() {
+  const { isMaster } = useAdmin();
   const router = useRouter();
 
   const {
@@ -48,7 +50,10 @@ export default function PostsPage() {
     },
   ]);
 
-  const columns = PostColumns((id) => router.push(`/admin/writing?id=${id}`));
+  const columns = PostColumns((id) => {
+    if (!isMaster) return;
+    router.push(`/admin/posts/editor?id=${id}`);
+  });
 
   const postFilters = [
     { label: "카테고리별", onClick: () => console.log("카테고리별 정렬") },
@@ -77,14 +82,12 @@ export default function PostsPage() {
               filterItems={postFilters}
             />
 
-            <Button
-              variant="secondary"
-              icon="trash"
-              onClick={openDeleteModal}
-              disabled={selectedIds.length === 0}
-            >
-              선택 항목 삭제
-            </Button>
+            {isMaster && (
+              <DeleteButton
+                onClick={openDeleteModal}
+                disabled={selectedIds.length === 0}
+              />
+            )}
           </div>
         </div>
       </AdminActionBar>

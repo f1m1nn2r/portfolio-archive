@@ -4,12 +4,14 @@ import { useState, useMemo } from "react";
 import { useAppSWR } from "@/hooks/common/useAppSWR";
 import { getCategoriesApi } from "@/services/category/client";
 import { Category } from "@/types/admin";
-import { useAdminMode } from "@/hooks/common/useAdminMode";
 import { useSummaryData } from "@/hooks/common/useSummaryData";
 import { CategoryResponse } from "@/types/api/category";
+import { useAdmin } from "@/providers/AdminProvider";
 
-export const useCategories = () => {
-  const { isMaster } = useAdminMode();
+export const useCategories = ({
+  initialData,
+}: { initialData?: CategoryResponse } = {}) => {
+  const { isMaster } = useAdmin();
 
   const {
     data,

@@ -2,16 +2,14 @@
 
 import Image from "next/image";
 import { AdminPageLayout } from "@/components/admin/layout/AdminPageLayout";
-import { Button } from "@/components/common/Button";
-import { Icon } from "@/components/common/Icon";
-import { useProfileForm } from "@/hooks/profile/useProfileForm";
+import { useProfile } from "@/hooks/profile/useProfile";
 import { ProfileIntroSection } from "@/components/admin/profile-settings/ProfileIntroSection";
 import { ProfileContactSection } from "@/components/admin/profile-settings/ProfileContactSection";
 import { ProfileLinkSection } from "@/components/admin/profile-settings/ProfileLinkSection";
+import { SaveButton } from "@/components/common/SaveButton";
 
 export default function ProfileSettingsPage() {
-  const { isMaster, formData, isLoading, handleInputChange, handleSave } =
-    useProfileForm();
+  const { formData, isLoading, handleInputChange, handleSave } = useProfile();
 
   return (
     <AdminPageLayout title="Profile Settings">
@@ -27,41 +25,18 @@ export default function ProfileSettingsPage() {
         </div>
 
         {/* 자기소개 관리 섹션 */}
-        <ProfileIntroSection
-          data={formData}
-          onChange={handleInputChange}
-          disabled={!isMaster}
-        />
+        <ProfileIntroSection data={formData} onChange={handleInputChange} />
 
         {/* 연락처 정보 섹션 */}
-        <ProfileContactSection
-          data={formData}
-          onChange={handleInputChange}
-          disabled={!isMaster}
-        />
+        <ProfileContactSection data={formData} onChange={handleInputChange} />
 
         {/* 링크 연결 섹션 */}
-        <ProfileLinkSection
-          data={formData}
-          onChange={handleInputChange}
-          disabled={!isMaster}
-        />
+        <ProfileLinkSection data={formData} onChange={handleInputChange} />
       </div>
 
       {/* 저장 버튼 */}
       <div className="flex justify-end mt-15">
-        {isMaster && (
-          <Button
-            variant="ghost"
-            size="md"
-            onClick={() => handleSave()}
-            disabled={isLoading}
-            type="button"
-          >
-            <Icon type="save" />
-            {isLoading ? "저장 중..." : "저장하기"}
-          </Button>
-        )}
+        <SaveButton isLoading={isLoading} onClick={handleSave} />
       </div>
     </AdminPageLayout>
   );

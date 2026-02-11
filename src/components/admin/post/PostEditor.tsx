@@ -2,7 +2,7 @@ import "react-markdown-editor-lite/lib/index.css";
 import dynamic from "next/dynamic";
 import { mdParser } from "@/lib/markdown";
 import { PostEditorProps } from "@/types/ui/post";
-import { uploadImageApi } from "@/services/storage";
+import { uploadImageApi } from "@/utils/storage";
 import { showToast } from "@/lib/toast";
 
 const MdEditor = dynamic(() => import("react-markdown-editor-lite"), {

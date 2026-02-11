@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useBacklog } from "@/hooks/backlog/useBacklog";
 import { useSelectionHandler } from "@/hooks/common/useSelectionHandler";
 import { useSummaryData } from "@/hooks/common/useSummaryData";
@@ -6,6 +6,7 @@ import { BacklogColumns } from "@/components/admin/backlog/BacklogColumns";
 import { useEpics } from "@/hooks/backlog/useEpics";
 import { useBacklogFilter } from "@/hooks/backlog/useBacklogFilter";
 import { Backlog } from "@/types/admin";
+import { useModal } from "@/hooks/common/useModal";
 
 export function useBacklogPage(isMaster?: boolean) {
   // 데이터 및 기본 상태 관리 훅
@@ -18,8 +19,8 @@ export function useBacklogPage(isMaster?: boolean) {
     deleteBacklogs,
   } = useBacklog();
 
-  const { epics, addEpic, removeEpic } = useEpics();
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const { epics } = useEpics();
+  const deleteModal = useModal();
 
   // 필터 및 페이지네이션 로직 위임
   const filter = useBacklogFilter(backlogData, 20);
@@ -69,16 +70,13 @@ export function useBacklogPage(isMaster?: boolean) {
     currentFilterLabel: filter.currentFilterLabel,
     filterOptions: filter.filterOptions,
 
-    openDeleteModal: () => setIsDeleteModalOpen(true),
-    closeDeleteModal: () => setIsDeleteModalOpen(false),
+    openDeleteModal: deleteModal.open,
+    closeDeleteModal: deleteModal.close,
 
     confirmDelete: useCallback(async () => {
       const success = await selection.deleteSelected();
-      if (success === true) setIsDeleteModalOpen(false);
+      if (success === true) deleteModal.close();
     }, [selection]),
-
-    addEpic,
-    removeEpic,
   };
 
   return {
@@ -91,7 +89,7 @@ export function useBacklogPage(isMaster?: boolean) {
     summaryItems,
     selection,
     deleteModal: {
-      isOpen: isDeleteModalOpen,
+      isOpen: deleteModal.isOpen,
     },
     epics,
     handlers,

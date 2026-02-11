@@ -15,9 +15,9 @@ const menuItems: MenuItem[] = [
   { name: "Backlog", icon: "clipboard", href: "/admin/backlog" },
   { name: "Experience", icon: "briefcase", href: "/admin/experience" },
   { name: "Contacts", icon: "envelope", href: "/admin/contacts" },
-  { name: "DB Schema", icon: "data", href: "/admin/schema" },
-  { name: "Writing", icon: "editAlt", href: "/admin/writing" },
+  // { name: "DB Schema", icon: "data", href: "/admin/schema" },
   { name: "Categories", icon: "category", href: "/admin/categories" },
+  { name: "Post Editor", icon: "editAlt", href: "/admin/posts/editor" },
   { name: "Posts", icon: "listUl", href: "/admin/posts" },
 ];
 
@@ -53,7 +53,10 @@ export function AdminSidebar() {
       >
         <ul className="space-y-2">
           {menuItems.map((item) => {
-            const isActive = pathname.startsWith(item.href);
+            const isActive =
+              item.href === "/admin/posts"
+                ? pathname === item.href
+                : pathname.startsWith(item.href);
 
             return (
               <li key={item.name}>

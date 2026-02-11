@@ -8,14 +8,14 @@ import { Backlog } from "@/types/admin";
 import { useMemo, useState } from "react";
 import { getBacklogs } from "@/services/backlog/client";
 import { BacklogClientProps } from "@/types/ui/backlog";
-import { useAdminMode } from "@/hooks/common/useAdminMode";
 import { BacklogResponse } from "@/types/api/backlog";
+import { useAdmin } from "@/providers/AdminProvider";
 
 export default function BacklogClient({
   initialBacklogs,
   initialEpics,
 }: BacklogClientProps) {
-  const { isMaster } = useAdminMode();
+  const { isMaster } = useAdmin();
   const { data: backlogResponse } = useSWR<BacklogResponse>(
     "/api/backlog",
     () => getBacklogs(),

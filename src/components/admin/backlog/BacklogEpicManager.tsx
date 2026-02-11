@@ -1,41 +1,28 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
 import { Badge } from "@/components/common/Badge";
-import { EpicManagerProps } from "@/types/admin/backlog";
+import { useEpics } from "@/hooks/backlog/useEpics";
+import { useAdmin } from "@/providers/AdminProvider";
+import { cn } from "@/lib/utils";
 
-export function BacklogEpicManager({
-  epics,
-  onRemove,
-  onAdd,
-  isMaster,
-}: EpicManagerProps) {
-  const [isAdding, setIsAdding] = useState(false);
-  const [newLabel, setNewLabel] = useState("");
+export function BacklogEpicManager() {
+  const { isMaster } = useAdmin();
+  const {
+    epics,
+    isAdding,
+    setIsAdding,
+    newLabel,
+    setNewLabel,
+    submitNewEpic,
+    removeEpic,
+  } = useEpics();
+
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 추가 모드가 되면 자동으로 인풋에 포커스
   useEffect(() => {
     if (isAdding) inputRef.current?.focus();
   }, [isAdding]);
-
-  const handleAddEpic = () => {
-    if (newLabel.trim() && onAdd) {
-      onAdd(newLabel.trim());
-      setNewLabel("");
-      setIsAdding(false);
-    } else {
-      setIsAdding(false);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") handleAddEpic();
-    if (e.key === "Escape") {
-      setIsAdding(false);
-      setNewLabel("");
-    }
-  };
 
   return (
     <section className="mt-7.5">
@@ -48,13 +35,19 @@ export function BacklogEpicManager({
           <Badge
             key={epic.id}
             backgroundColor={epic.color}
-            className="flex items-center gap-1.5 py-1.5 px-3 group"
+            className={cn(
+              "flex items-center gap-1.5 py-1.5 px-3",
+              "group transition-all",
+            )}
           >
             {epic.label}
-            {isMaster && onRemove && (
+            {isMaster && (
               <button
-                onClick={() => onRemove(epic.id)}
-                className="opacity-50 hover:opacity-100 hover:text-red-500 transition-all"
+                onClick={() => removeEpic(epic.id)}
+                className={cn(
+                  "opacity-50 transition-all",
+                  "hover:opacity-100 hover:text-red-500",
+                )}
                 aria-label={`${epic.label} 삭제`}
               >
                 <Icon type="x" size={14} />
@@ -65,16 +58,19 @@ export function BacklogEpicManager({
 
         {/* 에픽 추가 인풋 모드 */}
         {isAdding ? (
-          <div className="flex items-center px-2 py-1 bg-white">
+          <div className="flex items-center px-2 py-1 bg-white border border-gray-ddd rounded-md">
             <input
               ref={inputRef}
               type="text"
               value={newLabel}
               onChange={(e) => setNewLabel(e.target.value)}
-              onBlur={handleAddEpic} // 포커스 나가면 자동 저장
-              onKeyDown={handleKeyDown}
+              onBlur={submitNewEpic}
+              onKeyDown={(e) => e.key === "Enter" && submitNewEpic()}
               placeholder="Epic 이름 입력..."
-              className="text-sm outline-none border-none focus:ring-0 ring-0 w-[120px] bg-transparent"
+              className={cn(
+                "text-sm bg-transparent outline-none border-none w-[120px]",
+                "focus:ring-0 ring-0",
+              )}
             />
           </div>
         ) : (
@@ -82,7 +78,10 @@ export function BacklogEpicManager({
             <Button
               variant="secondary"
               size="md"
-              className="text-gray-999 text-sm h-[34px] border-dashed"
+              className={cn(
+                "text-gray-999 text-sm h-[34px]",
+                "border-dashed hover:border-solid",
+              )}
               onClick={() => setIsAdding(true)}
             >
               <Icon type="plus" size={16} />
