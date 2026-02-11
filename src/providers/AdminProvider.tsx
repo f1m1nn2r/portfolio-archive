@@ -1,22 +1,32 @@
 "use client";
 
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useMemo } from "react";
+import { useSession } from "next-auth/react";
 
 interface AdminContextType {
   isMaster: boolean;
+  isObserver: boolean;
 }
 
-const AdminContext = createContext<AdminContextType>({ isMaster: false });
+const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export const AdminProvider = ({
   children,
-  isMaster,
 }: {
   children: React.ReactNode;
-  isMaster: boolean;
 }) => {
+  const { data: session } = useSession();
+
+  const value = useMemo(
+    () => ({
+      isMaster: session?.user?.role === "admin",
+      isObserver: session?.user?.role === "observer",
+    }),
+    [session?.user?.role],
+  );
+
   return (
-    <AdminContext.Provider value={{ isMaster }}>
+    <AdminContext.Provider value={value}>
       {children}
     </AdminContext.Provider>
   );

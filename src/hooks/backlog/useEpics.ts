@@ -1,7 +1,8 @@
-import { useAppSWR } from "../common/useAppSWR";
+import { useAppSWR } from "@/hooks/common/useAppSWR";
 import { getEpics } from "@/services/epic/client";
 import { Epic } from "@/types/admin/backlog";
 import { MESSAGES } from "@/lib/constants/messages";
+import { useState } from "react";
 
 const EPIC_COLORS = [
   "#DBF0D6",
@@ -27,16 +28,23 @@ export function useEpics() {
     deleteItem,
   } = useAppSWR<Epic[], Partial<Epic>, Partial<Epic>>("/api/epics", getEpics);
 
+  const [isAdding, setIsAdding] = useState(false);
+  const [newLabel, setNewLabel] = useState("");
+
   const addEpic = async (label: string = MESSAGES.EPIC.DEFAULT_LABEL) => {
     const randomColor =
       EPIC_COLORS[Math.floor(Math.random() * EPIC_COLORS.length)];
-
-    const newEpicData: Partial<Epic> = {
-      label,
-      color: randomColor,
-    };
-
+    const newEpicData: Partial<Epic> = { label, color: randomColor };
     return await createItem(newEpicData);
+  };
+
+  const submitNewEpic = async () => {
+    const trimmed = newLabel.trim();
+    if (trimmed) {
+      await addEpic(trimmed);
+    }
+    setNewLabel("");
+    setIsAdding(false);
   };
 
   const removeEpic = async (id: string) => {
@@ -46,6 +54,11 @@ export function useEpics() {
   return {
     epics: (epics || []) as readonly Epic[],
     loading: isLoading,
+    isAdding,
+    setIsAdding,
+    newLabel,
+    setNewLabel,
+    submitNewEpic,
     addEpic,
     removeEpic,
   };

@@ -2,14 +2,14 @@ import { useState, useMemo } from "react";
 import { useProjects } from "@/hooks/project/useProjects";
 import { useProjectStore } from "@/store/useProjectStore";
 import { AdminSummaryItem } from "@/types/admin/layout";
-import { useAdminMode } from "@/hooks/common/useAdminMode";
 import { showToast } from "@/lib/toast";
 import { useExperience } from "@/hooks/experience/useExperience";
 import { MESSAGES } from "@/lib/constants/messages";
 import { Project } from "@/types/api/project";
+import { useAdmin } from "@/providers/AdminProvider";
 
 export function useProjectManagement() {
-  const { isMaster } = useAdminMode();
+  const { isMaster } = useAdmin();
 
   // 필터 상태
   const [selectedCompany, setSelectedCompany] = useState("all");

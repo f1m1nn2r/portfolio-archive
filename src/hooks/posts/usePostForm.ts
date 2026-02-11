@@ -1,15 +1,15 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Category } from "@/types/admin";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/lib/toast";
-import { useAdminMode } from "@/hooks/common/useAdminMode";
 import {
   createPostApi,
   getPostByIdApi,
   updatePostApi,
 } from "@/services/post/client";
+import { useAdmin } from "@/providers/AdminProvider";
 
-export const useWritingForm = (
+export const usePostForm = (
   postId: string | undefined,
   categories: Category[],
 ) => {
@@ -20,7 +20,7 @@ export const useWritingForm = (
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-  const { isMaster } = useAdminMode();
+  const { isMaster } = useAdmin();
 
   useEffect(() => {
     if (!postId || categories.length === 0) return;
