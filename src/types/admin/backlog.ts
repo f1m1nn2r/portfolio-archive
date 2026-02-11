@@ -23,13 +23,6 @@ export interface Epic {
   created_at?: string;
 }
 
-export interface EpicManagerProps {
-  epics: readonly Epic[];
-  onRemove?: (id: string) => void;
-  onAdd?: (label: string) => void;
-  isMaster: boolean;
-}
-
 export interface UseBacklogProps {
   initialData?: BacklogResponse;
   onSuccess?: () => void;

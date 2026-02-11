@@ -1,12 +1,17 @@
-import { ProfileContactSectionProps } from "@/types/ui/profile";
+import { Input } from "@/components/ui/input";
+import { ProfileFormData } from "@/lib/schemas/profile.schemas";
+import { useAdmin } from "@/providers/AdminProvider";
+
+interface ProfileContactSectionProps {
+  data: Pick<ProfileFormData, "phone" | "email">;
+  onChange: (key: keyof ProfileFormData, value: string) => void;
+}
 
 export function ProfileContactSection({
   data,
   onChange,
-  disabled,
 }: ProfileContactSectionProps) {
-  const inputStyles =
-    "w-full p-5 border border-gray-ddd rounded-lg text-base outline-none focus:border-gray-555 transition-colors";
+  const { isMaster } = useAdmin();
 
   return (
     <section className="flex flex-col gap-5">
@@ -16,20 +21,18 @@ export function ProfileContactSection({
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-4">
           <label className="text-base font-medium">전화번호</label>
-          <input
-            className={inputStyles}
+          <Input
             value={data.phone}
             onChange={(e) => onChange("phone", e.target.value)}
-            disabled={disabled}
+            disabled={!isMaster}
           />
         </div>
         <div className="flex flex-col gap-4">
           <label className="text-base font-medium">이메일</label>
-          <input
-            className={inputStyles}
+          <Input
             value={data.email}
             onChange={(e) => onChange("email", e.target.value)}
-            disabled={disabled}
+            disabled={!isMaster}
           />
         </div>
       </div>

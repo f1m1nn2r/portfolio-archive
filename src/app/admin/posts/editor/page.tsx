@@ -7,11 +7,11 @@ import { AdminPageLayout } from "@/components/admin/layout/AdminPageLayout";
 import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
 import { useCategories } from "@/hooks/categories/useCategories";
-import { useWritingForm } from "@/hooks/writing/useWritingForm";
+import { usePostForm } from "@/hooks/posts/usePostForm";
 import { PostCategorySelect } from "@/components/admin/post/PostCategorySelect";
 import { PostEditor } from "@/components/admin/post/PostEditor";
 
-export default function WritingPage() {
+export default function PostEditorPage() {
   const searchParams = useSearchParams();
   const postId = searchParams.get("id") as string;
 
@@ -29,7 +29,7 @@ export default function WritingPage() {
     isSubmitting,
     handleSubmit,
     isMaster,
-  } = useWritingForm(postId, categories);
+  } = usePostForm(postId, categories);
 
   const subCategories = useMemo(() => {
     if (!category1) return [];
@@ -38,7 +38,7 @@ export default function WritingPage() {
   }, [category1, categories]);
 
   return (
-    <AdminPageLayout title={postId ? "Editing" : "Writing"}>
+    <AdminPageLayout title={postId ? "Post Editing" : "Post Editor"}>
       <div className="w-full overflow-hidden">
         <Image
           src="/images/write-it.png"

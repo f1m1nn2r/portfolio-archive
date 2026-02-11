@@ -1,10 +1,9 @@
 import { Icon } from "@/components/common/Icon";
+import { useAdmin } from "@/providers/AdminProvider";
 
-interface AdminAuthGuardProps {
-  isMaster: boolean;
-}
+export function AdminAuthGuard() {
+  const { isMaster } = useAdmin();
 
-export function AdminAuthGuard({ isMaster }: AdminAuthGuardProps) {
   // 관리자(Admin)일 때
   if (isMaster) {
     return (

@@ -9,12 +9,13 @@ import { Button } from "@/components/common/Button";
 import { Backlog } from "@/types/admin";
 import { useBacklogPage } from "@/hooks/backlog/useBacklogPage";
 import { BacklogEpicManager } from "@/components/admin/backlog/BacklogEpicManager";
-import { useAdminMode } from "@/hooks/common/useAdminMode";
 import { Dropdown } from "@/components/common/Dropdown";
 import { AdminSummaryGrid } from "@/components/admin/layout/AdminSummaryGrid";
+import { DeleteButton } from "@/components/common/DeleteButton";
+import { useAdmin } from "@/providers/AdminProvider";
 
 export default function BacklogPage() {
-  const { isMaster } = useAdminMode();
+  const { isMaster } = useAdmin();
 
   const {
     backlogData,
@@ -22,7 +23,6 @@ export default function BacklogPage() {
     page,
     totalPages,
     columns,
-    epics,
     selection,
     deleteModal,
     handlers,
@@ -35,16 +35,11 @@ export default function BacklogPage() {
 
       <AdminActionBar>
         <div className="flex gap-2 ml-auto">
-          {isMaster && (
-            <Button
-              variant="secondary"
-              icon="trash"
-              disabled={selection.selectionCount === 0}
-              onClick={handlers.openDeleteModal}
-            >
-              선택 삭제 ({selection.selectionCount})
-            </Button>
-          )}
+          <DeleteButton
+            disabled={selection.selectionCount === 0}
+            onClick={handlers.openDeleteModal}
+          />
+
           <Dropdown
             width="w-[160px]"
             trigger={
@@ -83,19 +78,17 @@ export default function BacklogPage() {
         }}
       />
 
+      {/* 백로그 페이지네이션 */}
       <CommonPagination
         currentPage={page}
         totalPages={totalPages}
         onPageChange={handlers.handlePageChange}
       />
 
-      <BacklogEpicManager
-        epics={epics}
-        onAdd={isMaster ? (name) => handlers.addEpic(name) : undefined}
-        onRemove={isMaster ? (id) => handlers.removeEpic(id) : undefined}
-        isMaster={isMaster}
-      />
+      {/* 백로그 에픽 관리 */}
+      <BacklogEpicManager />
 
+      {/* 공통 삭제 모달창 */}
       <DeleteModal
         isOpen={deleteModal.isOpen}
         onClose={handlers.closeDeleteModal}

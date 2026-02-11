@@ -1,8 +1,8 @@
 "use client";
 
+import "react-markdown-editor-lite/lib/index.css";
 import Link from "next/link";
 import DeleteModal from "@/components/common/DeleteModal";
-import "react-markdown-editor-lite/lib/index.css";
 import { useCategories } from "@/hooks/categories/useCategories";
 import { Icon } from "@/components/common/Icon";
 import { CategoryResponse } from "@/types/api/category";
@@ -128,7 +128,7 @@ export default function EtcClient({
                     >
                       삭제
                     </Button>
-                    <Link href={`/admin/writing?id=${post.id}`}>
+                    <Link href={`/admin/posts/editor?id=${post.id}`}>
                       <Button variant="ghost" size="sm" className="bg-white">
                         수정
                       </Button>
