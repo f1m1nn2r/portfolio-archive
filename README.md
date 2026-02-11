@@ -1,81 +1,78 @@
-# 개인 포트폴리오 & 개발 허브
+# 📦 portfolio-archive
 
-Notion과 같은 생산성 툴, 개인 기술 블로그, 그리고 포트폴리오를 하나로 통합한 올인원(All-in-one) 웹 입니다.
+> 나만의 기술 블로그와 포트폴리오를 한 곳에서 관리하는 통합 아카이브 플랫폼
 
-## ✨ 주요 기능
+[Live Demo](https://portfolio-archive-beryl.vercel.app/) | [Wiki](https://github.com/f1m1nn2r/portfolio-archive/wiki)
 
-이 프로젝트는 다음과 같은 핵심 기능들을 제공합니다.
+## 🎯 Why I Built This
 
-- **경력 및 프로젝트 관리**: 저의 개발 여정과 참여했던 프로젝트들을 보여주는 포트폴리오 섹션입니다.
-- **기술 블로그**: 개발 과정에서 얻은 지식과 경험을 기록하고 공유하는 공간입니다.
-- **백로그 관리**: Notion과 같이 아이디어를 기록하고, 업무를 칸반 보드 형식으로 관리할 수 있는 기능입니다.
-- **문의하기**: 방문하신 분들이 저에게 쉽게 연락할 수 있는 메일링 기능이 포함된 페이지입니다.
-- **관리자 대시보드**: 포트폴리오, 블로그 글, 백로그 등 모든 콘텐츠를 효율적으로 관리할 수 있는 전용 대시보드입니다.
+시중에 다양한 블로그 플랫폼이 있지만, **내 손으로 직접 만든 공간**에서 
+개발 여정을 기록하고 싶었습니다.
 
-## 🛠️ 기술 스택
+- 마음대로 디자인할 수 있는 나만의 기술 블로그
+- 경력과 프로젝트를 체계적으로 관리하는 포트폴리오
+- 모든 콘텐츠를 직접 제어할 수 있는 관리 시스템
 
-이 프로젝트는 다음과 같은 최신 기술들을 기반으로 구축되었습니다.
+단순한 포트폴리오를 넘어, **지속 가능한 개인 브랜딩 시스템**을 
+만들고자 했습니다.
 
-- **프레임워크**: [Next.js](https://nextjs.org/) (App Router)
-- **언어**: [TypeScript](https://www.typescriptlang.org/)
-- **백엔드 & 데이터베이스**: [Supabase](https://supabase.io/)
-- **스타일링**: [Tailwind CSS](https://tailwindcss.com/)
-- **UI 컴포넌트**: [shadcn/ui](https://ui.shadcn.com/)
-- **상태 관리**: [Zustand](https://zustand-demo.pmnd.rs/)
-- **데이터 페칭**: [SWR](https://swr.vercel.app/)
-- **폼 검증**: [Zod](https://zod.dev/)
-- **메일링**: [Resend](https://resend.com/)
-- **알림**: [Sonner](https://sonner.emilpriv.dev/)
+## 📖 Overview
 
-## 🚀 시작하기
+portfolio-archive는 단순한 포트폴리오를 넘어, 개인 기술 블로그와 
+관리 시스템을 통합한 자체 제작 아카이브 플랫폼입니다. 
 
-프로젝트를 로컬 환경에서 실행하려면 다음 단계를 따르세요.
+개발 과정에서의 고민을 담은 백로그 관리, 데이터 기반의 경력 및 
+작업물 큐레이션, 그리고 직접 구현한 관리자 대시보드를 통해 
+지속 가능한 개인 브랜딩 시스템을 지향합니다.
 
-### 1. 저장소 복제
+## ✨ Features
 
-```bash
-git clone https://github.com/your-username/portfolio-archive.git
-cd portfolio-archive
-```
+### 📝 Content Management
+- 마크다운 기반 게시글 작성/수정
+- 카테고리 분류 및 태깅
+- 게시글 검색 및 일괄 삭제 지원
 
-### 2. 의존성 설치
+### 💼 Career & Projects
+- 경력(Experience) · 프로젝트(Project) 통합 관리
+- 회사/연도 기반 필터링
+- 요약 카드를 통한 데이터 현황 대시보드
 
-```bash
-npm install
-```
+### 🔐 Admin System
+- `useAppSWR` 제네릭 훅 기반 CRUD 공통화
+- `AdminProvider` + `useAdmin` 권한 제어
+- Backlog/Posts/Categories/Contacts/Profile 통합 관리
 
-### 3. 환경 변수 설정
+### 🎨 Customizable Design
+- Tailwind CSS + shadcn/ui 기반 커스텀 디자인
+- 내 마음대로 수정 가능한 레이아웃과 스타일
 
-프로젝트 루트 디렉터리에 `.env.local` 파일을 생성하고, 아래의 Supabase 및 Resend 키를 입력하세요. 이 키들은 각 서비스의 대시보드에서 발급받을 수 있습니다.
+## 🛠️ Tech Stack
 
-```env
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=YOUR_SUPABASE_URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+### Frontend
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui
 
-# Resend
-RESEND_API_KEY=YOUR_RESEND_API_KEY
-```
+### Backend & Database
+- **BaaS**: Supabase (Auth, Database, Storage)
 
-### 4. 개발 서버 실행
+### State & Data
+- **State Management**: Zustand
+- **Data Fetching**: SWR (Custom `useAppSWR` hook)
+- **Form Validation**: Zod
 
-```bash
-npm run dev
-```
+### External Services
+- **Email**: Resend
+- **Toast Notifications**: Sonner
 
-이제 브라우저에서 `http://localhost:3000`으로 접속하여 프로젝트를 확인할 수 있습니다.
 
-## 📂 프로젝트 구조
+## 📸 Screenshots
 
-주요 디렉토리 구조는 다음과 같습니다.
+<img width="1902" height="929" alt="스크린샷 2026-02-12 오전 12 44 35" src="https://github.com/user-attachments/assets/95cdbd9a-7c39-4a49-9e52-e4fd7aa6f67d" />
+<img width="1901" height="927" alt="스크린샷 2026-02-12 오전 12 43 52" src="https://github.com/user-attachments/assets/73b18486-7d1b-43d7-a37f-c749b9e4caf3" />
+<img width="1906" height="927" alt="스크린샷 2026-02-12 오전 12 43 35" src="https://github.com/user-attachments/assets/5bc7fe1b-d295-4dd0-9aaa-18dcdbc41e70" />
 
-```
-/src
-├── /app            # Next.js App Router 기반 라우팅 및 페이지
-├── /components     # 공통 및 UI 컴포넌트
-├── /hooks          # 재사용 가능한 커스텀 훅
-├── /lib            # 유틸리티, 상수, Zod 스키마
-├── /services       # API 요청 및 서버 로직
-├── /store          # Zustand를 사용한 전역 상태 관리
-└── /utils          # 날짜, 토스트 등 보조 유틸리티
-```
+## 👤 Contact
+- Email: [f1minn2r@naver.com]
+- Blog: [portfolio-archive-url](https://portfolio-archive-beryl.vercel.app/)
