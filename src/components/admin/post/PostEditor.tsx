@@ -10,11 +10,6 @@ const MdEditor = dynamic(() => import("react-markdown-editor-lite"), {
 });
 
 export function PostEditor({ value, onChange, isMaster }: PostEditorProps) {
-  if (!isMaster) {
-    showToast.error("관리자만 이미지를 업로드할 수 있습니다.");
-    return "";
-  }
-
   const handleImageUpload = async (file: File) => {
     try {
       const url = await uploadImageApi(file);
@@ -34,6 +29,14 @@ export function PostEditor({ value, onChange, isMaster }: PostEditorProps) {
         onChange={({ text }) => onChange(text)}
         onImageUpload={handleImageUpload}
         placeholder="내용을 입력하세요."
+        readOnly={!isMaster}
+        config={{
+          view: {
+            menu: isMaster,
+            md: true,
+            html: true,
+          },
+        }}
       />
     </div>
   );

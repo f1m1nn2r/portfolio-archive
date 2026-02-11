@@ -12,6 +12,7 @@ const ExperienceSchema = z.object({
   description: z.array(z.string()).default([]),
   skills: z.array(z.string()).default([]),
   is_finished: z.boolean().default(false),
+  type: z.enum(["WORK", "PROJECT"]).default("WORK"),
 });
 
 // 생성용 (모든 필드 필수)

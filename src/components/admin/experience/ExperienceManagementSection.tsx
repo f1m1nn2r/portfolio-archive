@@ -25,6 +25,7 @@ export function ExperienceManagementSection() {
             variant="secondary"
             onClick={expModal.openAdd}
             disabled={!isMaster}
+            className={!isMaster ? "opacity-50 cursor-not-allowed" : ""}
           >
             <Icon type="plus" size={16} />새 경력 추가
           </Button>

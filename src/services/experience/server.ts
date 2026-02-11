@@ -3,12 +3,18 @@ import { validateCreateExperience } from "@/lib/validations/experience";
 import { Experience } from "@/types/api/experience";
 import { createClient } from "@/lib/supabase/server";
 
-export async function getExperiencesFromDb(): Promise<Experience[]> {
+export async function getExperiencesFromDb(
+  type?: string | null,
+): Promise<Experience[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from(TABLES.EXPERIENCE)
-    .select("*")
-    .order("start_date", { ascending: false });
+
+  const query = supabase.from(TABLES.EXPERIENCE).select("*");
+
+  if (type) {
+    query.eq("type", type);
+  }
+
+  const { data, error } = await query.order("start_date", { ascending: false });
 
   if (error) {
     console.error("DB Experience 조회 실패:", error);

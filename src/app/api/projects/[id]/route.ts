@@ -39,14 +39,28 @@ export async function PATCH(
     const { id } = await params;
     const body = await request.json();
 
+    const updateData = {
+      experience_id: body.experience_id,
+      title: body.title,
+      description: body.description,
+      start_date: body.start_date,
+      end_date: body.end_date || null,
+      category: body.category,
+      year: body.year,
+      project_url: body.project_url,
+      image_url: body.image_url,
+      updated_at: new Date().toISOString(),
+    };
+
     const { data, error } = await supabase
       .from(TABLES.PROJECTS)
-      .update(body)
+      .update(updateData)
       .eq("id", id)
       .select()
       .single();
 
     if (error) {
+      console.error("Supabase Update Error:", error);
       return NextResponse.json(
         { success: false, error: error.message },
         { status: 500 },
@@ -55,6 +69,7 @@ export async function PATCH(
 
     return NextResponse.json({ success: true, data });
   } catch (err) {
+    console.error("Internal Server Error:", err);
     return handleApiError(err);
   }
 }

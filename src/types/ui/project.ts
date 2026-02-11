@@ -7,7 +7,12 @@ export interface ProjectModalProps {
   mode: "add" | "edit";
   initialData?: Project | null;
   experiences: Experience[]; // 경력 목록
-  onSave: (data: ProjectFormData) => Promise<boolean>;
+  // onSave: (data: ProjectFormData) => Promise<boolean>;
+  onSave: (
+    mode: "add" | "edit",
+    id: number | undefined,
+    data: any,
+  ) => Promise<boolean>;
 }
 export interface ProjectCardProps {
   project: Project;

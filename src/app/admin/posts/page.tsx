@@ -15,10 +15,12 @@ import { PostColumns } from "@/components/admin/post/PostColumns";
 import { MESSAGES } from "@/lib/constants/messages";
 import { useAdmin } from "@/providers/AdminProvider";
 import { DeleteButton } from "@/components/common/DeleteButton";
+import { FormattedPost } from "@/types/admin";
 
 export default function PostsPage() {
   const { isMaster } = useAdmin();
   const router = useRouter();
+  const disabledStyles = !isMaster ? "opacity-50 cursor-not-allowed" : "";
 
   const {
     posts,
@@ -92,10 +94,10 @@ export default function PostsPage() {
         </div>
       </AdminActionBar>
 
-      <AdminTable
+      <AdminTable<FormattedPost>
         columns={columns}
         data={posts}
-        getItemId={(item: any) => String(item.id)}
+        getItemId={(item: FormattedPost) => String(item.id)}
         selectedIds={selectedIds}
         onToggleSelect={handleToggleSelect}
         onToggleSelectAll={handleToggleSelectAll}

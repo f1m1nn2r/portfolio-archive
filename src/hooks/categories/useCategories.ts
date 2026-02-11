@@ -20,8 +20,11 @@ export const useCategories = ({
     updateItem,
     deleteItem,
   } = useAppSWR<CategoryResponse, Partial<Category>, { name: string }>(
-    "/api/category",
+    "/api/categories",
     getCategoriesApi,
+    {
+      fallbackData: initialData,
+    },
   );
 
   const categories = useMemo(() => {
@@ -127,10 +130,12 @@ export const useCategories = ({
       handleUpdate,
       handleDelete,
       openEdit: (cat: Category) => {
+        if (!isMaster) return;
         setEditingId(cat.id);
         setEditName(cat.name);
       },
       openDelete: (id: string) => {
+        if (!isMaster) return;
         setDeleteId(id);
         setIsDeleteModalOpen(true);
       },

@@ -13,12 +13,13 @@ export function ExperienceCard({
   if (!experience.id) {
     return null;
   }
+  const isWork = experience.type === "WORK";
 
   return (
     <div className="p-10 border border-gray-ddd rounded-xl relative hover:border-gray-400 transition-colors">
-      <div className="flex items-start">
+      <div className="flex flex-col 2xl:flex-row gap-8">
         {/* 회사/주요 업무 */}
-        <div className="w-full max-w-[600px]">
+        <div className="w-full 2xl:max-w-[600px]">
           <div className="text-2xl font-bold mb-2.5">
             <h2>{experience.company}</h2>
             <p>{experience.team}</p>
@@ -30,32 +31,43 @@ export function ExperienceCard({
           </ul>
         </div>
 
-        {/* 다닌 기간 */}
-        <div className="flex-1">
-          <span className="font-medium text-lg block">
-            {formatPeriod(experience.start_date, experience.end_date)}
-          </span>
-          <span className="text-gray-999 text-base block mt-1">
-            {calculateDuration(experience.start_date, experience.end_date)}
-          </span>
-          <Badge className="bg-bg-light py-2 px-2.5 text-base mt-5">
-            {experience.is_finished ? "퇴사" : "재직 중"}
-          </Badge>
-        </div>
+        <div className="flex flex-col xl:flex-col 2xl:flex-row gap-8 flex-1">
+          {/* 다닌 기간 */}
+          <div className="flex-1">
+            <span className="font-medium text-lg block">
+              {formatPeriod(experience.start_date, experience.end_date)}
+            </span>
+            <span className="text-gray-999 text-base block mt-1">
+              {calculateDuration(experience.start_date, experience.end_date)}
+            </span>
+            <Badge className="bg-bg-light py-2 px-2.5 text-base mt-5">
+              {experience.is_finished
+                ? isWork
+                  ? "퇴사"
+                  : "종료"
+                : isWork
+                  ? "재직 중"
+                  : "진행 중"}
+            </Badge>
+          </div>
 
-        {/* 사용 스킬 */}
-        <div className="flex justify-end items-end flex-1">
-          <div className="flex flex-col items-end gap-6">
-            <div>
-              <span className="text-lg font-medium text-right block mb-5">
-                사용 스킬
-              </span>
-              <div className="flex flex-wrap justify-end gap-1.5 max-w-[300px]">
-                {experience.skills.map((skill) => (
-                  <Badge key={skill} className="border border-gray-ddd text-sm">
-                    {skill}
-                  </Badge>
-                ))}
+          {/* 사용 스킬 */}
+          <div className="2xl:flex-1 2xl:flex 2xl:justify-end">
+            <div className="flex flex-col items-end gap-6">
+              <div>
+                <span className="text-lg font-medium text-right block mb-5">
+                  사용 스킬
+                </span>
+                <div className="flex flex-wrap justify-end gap-1.5 max-w-[300px]">
+                  {experience.skills.map((skill) => (
+                    <Badge
+                      key={skill}
+                      className="border border-gray-ddd text-sm"
+                    >
+                      {skill}
+                    </Badge>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
