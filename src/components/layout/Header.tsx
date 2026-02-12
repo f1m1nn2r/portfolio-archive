@@ -68,10 +68,11 @@ export default function Header() {
         ))}
       </nav>
 
-      {/* 방문자 수 -> 추후 구현 예정 */}
+      {/* TODO 방문자 수 -> 추후 구현 예정 
       <div className="text-base">
         today <span className="font-semibold">N</span>
       </div>
+      */}
     </header>
   );
 }

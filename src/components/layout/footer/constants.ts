@@ -1,8 +1,8 @@
 import { MainLink, DocumentLink } from "./types";
 
 export const MAIN_LINKS: MainLink[] = [
-  { label: "이력서", useProfileUrl: "resume_url" },
-  { label: "포트폴리오 PDF", useProfileUrl: "pdf_url" },
+  { label: "이력서", useProfileUrl: "resume_url", external: true },
+  // { label: "포트폴리오 PDF", useProfileUrl: "pdf_url", external: true },
   { label: "깃허브", useProfileUrl: "github_url", external: true },
 ];
 
