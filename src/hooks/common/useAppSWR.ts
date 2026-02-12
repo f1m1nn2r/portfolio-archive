@@ -10,7 +10,11 @@ export function useAppSWR<T, C = Partial<T>, U = Partial<T>>(
     onSuccess?: (action: "add" | "edit" | "delete") => void;
   },
 ) {
-  const { data, error, isLoading, mutate } = useSWR<T>(key, fetcher, config);
+  const { data, error, isLoading, isValidating, mutate } = useSWR<T>(
+    key,
+    fetcher,
+    config,
+  );
 
   const createItem = useCallback(
     async (createData: C): Promise<T | null> => {
@@ -137,6 +141,7 @@ export function useAppSWR<T, C = Partial<T>, U = Partial<T>>(
   return {
     data: data,
     isLoading,
+    isValidating,
     error,
     mutate,
     createItem,

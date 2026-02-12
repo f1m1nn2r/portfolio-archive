@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ProjectCard } from "@/components/admin/project/ProjectCard";
 import { ExperienceFilters } from "@/components/admin/experience/ExperienceFilters";
 import { ExperienceCard } from "@/components/domains/experience/ExperienceCard";
@@ -18,22 +18,45 @@ export default function ExperienceClient({
   const [selectedYear, setSelectedYear] = useState<string>("all");
 
   const { experiences } = useExperience({ initialData: initialExperiences });
-  const { projects, allProjects } = useProjects({
+  const { projects, allProjects, loading } = useProjects({
     experienceId: selectedCompany,
     year: selectedYear,
     fallbackData: initialProjects,
   });
 
-  const availableYears = useMemo(() => {
-    const targetData =
-      selectedCompany === "all"
-        ? allProjects
-        : allProjects.filter(
-            (p) => String(p.experience_id) === selectedCompany,
-          );
-    const years = targetData.map((p) => p.year).filter((y): y is number => !!y);
-    return Array.from(new Set(years)).sort((a, b) => b - a);
-  }, [selectedCompany, allProjects]);
+  const getAvailableYearsByCompany = useCallback(
+    (companyId: string) => {
+      const targetData =
+        companyId === "all"
+          ? allProjects
+          : allProjects.filter((p) => String(p.experience_id) === companyId);
+
+      const years = targetData
+        .map((p) => p.year)
+        .filter((y): y is number => typeof y === "number");
+
+      return Array.from(new Set(years)).sort((a, b) => b - a);
+    },
+    [allProjects],
+  );
+
+  const availableYears = useMemo(
+    () => getAvailableYearsByCompany(selectedCompany),
+    [selectedCompany, getAvailableYearsByCompany],
+  );
+
+  const handleCompanyChange = useCallback(
+    (companyId: string) => {
+      setSelectedCompany(companyId);
+      setSelectedYear((prevYear) => {
+        if (prevYear === "all") return prevYear;
+
+        const nextAvailableYears = getAvailableYearsByCompany(companyId);
+        return nextAvailableYears.includes(Number(prevYear)) ? prevYear : "all";
+      });
+    },
+    [getAvailableYearsByCompany],
+  );
 
   const displayExperience =
     selectedCompany === "all"
@@ -61,13 +84,19 @@ export default function ExperienceClient({
           <ExperienceFilters
             experiences={experiences}
             years={availableYears}
-            onCompanyChange={setSelectedCompany}
+            selectedCompany={selectedCompany}
+            selectedYear={selectedYear}
+            onCompanyChange={handleCompanyChange}
             onYearChange={setSelectedYear}
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7.5">
-          {projects.length === 0 ? (
+          {loading ? (
+            <div className="col-span-full text-center py-20 text-gray-555">
+              작업물을 불러오는 중입니다.
+            </div>
+          ) : projects.length === 0 ? (
             <div className="col-span-full text-center py-20 text-gray-555">
               등록된 프로젝트가 없습니다.
             </div>

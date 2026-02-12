@@ -8,9 +8,18 @@ export function useProjects(options?: UseProjectsOptions) {
   const filterKey = `/api/projects?experienceId=${options?.experienceId || "all"}&year=${options?.year || "all"}`;
   const baseKey = "/api/projects";
 
-  const { data: projects, mutate: mutateFilter } = useAppSWR<Project[]>(
+  const {
+    data: projects,
+    isLoading: isProjectsLoading,
+    isValidating: isProjectsValidating,
+    mutate: mutateFilter,
+  } = useAppSWR<Project[]>(
     filterKey,
     () => getProjects(options),
+    {
+      fallbackData: options?.fallbackData,
+      keepPreviousData: true,
+    },
   );
 
   const { saveItem, deleteItem } = useAppSWR<Project[]>(baseKey, () =>
@@ -18,9 +27,14 @@ export function useProjects(options?: UseProjectsOptions) {
   );
 
   // 전체 데이터 관리 (요약 정보 및 필터링 옵션 추출용)
-  const { data: allProjects, mutate: mutateAll } = useAppSWR<Project[]>(
+  const {
+    data: allProjects,
+    isLoading: isAllProjectsLoading,
+    mutate: mutateAll,
+  } = useAppSWR<Project[]>(
     "/api/projects",
     () => getProjects({ experienceId: "all", year: "all" }),
+    { fallbackData: options?.fallbackData },
   );
 
   const saveProject = useCallback(
@@ -50,7 +64,10 @@ export function useProjects(options?: UseProjectsOptions) {
   return {
     projects: projects || [],
     allProjects: allProjects || [],
-    // loading,
+    loading:
+      isProjectsLoading ||
+      isAllProjectsLoading ||
+      (isProjectsValidating && typeof projects === "undefined"),
     saveProject,
     deleteProject: handleDeleteProject,
   };

@@ -12,11 +12,19 @@ export const CommonPagination = ({
   currentPage,
   totalPages,
   onPageChange,
+  maxVisiblePages,
 }: PaginationProps) => {
   // 표시할 페이지 번호 계산 (예: 현재 페이지 기준 앞뒤로 노출)
   const renderPageNumbers = () => {
     const pages = [];
-    for (let i = 1; i <= totalPages; i++) {
+    const visibleCount = maxVisiblePages && maxVisiblePages > 0
+      ? maxVisiblePages
+      : totalPages;
+    const groupIndex = Math.floor((currentPage - 1) / visibleCount);
+    const startPage = groupIndex * visibleCount + 1;
+    const endPage = Math.min(totalPages, startPage + visibleCount - 1);
+
+    for (let i = startPage; i <= endPage; i++) {
       pages.push(
         <PaginationItem key={i}>
           <PaginationLink

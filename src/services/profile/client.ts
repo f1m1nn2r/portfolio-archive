@@ -1,10 +1,9 @@
 import { DEFAULT_PROFILE, ProfileSettings } from "@/types/api/profile";
-import { API_BASE_URL } from "../index";
 import { ProfileFormData } from "@/types/admin";
 
 export async function getProfileSettings(): Promise<ProfileSettings> {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/profile-settings`, {
+    const res = await fetch("/api/profile-settings", {
       cache: "no-store",
     });
 
