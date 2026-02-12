@@ -1,5 +1,4 @@
 import { Project } from "@/types/api/project";
-import { API_BASE_URL } from "@/services";
 
 export async function getProjects(filters?: {
   experienceId?: string;
@@ -13,7 +12,7 @@ export async function getProjects(filters?: {
     if (filters?.year && filters.year !== "all")
       params.set("year", filters.year);
 
-    const res = await fetch(`${API_BASE_URL}/api/projects?${params}`, {
+    const res = await fetch(`/api/projects?${params}`, {
       cache: "no-store",
     });
 

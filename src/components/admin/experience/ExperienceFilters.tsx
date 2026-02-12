@@ -15,11 +15,13 @@ export function ExperienceFilters({
   years,
   onCompanyChange,
   onYearChange,
+  selectedCompany = "all",
+  selectedYear = "all",
 }: ExperienceFiltersProps) {
   return (
     <div className="flex gap-4 mb-10">
       {/* 회사 선택 필터 (동적) */}
-      <Select onValueChange={onCompanyChange} defaultValue="all">
+      <Select value={selectedCompany} onValueChange={onCompanyChange}>
         <SelectTrigger className="w-[350px] px-6 py-5.5 border border-black rounded-none text-base flex justify-between items-center">
           <SelectValue placeholder="전체 회사" />
           <Icon type="solidDownArrowAlt" size={12} className="text-black" />
@@ -35,7 +37,7 @@ export function ExperienceFilters({
       </Select>
 
       {/* 연도 선택 필터 (부모에서 계산된 연도에 따라 동적으로 변함) */}
-      <Select onValueChange={onYearChange} defaultValue="all">
+      <Select value={selectedYear} onValueChange={onYearChange}>
         <SelectTrigger className="w-[350px] px-6 py-5.5 border border-black rounded-none text-base flex justify-between items-center">
           <SelectValue placeholder="전체 연도" />
           <Icon type="solidDownArrowAlt" size={12} className="text-black" />

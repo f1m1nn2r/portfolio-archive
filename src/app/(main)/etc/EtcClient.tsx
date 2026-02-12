@@ -11,6 +11,8 @@ import { LoadingState } from "@/components/common/LoadingState";
 import { Button } from "@/components/common/Button";
 import { mdParser } from "@/lib/markdown";
 import { useAdmin } from "@/providers/AdminProvider";
+import { CommonPagination } from "@/components/common/Pagination";
+import { useEtcFilter } from "@/hooks/posts/useEtcFilter";
 
 export default function EtcClient({
   initialCategories,
@@ -36,6 +38,8 @@ export default function EtcClient({
     setSelectedIds([id]);
     setIsDeleteModalOpen(true);
   };
+
+  const pagination = useEtcFilter(posts, 1);
 
   return (
     <div className="flex w-full gap-10 items-start">
@@ -76,7 +80,7 @@ export default function EtcClient({
       </aside>
 
       {/* 오른쪽: 게시글 목록 영역 */}
-      <main className="flex-1 min-h-[500px]">
+      <main className="flex-1 min-w-0 min-h-[500px]">
         {/* 상단 요약 정보 */}
         <div className="mb-8 pb-4">
           <p className="text-base text-gray-555 font-regular flex gap-2">
@@ -92,7 +96,7 @@ export default function EtcClient({
           <LoadingState />
         ) : (
           <div className="flex flex-col gap-16">
-            {posts.map((post: any) => (
+            {pagination.paginatedPosts.map((post: any) => (
               <article key={post.id} className="group">
                 <div className="pb-7.5 mb-7.5 border-b border-gray-ddd">
                   {/* 카테고리 표시 */}
@@ -108,7 +112,7 @@ export default function EtcClient({
                 </div>
 
                 {/* 본문 미리보기 및 내용 */}
-                <div className="prose prose-slate max-w-none pb-25">
+                <div className="prose prose-slate max-w-none min-w-0 pb-25">
                   <div
                     className="custom-html-style markdown-body"
                     dangerouslySetInnerHTML={{
@@ -141,6 +145,17 @@ export default function EtcClient({
             {!loading && posts.length === 0 && (
               <div className="py-20 text-center text-gray-400 border border-dashed rounded-lg">
                 해당 카테고리에 게시글이 없습니다.
+              </div>
+            )}
+
+            {!loading && posts.length > 0 && (
+              <div className="flex justify-center">
+                <CommonPagination
+                  currentPage={pagination.page}
+                  totalPages={pagination.totalPages}
+                  onPageChange={pagination.handlePageChange}
+                  maxVisiblePages={5}
+                />
               </div>
             )}
           </div>

@@ -1,11 +1,11 @@
-import { getProjects } from "@/services/project/client";
-import { getExperiences } from "@/services/experience/client";
+import { getExperiencesFromDb } from "@/services/experience/server";
+import { getProjectsFromDb } from "@/services/project/server";
 import ExperienceClient from "./ExperienceClient";
 
 export default async function ExperiencePage() {
   const [initialExperiences, initialProjects] = await Promise.all([
-    getExperiences(),
-    getProjects({ experienceId: "all", year: "all" }),
+    getExperiencesFromDb(),
+    getProjectsFromDb({ experienceId: "all", year: "all" }),
   ]);
 
   return (

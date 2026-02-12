@@ -1,14 +1,19 @@
 import { Experience } from "@/types/api/experience";
-import { API_BASE_URL } from "../index";
 
 export async function getExperiences(): Promise<Experience[]> {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/experience`, {
+    const res = await fetch("/api/experience", {
       cache: "no-store",
     });
 
     if (!res.ok) {
-      throw new Error(`서버 에러: ${res.status}`);
+      const detail = await res.text().catch(() => "");
+      console.error("경력 정보 조회 실패:", {
+        status: res.status,
+        statusText: res.statusText,
+        detail,
+      });
+      return [];
     }
 
     const json = await res.json();
@@ -24,7 +29,7 @@ export async function getExperiences(): Promise<Experience[]> {
     return [];
   } catch (error) {
     console.error("경력 정보 조회 실패:", error);
-    throw error;
+    return [];
   }
 }
 
@@ -49,7 +54,7 @@ export async function updateExperienceApi(id: number, data: any) {
 }
 
 export async function deleteExperienceApi(id: number): Promise<void> {
-  const res = await fetch(`${API_BASE_URL}/api/experience/${id}`, {
+  const res = await fetch(`/api/experience/${id}`, {
     method: "DELETE",
   });
 
