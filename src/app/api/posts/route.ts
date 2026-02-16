@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/auth";
 import { handleApiError } from "@/lib/error-handler";
 import { Session } from "next-auth";
-import { createPost, deletePost, getPosts } from "@/services/post/server";
+import { createPost, deletePost, getPosts } from "@/features/admin/posts/server";
 
 export async function GET(request: Request) {
   try {

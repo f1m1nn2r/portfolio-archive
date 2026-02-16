@@ -8,14 +8,16 @@ import { AdminActionBar } from "@/components/admin/layout/AdminActionBar";
 import { AdminTable } from "@/components/admin/table/AdminTable";
 import { CommonPagination } from "@/components/common/Pagination";
 import { LoadingState } from "@/components/common/LoadingState";
-import { usePosts } from "@/hooks/posts/usePosts";
+import {
+  FormattedPost,
+  PostColumns,
+  usePosts,
+} from "@/features/admin/posts";
 import { useSummaryData } from "@/hooks/common/useSummaryData";
 import { AdminSearchBar } from "@/components/admin/common/AdminSearchBar";
-import { PostColumns } from "@/components/admin/post/PostColumns";
 import { MESSAGES } from "@/lib/constants/messages";
 import { useAdmin } from "@/providers/AdminProvider";
 import { DeleteButton } from "@/components/common/DeleteButton";
-import { FormattedPost } from "@/types/admin";
 
 export default function PostsPage() {
   const { isMaster } = useAdmin();

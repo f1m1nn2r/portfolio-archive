@@ -1,4 +1,4 @@
-import { Epic } from "@/types/admin";
+import type { Epic } from "@/features/admin/backlog/model/backlog.admin";
 
 export const getEpics = async (): Promise<Epic[]> => {
   const res = await fetch("/api/epics");
