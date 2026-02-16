@@ -1,4 +1,4 @@
-import { Backlog, Epic } from "@/types/admin/backlog";
+import { Backlog, Epic } from "@/features/admin/backlog/model/backlog.admin";
 import { AdminTableColumn } from "@/types/admin/table";
 import { Badge } from "@/components/common/Badge";
 import { Icon } from "@/components/common/Icon";
