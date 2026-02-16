@@ -23,8 +23,6 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials): Promise<User | null> {
-        console.log("1. 입력받은 정보:", credentials);
-
         if (!credentials?.email || !credentials.password) return null;
 
         const { data: user, error } = await supabaseAdmin
@@ -33,15 +31,13 @@ export const authOptions: NextAuthOptions = {
           .eq("email", credentials.email)
           .single();
 
-        console.log("2. DB에서 찾은 유저:", user);
-
         if (error || !user) return null;
 
         const isValidPassword = await bcrypt.compare(
           credentials.password,
           user.password,
         );
-        console.log("3. 비밀번호 일치 여부:", isValidPassword);
+
         if (!isValidPassword) return null;
 
         return {
@@ -69,9 +65,12 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  session: { strategy: "jwt" },
+  session: { strategy: "jwt", maxAge: 60 * 60 },
   pages: { signIn: "/login" },
   debug: process.env.NODE_ENV === "development",
+  jwt: {
+    maxAge: 60 * 60,
+  },
 };
 // export const getAuthSession = () => {
 //   return getServerSession(authOptions as any);

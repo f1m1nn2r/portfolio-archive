@@ -6,13 +6,12 @@ import DeleteModal from "@/components/common/DeleteModal";
 import { useCategories } from "@/hooks/categories/useCategories";
 import { Icon } from "@/components/common/Icon";
 import { CategoryResponse } from "@/types/api/category";
-import { usePosts } from "@/hooks/posts/usePosts";
+import { useEtcFilter, usePosts } from "@/features/admin/posts";
 import { LoadingState } from "@/components/common/LoadingState";
 import { Button } from "@/components/common/Button";
 import { mdParser } from "@/lib/markdown";
 import { useAdmin } from "@/providers/AdminProvider";
 import { CommonPagination } from "@/components/common/Pagination";
-import { useEtcFilter } from "@/hooks/posts/useEtcFilter";
 
 export default function EtcClient({
   initialCategories,

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ExperienceCard } from "@/components/domains/experience/ExperienceCard";
 import { PageLayout } from "@/components/common/PageLayout";
 import { useExperience } from "@/hooks/experience/useExperience";
-import { getProfileSettings } from "@/services/profile/client";
+import { getProfileSettings } from "@/features/admin/profile";
 import { HomeClientProps } from "@/types/ui/main";
 
 export default function HomeClient({
