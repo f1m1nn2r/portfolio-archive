@@ -1,6 +1,7 @@
 import { UseContactFilterProps } from "@/types/admin/contact";
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { usePagination } from "@/hooks/common/usePagination";
+import { useSearchFilter } from "@/hooks/common/useSearchFilter";
 
 export function useContactFilter<T extends Record<string, any>>({
   data,
@@ -8,22 +9,9 @@ export function useContactFilter<T extends Record<string, any>>({
   selectionHandlers,
   itemsPerPage = 5,
 }: UseContactFilterProps<T> & { itemsPerPage?: number }) {
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const filteredData = useMemo(() => {
-    if (!searchQuery.trim()) return data;
-
-    const lowerQuery = searchQuery.toLowerCase();
-
-    return data.filter((item) =>
-      searchKeys.some((key) => {
-        const value = item[key];
-        return (
-          typeof value === "string" && value.toLowerCase().includes(lowerQuery)
-        );
-      }),
-    );
-  }, [data, searchQuery, searchKeys]);
+  const { searchQuery, setSearchQuery, filteredData } = useSearchFilter(data, {
+    searchKeys,
+  });
 
   const { currentData, totalPages, currentPage, setCurrentPage } =
     usePagination(filteredData, { itemsPerPage });
