@@ -11,6 +11,6 @@ export const AdminActionBar = ({
   };
 
   return (
-    <div className={`mb-4 flex gap-2 ${alignClass[align]}`}>{children}</div>
+    <div className={`mb-4 flex flex-wrap gap-2 ${alignClass[align]}`}>{children}</div>
   );
 };

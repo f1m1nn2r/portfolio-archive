@@ -32,7 +32,7 @@ export default function BacklogPage() {
       <AdminSummaryGrid items={summaryItems} columns={3} />
 
       <AdminActionBar>
-        <div className="flex gap-2 ml-auto">
+        <div className="ml-auto flex w-full flex-wrap justify-end gap-2 sm:w-auto">
           <DeleteButton
             disabled={selection.selectionCount === 0}
             onClick={handlers.openDeleteModal}
