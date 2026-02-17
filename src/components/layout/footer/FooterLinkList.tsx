@@ -1,4 +1,4 @@
-import FooterLink from "./FooterLink";
+import Link from "next/link";
 import { MAIN_LINKS, DOCUMENT_LINKS } from "./constants";
 
 type Profile = {
@@ -18,14 +18,22 @@ export default function FooterLinkList({ profile }: FooterLinkListProps) {
       <div className="flex gap-6 mt-2">
         {MAIN_LINKS.map((link) => {
           const url = profile[link.useProfileUrl];
+          if (!url) {
+            return null;
+          }
+
           return (
-            <FooterLink
+            <Link
               key={link.label}
-              href={url || "#"}
-              external={link.external}
+              href={url}
+              {...(link.external && {
+                target: "_blank",
+                rel: "noopener noreferrer",
+              })}
+              className="flex items-center gap-2 text-base hover:opacity-70 transition-opacity"
             >
               <span>▶</span> {link.label}
-            </FooterLink>
+            </Link>
           );
         })}
       </div>
@@ -33,13 +41,17 @@ export default function FooterLinkList({ profile }: FooterLinkListProps) {
       {/* 문서 링크 */}
       <nav className="flex flex-col gap-3">
         {DOCUMENT_LINKS.map((link) => (
-          <FooterLink
+          <Link
             key={link.label}
             href={link.href}
-            external={link.external}
+            {...(link.external && {
+              target: "_blank",
+              rel: "noopener noreferrer",
+            })}
+            className="flex items-center gap-2 text-base hover:opacity-70 transition-opacity"
           >
             {link.icon} {link.label}
-          </FooterLink>
+          </Link>
         ))}
       </nav>
     </div>
