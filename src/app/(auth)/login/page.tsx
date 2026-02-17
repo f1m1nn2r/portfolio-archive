@@ -45,9 +45,11 @@ export default function LoginPage() {
   return (
     <PageLayout>
       <div className="">
-        <div className="mb-25">
-          <h1 className="text-[80px] font-bold leading-none mb-3">Login</h1>
-          <p className="text-lg text-gray-222 leading-relaxed mb-6">
+        <div className="mb-14 sm:mb-20 md:mb-25">
+          <h1 className="mb-3 text-4xl font-bold leading-none sm:text-6xl md:text-[80px]">
+            Login
+          </h1>
+          <p className="mb-6 text-base leading-relaxed text-gray-222 sm:text-lg">
             대시보드 확인을 위해 로그인이 필요합니다.
             <br />
             관리자 기능을 둘러보시려면 아래{" "}
@@ -55,12 +57,12 @@ export default function LoginPage() {
             이용해 주세요.
           </p>
 
-          <div className="inline-block bg-bg-light border border-gray-ddd p-5 rounded-sm">
-            <div className="flex items-center gap-4 text-sm text-gray-555">
+          <div className="inline-block max-w-full rounded-sm border border-gray-ddd bg-bg-light p-4 sm:p-5">
+            <div className="flex flex-wrap items-center gap-2 text-sm text-gray-555 sm:gap-4">
               <span className="flex items-center gap-1">
                 <Icon type="userCircle" size={14} /> ID: observer@guest.com
               </span>
-              <span className="w-[1px] h-3 bg-gray-ddd"></span>
+              <span className="hidden h-3 w-[1px] bg-gray-ddd sm:block"></span>
               <span className="flex items-center gap-1">
                 <Icon type="lockAlt" size={14} /> PW: guest1234
               </span>
@@ -68,10 +70,10 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-start md:justify-end">
           <form
             onSubmit={handleSubmit}
-            className="w-full max-w-[450px] space-y-12"
+            className="w-full max-w-[450px] space-y-8 sm:space-y-10 md:space-y-12"
           >
             <div>
               <label className={labelStyles}>Email</label>
@@ -97,7 +99,7 @@ export default function LoginPage() {
               />
             </div>
 
-            <div className="flex justify-end items-center gap-4">
+            <div className="flex items-center justify-end gap-4">
               <button
                 type="submit"
                 className="px-6 py-1.5 rounded-full text-base text-white font-medium transition-all border border-black bg-black disabled:bg-gray-400"
