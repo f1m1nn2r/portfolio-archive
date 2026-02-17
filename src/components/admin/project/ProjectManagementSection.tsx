@@ -29,7 +29,7 @@ export function ProjectManagementSection() {
     currentPage,
     setCurrentPage,
     totalPages,
-  } = usePagination(projects, { itemsPerPage: 6 });
+  } = usePagination(projects, { itemsPerPage: 8 });
 
   return (
     <>

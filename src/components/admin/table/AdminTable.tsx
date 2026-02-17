@@ -23,8 +23,8 @@ export function AdminTable<T>({
 }: AdminTableProps<T> & { onAdd?: () => void }) {
   return (
     <div className="bg-white rounded-lg border border-gray-ddd">
-      <div className="overflow-hidden">
-        <Table className="table-fixed">
+      <div className="overflow-x-auto">
+        <Table className="min-w-[860px] table-fixed">
           <TableHeader className="bg-bg-light">
             <TableRow>
               {columns.map((col, index) => (

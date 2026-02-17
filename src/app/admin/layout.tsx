@@ -33,12 +33,12 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-bg-light p-5 gap-5 items-start">
+    <div className="flex min-h-screen flex-col items-stretch gap-4 bg-bg-light p-3 sm:p-4 lg:flex-row lg:items-start lg:gap-5 lg:p-5">
       <Suspense fallback={<div>Loading navigation...</div>}>
         <AdminSidebar />
       </Suspense>
 
-      <main className="flex-1 overflow-y-auto">
+      <main className="min-w-0 flex-1 overflow-y-auto">
         <Suspense fallback={<div>Loading admin content...</div>}>
           {children}
         </Suspense>

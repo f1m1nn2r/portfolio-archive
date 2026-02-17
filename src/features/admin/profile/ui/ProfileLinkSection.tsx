@@ -40,6 +40,7 @@ export function ProfileLinkSection({
         <div className="flex flex-col gap-2">
           <label className="text-base font-medium">깃허브</label>
           <Input
+            placeholder="URL을 입력하세요."
             value={data.github_url}
             onChange={(e) => onChange("github_url", e.target.value)}
             disabled={!isMaster}

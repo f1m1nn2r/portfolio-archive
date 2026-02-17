@@ -57,7 +57,7 @@ export default function CategoriesPage() {
           ))}
 
           {/* 새 1차 카테고리 추가 폼 */}
-          <div className="flex gap-2 bg-bg-light p-5 border border-gray-ddd rounded-lg">
+          <div className="flex flex-col gap-2 rounded-lg border border-gray-ddd bg-bg-light p-4 sm:flex-row sm:p-5">
             <input
               placeholder="새 1차 카테고리 이름을 입력하세요."
               className={inputStyles}
@@ -70,8 +70,8 @@ export default function CategoriesPage() {
               size="md"
               className={
                 !isMaster
-                  ? "opacity-50 cursor-not-allowed "
-                  : "whitespace-nowrap"
+                  ? "w-full opacity-50 cursor-not-allowed sm:w-auto"
+                  : "w-full whitespace-nowrap sm:w-auto"
               }
               onClick={handlers.handleAddParent}
               disabled={!isMaster}

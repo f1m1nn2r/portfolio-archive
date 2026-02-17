@@ -23,6 +23,7 @@ export default function ProfileSettingsPage() {
             width={1500}
             height={600}
             alt="나 자신 화이팅"
+            className="h-auto w-full"
           />
         </div>
 
