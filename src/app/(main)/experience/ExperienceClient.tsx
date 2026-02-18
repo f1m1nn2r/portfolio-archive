@@ -75,11 +75,11 @@ export default function ExperienceClient({
         />
       </section>
 
-      <section className="max-w-7xl mx-auto px-4">
+      <section className="max-w-7xl mx-auto">
         {displayExperience && <ExperienceCard experience={displayExperience} />}
       </section>
 
-      <section className="max-w-7xl mx-auto px-4 mt-20">
+      <section className="max-w-7xl mx-auto mt-20">
         <ExperienceFilters
           experiences={experiences}
           years={availableYears}

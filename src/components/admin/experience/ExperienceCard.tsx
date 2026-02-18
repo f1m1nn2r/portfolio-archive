@@ -16,15 +16,15 @@ export function ExperienceCard({
   const isWork = experience.type === "WORK";
 
   return (
-    <div className="p-10 border border-gray-ddd rounded-xl relative hover:border-gray-400 transition-colors">
-      <div className="flex flex-col 2xl:flex-row gap-8">
+    <div className="p-6 border border-gray-ddd rounded-xl relative hover:border-gray-400 transition-colors sm:p-10">
+      <div className="flex flex-col 2xl:flex-row gap-4 2xl:gap-8">
         {/* 회사/주요 업무 */}
         <div className="w-full 2xl:max-w-[600px]">
-          <div className="text-2xl font-bold mb-2.5">
+          <div className="text-[18px] sm:text-2xl font-bold mb-2.5">
             <h2>{experience.company}</h2>
             <p>{experience.team}</p>
           </div>
-          <ul className="text-gray-555 text-lg">
+          <ul className="text-gray-555 text-[14px] sm:text-lg">
             {experience.description.map((desc, idx) => (
               <li key={idx}>{desc}</li>
             ))}
@@ -34,10 +34,10 @@ export function ExperienceCard({
         <div className="flex flex-col xl:flex-col 2xl:flex-row gap-8 flex-1">
           {/* 다닌 기간 */}
           <div className="flex-1">
-            <span className="font-medium text-lg block">
+            <span className="font-medium text-[14px] sm:text-lg block">
               {formatPeriod(experience.start_date, experience.end_date)}
             </span>
-            <span className="text-gray-999 text-base block mt-1">
+            <span className="text-gray-999 text-[14px] sm:text-base block mt-1">
               {calculateDuration(experience.start_date, experience.end_date)}
             </span>
             <Badge className="bg-bg-light py-2 px-2.5 text-base mt-5">

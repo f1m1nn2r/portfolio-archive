@@ -10,8 +10,8 @@ export function AdminSearchBar({
   filterItems = [],
 }: AdminSearchBarProps) {
   return (
-    <div className="flex w-full flex-wrap justify-end gap-2">
-      <div className="relative w-full sm:w-[300px]">
+    <div className="flex w-full min-w-0 items-center justify-end gap-2">
+      <div className="relative min-w-0 flex-1 sm:w-[300px] sm:flex-none">
         <input
           type="text"
           value={searchValue}
@@ -30,7 +30,11 @@ export function AdminSearchBar({
       {filterItems.length > 0 && (
         <Dropdown
           trigger={
-            <Button variant="secondary" size="md" className="w-full sm:w-auto">
+            <Button
+              variant="secondary"
+              size="md"
+              className="shrink-0 whitespace-nowrap"
+            >
               필터 <Icon type="chevronDown" size={20} />
             </Button>
           }

@@ -23,7 +23,7 @@ export default function ContactPage() {
         <h1 className="mb-3 text-4xl font-bold leading-none sm:text-6xl md:text-[80px]">
           Contact me
         </h1>
-        <p className="text-base leading-relaxed text-gray-222 sm:text-lg">
+        <p className="text-base break-keep text-gray-222 sm:text-lg">
           남겨주신 메시지는 대시보드와 개인 이메일을 통해 실시간으로 확인하고
           있습니다.
         </p>

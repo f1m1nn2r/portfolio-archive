@@ -7,6 +7,14 @@ interface ProfileLinkSectionProps {
   onChange: (key: keyof ProfileFormData, value: string) => void;
 }
 
+type LinkKey = "resume_url" | "pdf_url" | "github_url";
+
+const linkFields: { key: LinkKey; label: string }[] = [
+  { key: "resume_url", label: "이력서" },
+  { key: "pdf_url", label: "포트폴리오 PDF" },
+  { key: "github_url", label: "깃허브" },
+];
+
 export function ProfileLinkSection({
   data,
   onChange,
@@ -18,34 +26,18 @@ export function ProfileLinkSection({
       <h3 className="text-lg font-bold pb-5 border-b border-gray-ddd">
         링크 연결
       </h3>
-      <div className="grid grid-cols-3 gap-4">
-        <div className="flex flex-col gap-2">
-          <label className="text-base font-medium">이력서</label>
-          <Input
-            placeholder="URL을 입력하세요."
-            value={data.resume_url}
-            onChange={(e) => onChange("resume_url", e.target.value)}
-            disabled={!isMaster}
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label className="text-base font-medium">포트폴리오 PDF</label>
-          <Input
-            placeholder="URL을 입력하세요."
-            value={data.pdf_url}
-            onChange={(e) => onChange("pdf_url", e.target.value)}
-            disabled={!isMaster}
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label className="text-base font-medium">깃허브</label>
-          <Input
-            placeholder="URL을 입력하세요."
-            value={data.github_url}
-            onChange={(e) => onChange("github_url", e.target.value)}
-            disabled={!isMaster}
-          />
-        </div>
+      <div className="flex flex-wrap gap-4">
+        {linkFields.map(({ key, label }) => (
+          <div className="flex flex-col gap-4 flex-1 min-w-[200px]">
+            <label className="text-base font-medium">{label}</label>
+            <Input
+              placeholder="URL을 입력하세요."
+              value={data[key]}
+              onChange={(e) => onChange(key, e.target.value)}
+              disabled={!isMaster}
+            />
+          </div>
+        ))}
       </div>
     </section>
   );

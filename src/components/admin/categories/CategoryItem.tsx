@@ -17,12 +17,12 @@ export function CategoryItem({
   const disabledStyles = !isMaster ? "opacity-50 cursor-not-allowed" : "";
 
   return (
-    <div className="flex items-center justify-between py-3 px-5 hover:bg-gray-50 transition-colors">
+    <div className="flex flex-col gap-2 px-4 py-3 transition-colors hover:bg-gray-50 sm:flex-row sm:items-center sm:justify-between sm:px-5">
       {isEditing ? (
-        <div className="flex gap-2 flex-1 mr-4 ml-6">
+        <div className="ml-0 flex w-full min-w-0 flex-col gap-2 sm:mr-4 sm:ml-6 sm:flex-1 sm:flex-row">
           <input
             autoFocus
-            className="flex-1 p-1 px-2 border rounded text-sm outline-none focus:border-gray-555 bg-white"
+            className="min-w-0 flex-1 rounded border bg-white p-1 px-2 text-sm outline-none focus:border-gray-555"
             value={editName}
             onChange={(e) => onEditChange(e.target.value)}
           />
@@ -30,16 +30,21 @@ export function CategoryItem({
             variant="primary"
             size="sm"
             onClick={() => onUpdate(category.id)}
-            className={disabledStyles}
+            className={`w-full whitespace-nowrap sm:w-auto ${disabledStyles}`}
           >
             저장
           </Button>
-          <Button variant="ghost" size="sm" onClick={onCancel}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onCancel}
+            className="w-full whitespace-nowrap sm:w-auto"
+          >
             취소
           </Button>
         </div>
       ) : (
-        <div className="flex items-center gap-2 text-gray-600 pl-4">
+        <div className="flex w-full items-center gap-2 pl-1 text-gray-600 sm:pl-4">
           <Icon type="fileBlank" size={16} />
           <span>
             {category.name}
@@ -49,12 +54,12 @@ export function CategoryItem({
           </span>
         </div>
       )}
-      <div className="flex gap-2">
+      <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:flex">
         <Button
           variant="secondary"
           size="sm"
           onClick={() => onOpenEdit(category)}
-          className={disabledStyles}
+          className={`w-full whitespace-nowrap sm:w-auto ${disabledStyles}`}
         >
           수정
         </Button>
@@ -62,7 +67,7 @@ export function CategoryItem({
           variant="danger"
           size="sm"
           onClick={() => onOpenDelete(category.id)}
-          className={disabledStyles}
+          className={`w-full whitespace-nowrap sm:w-auto ${disabledStyles}`}
         >
           삭제
         </Button>
