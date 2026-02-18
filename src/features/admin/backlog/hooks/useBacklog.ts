@@ -1,26 +1,24 @@
 import { useAppSWR } from "@/hooks/common/useAppSWR";
-import { getBacklogs } from "../api/client";
+import {
+  createBacklogApi,
+  deleteBacklogsApi,
+  getBacklogs,
+  updateBacklogApi,
+} from "../api/client";
 import { Backlog, UseBacklogProps } from "../model/backlog.admin";
 import { useMemo, useCallback, useState } from "react";
 import { SWR_MUTATE_OPTIONS } from "@/lib/constants/swr";
 import { BacklogResponse } from "../model/backlog.api";
+import { showToast } from "@/lib/toast";
 
 export function useBacklog({ initialData, onSuccess }: UseBacklogProps = {}) {
   const [isActionLoading, setIsActionLoading] = useState(false);
 
-  const {
-    data,
-    isLoading: isFetchLoading,
-    mutate,
-    createItem,
-    updateItem,
-    deleteManyItems,
-  } = useAppSWR<BacklogResponse, Partial<Backlog>, Partial<Backlog>>(
+  const { data, isLoading: isFetchLoading, mutate } = useAppSWR<BacklogResponse>(
     "/api/backlog",
     getBacklogs,
     {
       fallbackData: initialData,
-      onSuccess: () => onSuccess?.(),
     },
   );
 
@@ -45,11 +43,14 @@ export function useBacklog({ initialData, onSuccess }: UseBacklogProps = {}) {
         order: backlogData.length,
       };
 
-      await createItem(newEntry);
+      await createBacklogApi(newEntry);
+      await mutate();
+      onSuccess?.();
+      showToast.save("add");
     } finally {
       setIsActionLoading(false);
     }
-  }, [data, backlogData.length, createItem]);
+  }, [data, backlogData.length, mutate, onSuccess]);
 
   const updateBacklogField = useCallback(
     async <K extends keyof Backlog>(
@@ -67,11 +68,12 @@ export function useBacklog({ initialData, onSuccess }: UseBacklogProps = {}) {
       };
 
       await mutate(async () => {
-        await updateItem(id, { [field]: value }, { showToast: false });
+        await updateBacklogApi(id, { [field]: value });
+        onSuccess?.();
         return optimisticData;
       }, SWR_MUTATE_OPTIONS(optimisticData));
     },
-    [data, backlogData, mutate, updateItem],
+    [data, backlogData, mutate, onSuccess],
   );
 
   const deleteBacklogs = useCallback(
@@ -86,14 +88,16 @@ export function useBacklog({ initialData, onSuccess }: UseBacklogProps = {}) {
       try {
         setIsActionLoading(true);
         await mutate(async () => {
-          await deleteManyItems(ids);
+          await deleteBacklogsApi(ids);
+          onSuccess?.();
           return optimisticData;
         }, SWR_MUTATE_OPTIONS(optimisticData));
+        showToast.delete();
       } finally {
         setIsActionLoading(false);
       }
     },
-    [data, backlogData, mutate, deleteManyItems],
+    [data, backlogData, mutate, onSuccess],
   );
 
   return {

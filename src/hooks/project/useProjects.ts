@@ -1,13 +1,17 @@
 import { useCallback } from "react";
 import { Project, UseProjectsOptions } from "@/types/api/project";
-import { getProjects } from "@/services/project/client";
+import {
+  createProjectApi,
+  deleteProjectApi,
+  getProjects,
+  updateProjectApi,
+} from "@/services/project/client";
 import { useAppSWR } from "@/hooks/common/useAppSWR";
+import { showToast } from "@/lib/toast";
 
 export function useProjects(options?: UseProjectsOptions) {
   // SWR용 키 (필터링/베이스 키 분리)
   const filterKey = `/api/projects?experienceId=${options?.experienceId || "all"}&year=${options?.year || "all"}`;
-  const baseKey = "/api/projects";
-
   const {
     data: projects,
     isLoading: isProjectsLoading,
@@ -20,10 +24,6 @@ export function useProjects(options?: UseProjectsOptions) {
       fallbackData: options?.fallbackData,
       keepPreviousData: true,
     },
-  );
-
-  const { saveItem, deleteItem } = useAppSWR<Project[]>(baseKey, () =>
-    getProjects({ experienceId: "all", year: "all" }),
   );
 
   // 전체 데이터 관리 (요약 정보 및 필터링 옵션 추출용)
@@ -39,26 +39,38 @@ export function useProjects(options?: UseProjectsOptions) {
 
   const saveProject = useCallback(
     async (mode: "add" | "edit", id: number | undefined, data: any) => {
-      const result = await saveItem(id, data);
-      if (result) {
+      try {
+        if (mode === "edit" && id) {
+          await updateProjectApi(id, data);
+        } else {
+          await createProjectApi(data);
+        }
         mutateFilter();
+        mutateAll();
+        showToast.save(mode === "edit" ? "edit" : "add");
         return true;
+      } catch (error) {
+        showToast.error(error instanceof Error ? error.message : "저장에 실패했습니다.");
+        return false;
       }
-      return false;
     },
-    [saveItem, mutateFilter],
+    [mutateFilter, mutateAll],
   );
 
   const handleDeleteProject = useCallback(
     async (id: number) => {
-      const success = await deleteItem(id);
-      if (success) {
+      try {
+        await deleteProjectApi(id);
         mutateFilter();
         mutateAll();
+        showToast.delete();
+        return true;
+      } catch (error) {
+        showToast.error(error instanceof Error ? error.message : "삭제에 실패했습니다.");
+        return false;
       }
-      return success;
     },
-    [deleteItem, mutateFilter, mutateAll],
+    [mutateFilter, mutateAll],
   );
 
   return {

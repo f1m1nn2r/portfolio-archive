@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getProfileSettings } from "../api/client";
+import { getProfileSettings, updateProfileSettings } from "../api/client";
 import { useAppSWR } from "@/hooks/common/useAppSWR";
 import {
   profileSchema,
@@ -13,7 +13,7 @@ export function useProfile() {
   const {
     data: initialData,
     isLoading: isFetching,
-    updateItem,
+    mutate,
   } = useAppSWR<ProfileFormData>("/api/profile-settings", getProfileSettings);
 
   // 기존 폼 상태 하드코딩 -> zod 스키마에서 뽑아오는 방식으로 변경
@@ -37,12 +37,20 @@ export function useProfile() {
     const result = profileSchema.safeParse(formData);
     if (!result.success) {
       showToast.error(result.error.issues[0].message);
+      setIsLoading(false);
       return;
     }
 
-    setIsLoading(true);
-    await updateItem("", formData);
-    setIsLoading(false);
+    try {
+      await updateProfileSettings(formData);
+      await mutate();
+      showToast.save("edit");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "저장에 실패했습니다.";
+      showToast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return {
