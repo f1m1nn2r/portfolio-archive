@@ -1,5 +1,5 @@
 import { useAppSWR } from "@/hooks/common/useAppSWR";
-import { getPostsApi } from "../api/client";
+import { deleteManyPostsApi, getPostsApi } from "../api/client";
 import { useCallback, useMemo, useState } from "react";
 import { PostsResponse } from "../model/post.api";
 import { MESSAGES } from "@/lib/constants/messages";
@@ -22,8 +22,10 @@ export const usePosts = () => {
     ? `/api/posts?categoryId=${categoryFilterId}`
     : "/api/posts";
 
-  const { data, isLoading, error, mutate, deleteManyItems } =
-    useAppSWR<PostsResponse>(apiUrl, getPostsApi);
+  const { data, isLoading, error, mutate } = useAppSWR<PostsResponse>(
+    apiUrl,
+    getPostsApi,
+  );
 
   const posts = useMemo<FormattedPost[]>(() => {
     return (data?.posts || []) as FormattedPost[];
@@ -52,11 +54,13 @@ export const usePosts = () => {
   }, [filteredPosts, filterType]);
 
   const handleConfirmDelete = async () => {
-    const success = await deleteManyItems(selectedIds, "/api/posts");
+    const success = await deleteManyPostsApi(selectedIds);
 
     if (success) {
+      mutate();
       setSelectedIds([]);
       setIsDeleteModalOpen(false);
+      showToast.delete();
     }
   };
 
