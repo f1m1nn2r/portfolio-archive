@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import hljs from "highlight.js";
 import DeleteModal from "@/components/common/DeleteModal";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback } from "react";
 import { useCategories } from "@/hooks/categories/useCategories";
 import { Icon } from "@/components/common/Icon";
 import { CategoryResponse } from "@/types/api/category";
@@ -19,8 +18,6 @@ export default function EtcClient({
 }: {
   initialCategories: CategoryResponse;
 }) {
-  const contentRootRef = useRef<HTMLDivElement>(null);
-
   const { categories } = useCategories({
     initialData: initialCategories,
   });
@@ -46,22 +43,8 @@ export default function EtcClient({
 
   const pagination = useEtcFilter(posts, 1);
 
-  useEffect(() => {
-    const root = contentRootRef.current;
-    if (!root) return;
-
-    const blocks = root.querySelectorAll("pre code");
-    blocks.forEach((block) => {
-      if (!(block instanceof HTMLElement)) return;
-      hljs.highlightElement(block);
-    });
-  }, [pagination.paginatedPosts]);
-
   return (
-    <div
-      ref={contentRootRef}
-      className="flex w-full flex-col items-start gap-8 lg:flex-row lg:gap-10"
-    >
+    <div className="flex w-full flex-col items-start gap-8 lg:flex-row lg:gap-10">
       <aside className="w-full lg:w-64 lg:shrink-0 lg:sticky lg:top-10">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-1">
           {categories.map((parent) => (

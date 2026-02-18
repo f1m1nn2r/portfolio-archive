@@ -11,9 +11,11 @@ export default async function BacklogMainPage() {
 
   return (
     <PageLayout>
-      <header className="mb-25">
-        <h1 className="text-[80px] font-bold leading-none mb-3">Backlog</h1>
-        <p className="text-lg text-gray-222 leading-relaxed">
+      <header className="mb-14 sm:mb-20 md:mb-25">
+        <h1 className="mb-3 text-4xl font-bold leading-none sm:text-6xl md:text-[80px]">
+          Backlog
+        </h1>
+        <p className="text-base break-keep text-gray-222 sm:text-lg">
           본 포트폴리오의 백로그를 나타내는 페이지입니다.
         </p>
       </header>

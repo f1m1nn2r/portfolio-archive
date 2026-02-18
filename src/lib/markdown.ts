@@ -2,6 +2,15 @@ import MarkdownIt from "markdown-it";
 // import markdownItHighlightjs from "markdown-it-highlightjs";
 import hljs from "highlight.js";
 
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function markdownItIns(md: MarkdownIt) {
   md.inline.ruler.before("emphasis", "ins", (state, silent) => {
     const start = state.pos;
@@ -48,11 +57,18 @@ export const mdParser = new MarkdownIt({
   typographer: true,
   highlight: (code, lang) => {
     const validLang = hljs.getLanguage(lang || "") ? lang : "plaintext";
-    const highlighted = validLang
-      ? hljs.highlight(code, { language: validLang }).value
-      : code;
 
-    return `<pre data-lang="${validLang}" class="code-block"><code class="hljs">${highlighted}</code></pre>`;
+    try {
+      const highlighted = hljs.highlight(code, {
+        language: validLang,
+        ignoreIllegals: true,
+      }).value;
+
+      return `<pre data-lang="${validLang}" class="code-block"><code class="hljs">${highlighted}</code></pre>`;
+    } catch {
+      const escaped = escapeHtml(code);
+      return `<pre data-lang="plaintext" class="code-block"><code class="hljs">${escaped}</code></pre>`;
+    }
   },
 }).use(markdownItIns);
 // .use(markdownItHighlightjs, {

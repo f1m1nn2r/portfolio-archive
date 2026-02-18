@@ -52,25 +52,27 @@ export default function BacklogClient({
   );
 
   return (
-    <div className="mt-8 w-full overflow-x-auto">
-      <div className="min-w-[1200px] [&_table]:table-auto">
-        <AdminTable<Backlog>
-          columns={columns}
-          data={pagedData}
-          selectedIds={[]}
-          getItemId={(item) => String(item.id)}
-          showAddColumn={false}
-          onToggleSelect={() => {}}
-          onToggleSelectAll={() => {}}
-        />
-
-        <div className="mt-6 flex justify-center">
-          <CommonPagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(page) => setCurrentPage(page)}
+    <div className="mt-8 w-full">
+      <div className="w-full overflow-x-auto">
+        <div className="min-w-[1200px] [&_table]:table-auto">
+          <AdminTable<Backlog>
+            columns={columns}
+            data={pagedData}
+            selectedIds={[]}
+            getItemId={(item) => String(item.id)}
+            showAddColumn={false}
+            onToggleSelect={() => {}}
+            onToggleSelectAll={() => {}}
           />
         </div>
+      </div>
+
+      <div className="mt-6 flex justify-center">
+        <CommonPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
       </div>
     </div>
   );
