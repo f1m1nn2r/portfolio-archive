@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import { AdminPageLayout } from "@/components/admin/layout/AdminPageLayout";
-import { useProfile } from "@/hooks/profile/useProfile";
-import { ProfileIntroSection } from "@/components/admin/profile-settings/ProfileIntroSection";
-import { ProfileContactSection } from "@/components/admin/profile-settings/ProfileContactSection";
-import { ProfileLinkSection } from "@/components/admin/profile-settings/ProfileLinkSection";
+import {
+  ProfileContactSection,
+  ProfileIntroSection,
+  ProfileLinkSection,
+  useProfile,
+} from "@/features/admin/profile";
 import { SaveButton } from "@/components/common/SaveButton";
 
 export default function ProfileSettingsPage() {
@@ -21,6 +23,7 @@ export default function ProfileSettingsPage() {
             width={1500}
             height={600}
             alt="나 자신 화이팅"
+            className="h-auto w-full"
           />
         </div>
 

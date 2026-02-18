@@ -1,11 +1,11 @@
-import { getProfileFromDb } from "@/services/profile/server";
+import { getProfileFromDb } from "@/features/admin/profile/server";
 import FooterLinkList from "./FooterLinkList";
 
 export default async function Footer() {
   const profile = await getProfileFromDb();
 
   return (
-    <footer className="w-full bg-black text-white py-20 px-10 md:px-20">
+    <footer className="w-full bg-black text-white py-20 md:px-20 ">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between gap-12">
         <div className="flex flex-col gap-10">
           <div className="flex flex-col gap-4">

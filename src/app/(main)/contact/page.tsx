@@ -19,16 +19,18 @@ export default function ContactPage() {
 
   return (
     <PageLayout>
-      <div className="mb-25">
-        <h1 className="text-[80px] font-bold leading-none mb-3">Contact me</h1>
-        <p className="text-lg text-gray-222 leading-relaxed">
+      <div className="mb-14 sm:mb-20 md:mb-25">
+        <h1 className="mb-3 text-4xl font-bold leading-none sm:text-6xl md:text-[80px]">
+          Contact me
+        </h1>
+        <p className="text-base leading-relaxed text-gray-222 sm:text-lg">
           남겨주신 메시지는 대시보드와 개인 이메일을 통해 실시간으로 확인하고
           있습니다.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="max-w-[800px] ml-auto">
-        <div className="grid grid-cols-2 gap-x-12 gap-y-12">
+      <form onSubmit={handleSubmit} className="ml-auto w-full max-w-[800px]">
+        <div className="grid grid-cols-1 gap-x-12 gap-y-10 md:grid-cols-2 md:gap-y-12">
           {/* Honeypot Field */}
           <div className="hidden" aria-hidden="true">
             <input
@@ -66,7 +68,7 @@ export default function ContactPage() {
             />
           </div>
 
-          <div className="col-span-2">
+          <div className="md:col-span-2">
             <label className={labelStyles}>Message</label>
             <textarea
               name="message"
@@ -84,7 +86,7 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <div className="flex justify-end mt-12">
+        <div className="mt-10 flex justify-end sm:mt-12">
           <button
             type="submit"
             disabled={isLoading}

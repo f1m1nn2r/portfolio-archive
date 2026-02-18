@@ -1,25 +1,15 @@
-import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-import { TABLES } from "@/lib/constants/tables";
 import { handleApiError } from "@/lib/error-handler";
-import { DEFAULT_PROFILE, ProfileSettings } from "@/types/api/profile";
+import { getProfileFromDb, upsertProfileInDb } from "@/features/admin/profile/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/auth";
 import { Session } from "next-auth";
+import { ProfileFormData } from "@/features/admin/profile";
 
 export async function GET() {
   try {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from(TABLES.PROFILE_SETTINGS)
-      .select("*")
-      .maybeSingle();
-
-    if (error) {
-      console.error("조회 실패:", error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-    return NextResponse.json<ProfileSettings>(data || DEFAULT_PROFILE);
+    const data = await getProfileFromDb();
+    return NextResponse.json(data);
   } catch (err) {
     return handleApiError(err);
   }
@@ -38,19 +28,8 @@ export async function PATCH(request: Request) {
       );
     }
 
-    const supabase = await createClient();
-    const body = await request.json();
-
-    const { data, error } = await supabase
-      .from(TABLES.PROFILE_SETTINGS)
-      .upsert({ id: 1, ...body }, { onConflict: "id" })
-      .select()
-      .single();
-
-    if (error) {
-      console.error("업데이트 실패:", error);
-      return handleApiError(error);
-    }
+    const body = (await request.json()) as ProfileFormData;
+    const data = await upsertProfileInDb(body);
 
     return NextResponse.json({
       message: "성공적으로 저장되었습니다.",

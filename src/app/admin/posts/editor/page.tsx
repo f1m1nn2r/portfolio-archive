@@ -7,9 +7,11 @@ import { AdminPageLayout } from "@/components/admin/layout/AdminPageLayout";
 import { Button } from "@/components/common/Button";
 import { Icon } from "@/components/common/Icon";
 import { useCategories } from "@/hooks/categories/useCategories";
-import { usePostForm } from "@/hooks/posts/usePostForm";
-import { PostCategorySelect } from "@/components/admin/post/PostCategorySelect";
-import { PostEditor } from "@/components/admin/post/PostEditor";
+import {
+  PostCategorySelect,
+  PostEditor,
+  usePostForm,
+} from "@/features/admin/posts";
 
 export default function PostEditorPage() {
   const searchParams = useSearchParams();

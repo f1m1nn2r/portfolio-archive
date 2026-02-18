@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ExperienceCard } from "@/components/domains/experience/ExperienceCard";
 import { PageLayout } from "@/components/common/PageLayout";
 import { useExperience } from "@/hooks/experience/useExperience";
-import { getProfileSettings } from "@/services/profile/client";
+import { getProfileSettings } from "@/features/admin/profile";
 import { HomeClientProps } from "@/types/ui/main";
 
 export default function HomeClient({
@@ -21,27 +21,28 @@ export default function HomeClient({
   const { experiences } = useExperience({ initialData: initialExperiences });
 
   return (
-    <PageLayout className="min-h-screen bg-white pt-12.5 pb-25">
-      <section className="max-w-7xl mx-auto px-4">
-        <h1 className="text-4xl font-bold mb-6 whitespace-pre-line text-right">
+    <PageLayout className="bg-white">
+      <section className="mx-auto w-full px-4 sm:px-6 lg:px-8">
+        <h1 className="mb-4 whitespace-pre-line break-words text-left text-2xl font-bold sm:mb-6 sm:text-3xl md:text-right md:text-4xl">
           {profile?.main_title}
         </h1>
-        <p className="text-lg leading-relaxed whitespace-pre-line text-right">
+        <p className="whitespace-pre-line break-words text-left text-base leading-relaxed sm:text-lg md:text-right">
           {profile?.main_description}
         </p>
       </section>
 
-      <div className="flex justify-center my-25">
+      <div className="my-14 flex justify-center px-4 sm:my-20 md:my-25">
         <Image
           src="/images/circle-line-graphic.png"
           alt="decoration"
           width={828}
           height={230}
+          className="h-auto w-full max-w-[828px]"
         />
       </div>
 
-      <section className="max-w-7xl mx-auto px-4 pb-32">
-        <div className="space-y-20">
+      <section className="mx-auto w-full px-4 pb-20 sm:px-6 md:pb-24 lg:px-8 lg:pb-32">
+        <div className="space-y-14 sm:space-y-16 md:space-y-20">
           {experiences.map((exp) => (
             <ExperienceCard key={exp.id} experience={exp} />
           ))}

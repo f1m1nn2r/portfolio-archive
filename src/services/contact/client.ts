@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/client";
 import { ContactMessage } from "@/types/admin/contact";
 import { TABLES } from "@/lib/constants/tables";
+import { ContactFormData } from "@/lib/validations/contact";
+import { http } from "@/services/http/client";
 
 const supabase = createClient();
 
@@ -19,41 +21,26 @@ export const getContacts = async (): Promise<ContactMessage[]> => {
 };
 
 export const updateReadStatus = async (ids: string[], isRead: boolean) => {
-  const { error } = await supabase
-    .from(TABLES.CONTACTS)
-    .update({ is_read: isRead })
-    .in("id", ids);
-
-  if (error) throw error;
+  await http.patch("/api/contact", {
+    body: { ids, is_read: isRead },
+  });
 };
 
 export const updateStarStatus = async (id: string, isStarred: boolean) => {
-  const { error } = await supabase
-    .from(TABLES.CONTACTS)
-    .update({ is_starred: isStarred })
-    .eq("id", id);
-
-  if (error) throw error;
+  await http.patch("/api/contact", {
+    body: { ids: [id], is_starred: isStarred },
+  });
 };
 
 export const deleteContactsApi = async (ids: string[]) => {
-  const { error } = await supabase.from(TABLES.CONTACTS).delete().in("id", ids);
-
-  if (error) throw error;
+  await http.delete("/api/contact", {
+    body: { ids },
+  });
 };
 
 // 사용자용: 문의 메시지 발송 API 호출
-export const sendContactMessage = async (formData: any) => {
-  const response = await fetch("/api/contact", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(formData),
+export const sendContactMessage = async (formData: ContactFormData) => {
+  return http.post("/api/contact", {
+    body: formData,
   });
-
-  if (!response.ok) {
-    const result = await response.json();
-    throw new Error(result.error || "발송 실패");
-  }
-
-  return response.json();
 };

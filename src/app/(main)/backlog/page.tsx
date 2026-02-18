@@ -1,5 +1,5 @@
 import { PageLayout } from "@/components/common/PageLayout";
-import { getBacklogs } from "@/services/backlog/server";
+import { getBacklogs } from "@/features/admin/backlog/server";
 import { getEpicsFromDb } from "@/services/epic/server";
 import BacklogClient from "./BacklogClient";
 

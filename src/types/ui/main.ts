@@ -1,5 +1,5 @@
 import { Experience } from "@/types/api/experience";
-import { ProfileSettings } from "@/types/api/profile";
+import { ProfileSettings } from "@/features/admin/profile";
 
 export interface HomeClientProps {
   initialProfile: ProfileSettings;

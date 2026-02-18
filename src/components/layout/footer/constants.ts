@@ -1,4 +1,15 @@
-import { MainLink, DocumentLink } from "./types";
+type MainLink = {
+  label: string;
+  useProfileUrl: "resume_url" | "pdf_url" | "github_url";
+  external?: boolean;
+};
+
+type DocumentLink = {
+  icon: string;
+  label: string;
+  href: string;
+  external: boolean;
+};
 
 export const MAIN_LINKS: MainLink[] = [
   { label: "이력서", useProfileUrl: "resume_url", external: true },

@@ -1,4 +1,5 @@
 import { Project } from "@/types/api/project";
+import { http } from "@/services/http/client";
 
 export async function getProjects(filters?: {
   experienceId?: string;
@@ -12,16 +13,36 @@ export async function getProjects(filters?: {
     if (filters?.year && filters.year !== "all")
       params.set("year", filters.year);
 
-    const res = await fetch(`/api/projects?${params}`, {
+    const data = await http.get<Project[]>(`/api/projects?${params}`, {
       cache: "no-store",
+      unwrapData: true,
     });
-
-    if (!res.ok) throw new Error(`프로젝트 로드 실패: ${res.status}`);
-
-    const json = await res.json();
-    return json.success && Array.isArray(json.data) ? json.data : [];
+    return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error("프로젝트 조회 실패:", error);
     return [];
   }
+}
+
+export async function createProjectApi(
+  payload: Partial<Project>,
+): Promise<Project> {
+  return http.post<Project>("/api/projects", {
+    body: payload,
+    unwrapData: true,
+  });
+}
+
+export async function updateProjectApi(
+  id: number,
+  payload: Partial<Project>,
+): Promise<Project> {
+  return http.patch<Project>(`/api/projects/${id}`, {
+    body: payload,
+    unwrapData: true,
+  });
+}
+
+export async function deleteProjectApi(id: number): Promise<void> {
+  await http.delete(`/api/projects/${id}`);
 }

@@ -3,7 +3,7 @@ import { handleApiError } from "@/lib/error-handler";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/auth";
 import { Session } from "next-auth";
-import { deletePost, getPostById, updatePost } from "@/services/post/server";
+import { deletePost, getPostById, updatePost } from "@/features/admin/posts/server";
 
 export async function GET(
   request: Request,
@@ -47,7 +47,10 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(req: Request) {
+export async function DELETE(
+  _req: Request,
+  { params }: { params: { id: string } },
+) {
   try {
     const session = (await getServerSession(authOptions)) as Session | null;
 
@@ -55,18 +58,7 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "권한이 없습니다." }, { status: 403 });
     }
 
-    // URL에서 id 파라미터 가져오기
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
-
-    if (!id) {
-      return NextResponse.json(
-        { error: "ID가 제공되지 않았습니다." },
-        { status: 400 },
-      );
-    }
-
-    await deletePost(id);
+    await deletePost(params.id);
     return NextResponse.json({ success: true });
   } catch (err) {
     return handleApiError(err);

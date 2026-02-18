@@ -1,30 +1,18 @@
-import { Epic } from "@/types/admin";
+import type { Epic } from "@/features/admin/backlog/model/backlog.admin";
+import { http } from "@/services/http/client";
 
 export const getEpics = async (): Promise<Epic[]> => {
-  const res = await fetch("/api/epics");
-  if (!res.ok) throw new Error("에픽 로드 실패");
-  return res.json();
+  return http.get<Epic[]>("/api/epics");
 };
 
-export const createEpicApi = async (epic: Partial<Epic>): Promise<Epic> => {
-  const res = await fetch("/api/epics", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(epic),
+export const createEpicApi = async (
+  payload: Partial<Epic>,
+): Promise<Epic> => {
+  return http.post<Epic>("/api/epics", {
+    body: payload,
   });
-  if (!res.ok) throw new Error("에픽 생성 실패");
-  return res.json();
 };
 
-export const deleteEpicApi = async (id: string): Promise<boolean> => {
-  const res = await fetch(`/api/epics?id=${id}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  if (!res.ok) throw new Error("에픽 삭제 실패");
-  return res.ok;
+export const deleteEpicApi = async (id: string): Promise<void> => {
+  await http.delete(`/api/epics/${id}`);
 };

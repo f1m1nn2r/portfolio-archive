@@ -1,4 +1,4 @@
-import { Backlog } from "@/types/admin/backlog";
+import { Backlog } from "@/features/admin/backlog/model/backlog.admin";
 
 export const MOCK_BACKLOG: Backlog[] = [
   {

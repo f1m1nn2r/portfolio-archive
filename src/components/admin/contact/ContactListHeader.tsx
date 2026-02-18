@@ -12,8 +12,8 @@ export function ContactListHeader({
   onOpenDeleteModal,
 }: ContactListHeaderProps) {
   return (
-    <div className="flex items-center justify-between px-10 py-5 border-b border-gray-ddd bg-bg-light/30">
-      <div className="flex items-center gap-4">
+    <div className="flex flex-col gap-3 border-b border-gray-ddd bg-bg-light/30 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-10 lg:py-5">
+      <div className="flex items-center gap-3 sm:gap-4">
         <Dropdown
           trigger={
             <div className="flex items-center cursor-pointer">
@@ -35,13 +35,13 @@ export function ContactListHeader({
         </p>
       </div>
 
-      <div className="flex gap-2 relative z-10">
+      <div className="relative z-10 flex w-full flex-wrap gap-2 lg:w-auto lg:justify-end">
         <Button
           variant="secondary"
           size="md"
           onClick={onMarkAsRead}
           disabled={!isMaster || selectedCount === 0}
-          className={!isMaster ? "opacity-50 cursor-not-allowed" : ""}
+          className={`${!isMaster ? "opacity-50 cursor-not-allowed" : ""} w-full sm:w-auto`}
         >
           <Icon type="envelopeOpen" size={20} /> 읽음 표시
         </Button>
@@ -51,6 +51,7 @@ export function ContactListHeader({
             size="md"
             onClick={onOpenDeleteModal}
             disabled={selectedCount === 0}
+            className="w-full sm:w-auto"
           >
             <Icon type="trash" size={16} /> 삭제
           </Button>

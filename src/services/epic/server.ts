@@ -1,4 +1,4 @@
-import { Epic } from "@/types/admin";
+import type { Epic } from "@/features/admin/backlog/model/backlog.admin";
 import { createClient } from "@/lib/supabase/server";
 
 export async function getEpicsFromDb(): Promise<Epic[]> {

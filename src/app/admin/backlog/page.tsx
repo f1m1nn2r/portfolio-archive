@@ -6,9 +6,7 @@ import { AdminActionBar } from "@/components/admin/layout/AdminActionBar";
 import { AdminTable } from "@/components/admin/table/AdminTable";
 import { CommonPagination } from "@/components/common/Pagination";
 import { Button } from "@/components/common/Button";
-import { Backlog } from "@/types/admin";
-import { useBacklogPage } from "@/hooks/backlog/useBacklogPage";
-import { BacklogEpicManager } from "@/components/admin/backlog/BacklogEpicManager";
+import { Backlog, BacklogEpicManager, useBacklogPage } from "@/features/admin/backlog";
 import { Dropdown } from "@/components/common/Dropdown";
 import { AdminSummaryGrid } from "@/components/admin/layout/AdminSummaryGrid";
 import { DeleteButton } from "@/components/common/DeleteButton";
@@ -34,7 +32,7 @@ export default function BacklogPage() {
       <AdminSummaryGrid items={summaryItems} columns={3} />
 
       <AdminActionBar>
-        <div className="flex gap-2 ml-auto">
+        <div className="ml-auto flex w-full flex-wrap justify-end gap-2 sm:w-auto">
           <DeleteButton
             disabled={selection.selectionCount === 0}
             onClick={handlers.openDeleteModal}

@@ -4,7 +4,7 @@ import {
   createBacklog,
   deleteBacklogs,
   getBacklogsWithStats,
-} from "@/services/backlog/server";
+} from "@/features/admin/backlog/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/auth";
 import { Session } from "next-auth";

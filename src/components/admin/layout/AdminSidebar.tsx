@@ -27,20 +27,20 @@ export function AdminSidebar() {
   const { isMaster } = useAdmin();
 
   return (
-    <aside className="w-64 flex flex-col sticky top-5 h-[calc(100vh-60px)]">
+    <aside className="w-full lg:sticky lg:top-5 lg:flex lg:h-[calc(100vh-60px)] lg:w-64 lg:flex-shrink-0 lg:flex-col">
       <div>
         <div
           className="
-           bg-white p-2.5 rounded-lg border border-gray-ddd  
+           bg-white p-2.5 rounded-lg border border-gray-ddd
           "
         >
           <Link href="/">
-            <div className="rounded-lg flex items-center gap-2.5 w-fit">
-              <div className="bg-black w-11 h-11 flex items-center justify-center gap-1.5 rounded-sm">
-                <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
-                <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
+            <div className="flex w-fit items-center gap-2.5 rounded-lg">
+              <div className="flex h-10 w-10 items-center justify-center gap-1.5 rounded-sm bg-black sm:h-11 sm:w-11">
+                <div className="h-2.5 w-2.5 rounded-full bg-white"></div>
+                <div className="h-2.5 w-2.5 rounded-full bg-white"></div>
               </div>
-              <span className="font-bold text-base">Portfolio</span>
+              <span className="text-sm font-bold sm:text-base">Portfolio</span>
             </div>
           </Link>
         </div>
@@ -48,25 +48,26 @@ export function AdminSidebar() {
         <nav
           className="
           flex-1 
-          mt-5 pt-5
+          mt-4 pt-4
+          lg:mt-5 lg:pt-5
           relative
           after:content-[''] 
           after:absolute after:top-0 after:left-0 
           after:w-full after:h-[1px] 
           after:bg-gray-ddd"
         >
-          <ul className="space-y-2">
+          <ul className="flex gap-2 overflow-x-auto pb-1 lg:block lg:space-y-2 lg:overflow-visible lg:pb-0">
             {menuItems.map((item) => {
               const isActive =
                 item.href === "/admin/posts"
                   ? pathname === item.href
                   : pathname.startsWith(item.href);
 
-              return (
-                <li key={item.name}>
+                return (
+                <li key={item.name} className="shrink-0">
                   <Link
                     href={item.href}
-                    className={`flex items-center gap-3 p-2.5 rounded-lg transition-colors group ${
+                    className={`flex items-center gap-2.5 rounded-lg p-2 transition-colors group lg:gap-3 lg:p-2.5 ${
                       isActive
                         ? "bg-white border border-gray-ddd text-black font-medium"
                         : "hover:bg-bg-light/50"
@@ -82,9 +83,9 @@ export function AdminSidebar() {
                       <Icon type={item.icon} size="16" />
                     </span>
                     <span
-                      className={
+                      className={`text-sm whitespace-nowrap lg:text-base ${
                         isActive ? "font-medium text-black" : "font-regular"
-                      }
+                      }`}
                     >
                       {item.name}
                     </span>
@@ -96,13 +97,8 @@ export function AdminSidebar() {
         </nav>
       </div>
       {/* 하단 권한 표시 영역 추가 */}
-      <div
-        className="
-           bg-white p-2.5 rounded-lg border border-gray-ddd
-           mt-auto
-          "
-      >
-        <div className="rounded-lg flex items-center gap-2.5 w-fit">
+      <div className="mt-4 rounded-lg border border-gray-ddd bg-white p-2.5 lg:mt-auto">
+        <div className="flex w-fit items-center gap-2.5 rounded-lg">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black">
             <span className="text-[13px] font-semibold text-white">
               {isMaster ? "A" : "O"}
