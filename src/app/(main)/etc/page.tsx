@@ -18,7 +18,7 @@ export default function EtcPage() {
           <h1 className="mb-3 text-4xl font-bold leading-none sm:text-6xl md:text-[80px]">
             Etc
           </h1>
-          <p className="text-base leading-relaxed text-gray-222 sm:text-lg">
+          <p className="text-base break-keep text-gray-222 sm:text-lg">
             개발하면서 마주친 문제들, 배운 것들, 그리고 생각들을 기록합니다.
           </p>
         </div>

@@ -17,9 +17,9 @@ export function PostCategorySelect({
   subCategories,
 }: PostCategorySelectProps) {
   return (
-    <div className="flex gap-4">
+    <div className="grid gap-4 md:grid-cols-2">
       <div className="flex-1">
-        <label className="text-base font-medium mb-4 inline-block">
+        <label className="inline-block text-base font-medium mb-4">
           1차 카테고리
         </label>
         <Select
@@ -29,7 +29,7 @@ export function PostCategorySelect({
             setCategory2("");
           }}
         >
-          <SelectTrigger className="w-full px-6 py-5.5 border border-black rounded-none">
+          <SelectTrigger className="flex w-full items-center justify-between rounded-none border border-black px-6 py-5.5 text-base">
             <SelectValue placeholder="1차 카테고리 선택" />
             <Icon type="solidDownArrowAlt" size={12} className="text-black" />
           </SelectTrigger>
@@ -44,7 +44,7 @@ export function PostCategorySelect({
       </div>
 
       <div className="flex-1">
-        <label className="text-base font-medium mb-4 inline-block">
+        <label className="inline-block text-base font-medium mb-4">
           2차 카테고리
         </label>
         <Select
@@ -52,7 +52,7 @@ export function PostCategorySelect({
           onValueChange={setCategory2}
           disabled={!category1 || subCategories.length === 0}
         >
-          <SelectTrigger className="w-full px-6 py-5.5 border border-black rounded-none">
+          <SelectTrigger className="flex w-full items-center justify-between rounded-none border border-black px-6 py-5.5 text-base">
             <SelectValue
               placeholder={
                 !category1

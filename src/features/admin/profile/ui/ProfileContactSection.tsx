@@ -7,6 +7,13 @@ interface ProfileContactSectionProps {
   onChange: (key: keyof ProfileFormData, value: string) => void;
 }
 
+type ContactKey = "phone" | "email";
+
+const contactFields: { key: ContactKey; label: string }[] = [
+  { key: "phone", label: "전화번호" },
+  { key: "email", label: "이메일" },
+];
+
 export function ProfileContactSection({
   data,
   onChange,
@@ -18,23 +25,18 @@ export function ProfileContactSection({
       <h3 className="text-lg font-bold pb-5 border-b border-gray-ddd">
         연락처 정보
       </h3>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="flex flex-col gap-4">
-          <label className="text-base font-medium">전화번호</label>
-          <Input
-            value={data.phone}
-            onChange={(e) => onChange("phone", e.target.value)}
-            disabled={!isMaster}
-          />
-        </div>
-        <div className="flex flex-col gap-4">
-          <label className="text-base font-medium">이메일</label>
-          <Input
-            value={data.email}
-            onChange={(e) => onChange("email", e.target.value)}
-            disabled={!isMaster}
-          />
-        </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {contactFields.map(({ key, label }) => (
+          <div key={key} className="flex flex-col gap-4">
+            <label className="text-base font-medium">{label}</label>
+            <Input
+              value={data[key]}
+              onChange={(e) => onChange(key, e.target.value)}
+              disabled={!isMaster}
+            />
+          </div>
+        ))}
       </div>
     </section>
   );

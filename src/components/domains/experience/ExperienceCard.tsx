@@ -33,7 +33,10 @@ export function ExperienceCard({ experience }: { experience: Experience }) {
         {/* 업무 설명 */}
         <div className="mt-6 mb-5 text-left md:mt-13 md:mb-7 md:text-right">
           {experience.description.map((desc, idx) => (
-            <p key={idx} className="text-base leading-relaxed sm:text-lg">
+            <p
+              key={idx}
+              className="text-base leading-relaxed sm:text-lg break-keep"
+            >
               {desc}
             </p>
           ))}
