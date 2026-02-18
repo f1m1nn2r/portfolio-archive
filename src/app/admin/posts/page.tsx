@@ -89,7 +89,7 @@ export default function PostsPage() {
       <AdminSummaryGrid items={summaryItems} columns={2} />
 
       <AdminActionBar>
-        <div className="flex w-full items-center justify-end gap-2">
+        <div className="grid w-full gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
           <AdminSearchBar
             placeholder="게시글 검색"
             searchValue={searchQuery}
@@ -101,6 +101,7 @@ export default function PostsPage() {
             <DeleteButton
               onClick={openDeleteModal}
               disabled={selectedIds.length === 0}
+              className="w-full justify-center whitespace-nowrap sm:justify-self-end sm:w-auto"
             />
           )}
         </div>

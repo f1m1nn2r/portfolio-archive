@@ -22,11 +22,11 @@ export default function HomeClient({
 
   return (
     <PageLayout className="bg-white">
-      <section className="mx-auto w-full px-4 sm:px-6 lg:px-8">
+      <section className="mx-auto w-full sm:px-6 ">
         <h1 className="mb-4 whitespace-pre-line break-words text-left text-2xl font-bold sm:mb-6 sm:text-3xl md:text-right md:text-4xl">
           {profile?.main_title}
         </h1>
-        <p className="whitespace-pre-line break-words text-left text-base leading-relaxed sm:text-lg md:text-right">
+        <p className="whitespace-pre-line break-keep text-left text-base leading-relaxed sm:text-lg md:text-right">
           {profile?.main_description}
         </p>
       </section>
@@ -41,7 +41,7 @@ export default function HomeClient({
         />
       </div>
 
-      <section className="mx-auto w-full px-4 pb-20 sm:px-6 md:pb-24 lg:px-8 lg:pb-32">
+      <section className="mx-auto w-full pb-20 sm:px-6 md:pb-24 lg:pb-32">
         <div className="space-y-14 sm:space-y-16 md:space-y-20">
           {experiences.map((exp) => (
             <ExperienceCard key={exp.id} experience={exp} />

@@ -11,7 +11,7 @@ export const Button = ({
   ...props
 }: ButtonProps) => {
   const baseStyles =
-    "inline-flex items-center justify-center rounded font-medium transition-colors gap-1.5 cursor-pointer";
+    "inline-flex items-center justify-center rounded font-medium transition-colors gap-1.5 cursor-pointer text-[14px] sm:text-base";
 
   const variants = {
     primary: "bg-black text-white hover:bg-gray-800",
@@ -21,9 +21,9 @@ export const Button = ({
   };
 
   const sizes = {
-    sm: "px-3 py-1.5 text-xs",
-    md: "px-3 py-1.5 text-base",
-    lg: "px-6 py-3 text-base",
+    sm: "px-3 py-1.5",
+    md: "px-3 py-1.5",
+    lg: "px-6 py-3",
   };
 
   const iconSize = size === "sm" ? 16 : 20;
