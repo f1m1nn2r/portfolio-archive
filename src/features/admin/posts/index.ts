@@ -1,4 +1,5 @@
 export { usePosts } from "./hooks/usePosts";
+export { useEtcPosts } from "./hooks/useEtcPosts";
 export { usePostForm } from "./hooks/usePostForm";
 export { useEtcFilter } from "./hooks/useEtcFilter";
 
