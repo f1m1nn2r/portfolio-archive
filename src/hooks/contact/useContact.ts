@@ -1,5 +1,10 @@
 import { useAppSWR } from "@/hooks/common/useAppSWR";
-import { getContacts } from "@/services/contact/client";
+import {
+  deleteContactsApi,
+  getContacts,
+  updateReadStatus,
+  updateStarStatus,
+} from "@/services/contact/client";
 import { ContactMessage, UseContactProps } from "@/types/admin";
 import { useSummaryData } from "@/hooks/common/useSummaryData";
 import { showToast } from "@/lib/toast";
@@ -12,14 +17,11 @@ export function useContact({ initialData, onSuccess }: UseContactProps = {}) {
     data: contacts = [],
     isLoading,
     mutate,
-    deleteManyItems,
-    updateItem,
-  } = useAppSWR<ContactMessage[], string[], Partial<ContactMessage>>(
+  } = useAppSWR<ContactMessage[]>(
     "/api/contact",
     getContacts,
     {
       fallbackData: initialData,
-      onSuccess: () => onSuccess?.(),
     },
   );
 
@@ -48,30 +50,35 @@ export function useContact({ initialData, onSuccess }: UseContactProps = {}) {
     if (ids.length === 0) return;
 
     setIsDeleting(true);
-    const success = await deleteManyItems(ids);
-
-    if (success) {
+    try {
+      await deleteContactsApi(ids);
+      await mutate();
+      onSuccess?.();
+      showToast.delete();
       onComplete?.();
+    } catch (error) {
+      showToast.error(error instanceof Error ? error.message : "삭제 중 오류가 발생했습니다.");
+    } finally {
+      setIsDeleting(false);
     }
-    setIsDeleting(false);
   };
 
   const toggleStar = async (id: string, currentStatus: boolean) => {
-    await updateItem(id, { is_starred: !currentStatus }, { showToast: false });
+    try {
+      await updateStarStatus(id, !currentStatus);
+      await mutate();
+      onSuccess?.();
+    } catch (error) {
+      showToast.error(error instanceof Error ? error.message : "처리 중 오류가 발생했습니다.");
+    }
   };
 
   const markAsRead = async (ids: string[]) => {
     try {
-      const res = await fetch("/api/contact", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids, is_read: true }),
-      });
-
-      if (res.ok) {
-        mutate();
-        showToast.success(`${ids.length}개의 메시지를 읽음 처리했습니다.`);
-      }
+      await updateReadStatus(ids, true);
+      await mutate();
+      onSuccess?.();
+      showToast.success(`${ids.length}개의 메시지를 읽음 처리했습니다.`);
     } catch (error) {
       showToast.error("처리 중 오류가 발생했습니다.");
     }

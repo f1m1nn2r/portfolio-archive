@@ -1,8 +1,9 @@
 import { useAppSWR } from "@/hooks/common/useAppSWR";
-import { getEpics } from "@/services/epic/client";
+import { createEpicApi, deleteEpicApi, getEpics } from "@/services/epic/client";
 import { Epic } from "../model/backlog.admin";
 import { MESSAGES } from "@/lib/constants/messages";
 import { useState } from "react";
+import { showToast } from "@/lib/toast";
 
 const EPIC_COLORS = [
   "#DBF0D6",
@@ -21,12 +22,10 @@ const EPIC_COLORS = [
 ];
 
 export function useEpics() {
-  const {
-    data: epics,
-    isLoading,
-    createItem,
-    deleteItem,
-  } = useAppSWR<Epic[], Partial<Epic>, Partial<Epic>>("/api/epics", getEpics);
+  const { data: epics, isLoading, mutate } = useAppSWR<Epic[]>(
+    "/api/epics",
+    getEpics,
+  );
 
   const [isAdding, setIsAdding] = useState(false);
   const [newLabel, setNewLabel] = useState("");
@@ -35,7 +34,15 @@ export function useEpics() {
     const randomColor =
       EPIC_COLORS[Math.floor(Math.random() * EPIC_COLORS.length)];
     const newEpicData: Partial<Epic> = { label, color: randomColor };
-    return await createItem(newEpicData);
+    try {
+      const result = await createEpicApi(newEpicData);
+      await mutate();
+      showToast.save("add");
+      return result;
+    } catch (error) {
+      showToast.error(error instanceof Error ? error.message : "생성에 실패했습니다.");
+      return null;
+    }
   };
 
   const submitNewEpic = async () => {
@@ -48,7 +55,15 @@ export function useEpics() {
   };
 
   const removeEpic = async (id: string) => {
-    return await deleteItem(id);
+    try {
+      await deleteEpicApi(id);
+      await mutate();
+      showToast.delete();
+      return true;
+    } catch (error) {
+      showToast.error(error instanceof Error ? error.message : "삭제에 실패했습니다.");
+      return false;
+    }
   };
 
   return {
