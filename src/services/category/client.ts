@@ -1,40 +1,27 @@
 import { Category } from "@/types/admin";
 import { CategoryResponse } from "@/types/api/category";
+import { http } from "@/services/http/client";
 
 export const getCategoriesApi = async (): Promise<CategoryResponse> => {
-  const res = await fetch("/api/categories");
-  if (!res.ok) throw new Error("카테고리 로드 실패");
-  return res.json();
+  return http.get<CategoryResponse>("/api/categories");
 };
 
 export const createCategoryApi = async (
   payload: Partial<Category>,
-): Promise<Category | null> => {
-  const res = await fetch("/api/categories", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+): Promise<Category> => {
+  return http.post<Category>("/api/categories", {
+    body: payload,
+    unwrapData: true,
   });
-  if (!res.ok) return null;
-  const result = await res.json();
-  return result.data;
 };
 
 export const updateCategoryApi = async (
   id: string,
-  name: string,
-): Promise<boolean> => {
-  const res = await fetch(`/api/categories/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name }),
-  });
-  return res.ok;
+  payload: { name: string },
+): Promise<void> => {
+  await http.patch(`/api/categories/${id}`, { body: payload });
 };
 
-export const deleteCategoryApi = async (id: string): Promise<boolean> => {
-  const res = await fetch(`/api/categories/${id}`, {
-    method: "DELETE",
-  });
-  return res.ok;
+export const deleteCategoryApi = async (id: string): Promise<void> => {
+  await http.delete(`/api/categories/${id}`);
 };

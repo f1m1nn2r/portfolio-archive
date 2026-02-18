@@ -1,10 +1,14 @@
 import { PostsResponse } from "../model/post.api";
-import { Post } from "../model/post.admin";
+import { FormattedPost, Post } from "../model/post.admin";
+import { http } from "@/services/http/client";
 
 export const getPostsApi = async (url: string): Promise<PostsResponse> => {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("데이터 페치 실패");
-  const result = await res.json();
+  const result = await http.get<{
+    success?: boolean;
+    data?: FormattedPost[];
+    totalCount?: number;
+    recentCount?: number;
+  }>(url);
 
   return {
     success: result.success ?? true,
@@ -16,24 +20,25 @@ export const getPostsApi = async (url: string): Promise<PostsResponse> => {
 
 // 단일 조회
 export const getPostByIdApi = async (id: string): Promise<Post | null> => {
-  const res = await fetch(`/api/posts/${id}`);
-  if (!res.ok) return null;
-  const result = await res.json();
-  return result.data;
+  try {
+    return await http.get<Post>(`/api/posts/${id}`, { unwrapData: true });
+  } catch {
+    return null;
+  }
 };
 
 // 생성
 export const createPostApi = async (
   payload: Partial<Post>,
 ): Promise<Post | null> => {
-  const res = await fetch("/api/posts", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) return null;
-  const result = await res.json();
-  return result.data;
+  try {
+    return await http.post<Post>("/api/posts", {
+      body: payload,
+      unwrapData: true,
+    });
+  } catch {
+    return null;
+  }
 };
 
 // 수정
@@ -41,16 +46,33 @@ export const updatePostApi = async (
   id: string,
   payload: Partial<Post>,
 ): Promise<boolean> => {
-  const res = await fetch(`/api/posts/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  return res.ok;
+  try {
+    await http.patch(`/api/posts/${id}`, {
+      body: payload,
+    });
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 // 단일 삭제 (필요시)
 export const deletePostApi = async (id: string): Promise<boolean> => {
-  const res = await fetch(`/api/posts/${id}`, { method: "DELETE" });
-  return res.ok;
+  try {
+    await http.delete(`/api/posts/${id}`);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+export const deleteManyPostsApi = async (ids: string[]): Promise<boolean> => {
+  try {
+    await http.delete("/api/posts", {
+      body: { ids },
+    });
+    return true;
+  } catch {
+    return false;
+  }
 };
