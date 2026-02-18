@@ -174,6 +174,11 @@ body {
 body * {
   letter-spacing: -0.5px;
 }
+code,
+pre,
+.rc-md-editor .editor-container .sec-md .input {
+  letter-spacing: normal !important;
+}
 
 .react-datepicker-wrapper {
   width: 100%;
@@ -200,29 +205,154 @@ body * {
   line-height: 1.8 !important;
 }
 
+.custom-html-style ins {
+  text-decoration: underline !important;
+  text-underline-offset: 0.15em;
+}
+
 .custom-html-style :not(pre) > code {
-  background-color: #f3f4f6 !important;
-  color: #eb5757 !important;
-  padding: 0.2rem 0.4rem !important;
-  border-radius: 4px !important;
-  font-family: monospace !important;
+  background-color: #f6f8fa !important;
+  color: #c7254e !important;
+  padding: 0.15rem 0.4rem !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 6px !important;
+  font-family:
+    "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace !important;
   font-size: 0.9em !important;
 }
 
 /* 2. 여러 줄 코드 박스 (Block) */
-.custom-html-style pre {
-  background-color: #1f2937 !important;
-  color: #f9fafb !important;
-  padding: 1.5rem !important;
-  border-radius: 8px !important;
+/* .custom-html-style pre {
+  background-color: #f6f8fa !important;
+  color: #1f2937 !important;
+  border: 1px solid #e5e7eb !important;
+  padding: 1rem 1.125rem !important;
+  border-radius: 10px !important;
   margin: 1.5rem 0 !important;
   overflow-x: auto !important;
-  line-height: 1.5 !important;
+  line-height: 1.65 !important;
 }
 
 .custom-html-style pre code {
   background: none !important;
   color: inherit !important;
   padding: 0 !important;
-  font-family: "Fira Code", monospace !important;
+  font-family:
+    "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace !important;
+  font-size: 14px !important;
+}
+
+.custom-html-style pre code.hljs {
+  display: block;
+}
+
+.custom-html-style pre .hljs-comment {
+  color: #b08968 !important;
+}
+
+.custom-html-style pre .hljs-keyword {
+  color: #2563eb !important;
+  font-weight: 600 !important;
+}
+
+.custom-html-style h3 {
+  margin: 18px 0 !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  line-height: 1.6 !important;
+}
+
+.custom-html-style h4 {
+  margin: 14px 0 !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  line-height: 1.6 !important;
+}
+
+.custom-html-style h5 {
+  margin: 12px 0 !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  line-height: 1.6 !important;
+}
+
+.custom-html-style h6 {
+  margin: 10px 0 !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: #4b5563 !important;
+  line-height: 1.6 !important;
+}
+
+.rc-md-editor .editor-container .sec-md .input {
+  color: #1f2937 !important;
+} */
+
+/* 블록 전체 스타일 */
+.custom-html-style pre {
+  position: relative !important; /* 언어 라벨 위치용 */
+  background-color: #1e1e1e !important; /* 다크 배경 */
+  color: #f5f5f5 !important; /* 기본 텍스트 색 */
+  border-radius: 12px !important;
+  padding: 1rem 1rem 1rem 1rem !important;
+  margin: 1.5rem 0 !important;
+  overflow-x: auto !important; /* 가로 스크롤 */
+  font-family:
+    "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace !important;
+  font-size: 0.95rem !important;
+  line-height: 1.6 !important;
+}
+
+/* 내부 코드 */
+.custom-html-style pre code {
+  background: none !important;
+  color: inherit !important;
+  padding: 0 !important;
+  display: block !important; /* block으로 줄바꿈 유지 */
+  white-space: pre !important; /* 공백, 들여쓰기 유지 */
+}
+
+/* highlight.js 키워드 */
+.custom-html-style pre .hljs-comment {
+  color: #6a9955 !important;
+  font-style: italic !important;
+}
+.custom-html-style pre .hljs-keyword {
+  color: #569cd6 !important;
+  font-weight: 600 !important;
+}
+.custom-html-style pre .hljs-string {
+  color: #ce9178 !important;
+}
+
+/* 언어 라벨 (오른쪽 상단) */
+.custom-html-style pre::before {
+  content: attr(data-lang) !important; /* JS/TS/Bash 등 */
+  position: absolute !important;
+  top: 8px !important;
+  right: 12px !important;
+  background: rgba(0, 0, 0, 0.3) !important;
+  color: #f5f5f5 !important;
+  font-size: 0.7rem !important;
+  font-weight: 600 !important;
+  padding: 0.2rem 0.5rem !important;
+  border-radius: 6px !important;
+  text-transform: uppercase !important;
+}
+
+/* 선택 영역 강조 */
+.custom-html-style pre code::selection {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* 스크롤바 스타일 (선택 사항) */
+.custom-html-style pre::-webkit-scrollbar {
+  height: 8px !important;
+}
+.custom-html-style pre::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  border-radius: 4px !important;
+}
+.custom-html-style pre::-webkit-scrollbar-track {
+  background: transparent !important;
 }
